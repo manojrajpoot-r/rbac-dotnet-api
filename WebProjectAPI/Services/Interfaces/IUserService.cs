@@ -8,6 +8,8 @@ namespace WebProjectAPI.Services.Interfaces
     {
         ApiResponse<List<User>> GetAll();
         ApiResponse<User> Add(UserCreateDto dto);
+        ApiResponse<UserUpdateDto> GetById(int id);
+
         ApiResponse<User> Update(UserUpdateDto dto);
         ApiResponse<string> Delete(int id);
         ApiResponse<string> ToggleStatus(int id);

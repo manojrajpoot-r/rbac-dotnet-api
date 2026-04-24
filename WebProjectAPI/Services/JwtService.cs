@@ -1,17 +1,13 @@
-﻿
-
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-namespace WebProjectAPI.Services
+﻿namespace WebProjectAPI.Services
 {
+    using Microsoft.IdentityModel.Tokens;
+    using System.IdentityModel.Tokens.Jwt;
+    using System.Security.Claims;
+    using System.Text;
+    using WebProjectAPI.DTOs;
+    using WebProjectAPI.Services.Interfaces;
 
-    public interface IJwtService
-    {
-        string GenerateJwt(int userId, string email);
-    }
+
 
     public class JwtService : IJwtService
     {
@@ -22,7 +18,7 @@ namespace WebProjectAPI.Services
             _config = config;
         }
 
-        public string GenerateJwt(int userId, string email)
+        public JwtResult GenerateJwt(int userId, string email)
         {
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["Jwt:Key"])
@@ -36,16 +32,23 @@ namespace WebProjectAPI.Services
             new Claim(ClaimTypes.Email, email)
         };
 
+            var expiry = DateTime.UtcNow.AddMinutes(15);
+
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(15),
+                expires: expiry,
                 signingCredentials: creds
             );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return new JwtResult
+            {
+                Token = tokenString,
+                Expiry = expiry
+            };
         }
     }
-
 }

@@ -14,6 +14,8 @@ using WebProjectAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 // 🔹 Database
 builder.Services.AddDbContext<AppDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -34,7 +36,16 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 
 // 🔹 AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
-
+//foronted se backend api include krne ek liye permissom allow/deney
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 //swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -91,6 +102,9 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+
+//fronted add
+app.UseCors("AllowAll");
 //Swagger
 if (app.Environment.IsDevelopment())
 {

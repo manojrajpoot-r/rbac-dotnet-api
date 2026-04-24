@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WebProjectAPI.Attributes;
 using WebProjectAPI.DTOs.UserD;
 using WebProjectAPI.Repositories.Implementations;
@@ -21,17 +22,17 @@ namespace WebProjectAPI.Controllers.UserC
                 _service = service;
             }
 
-            [HttpGet("users")]
+            [HttpGet]
             public IActionResult GetAll()
             {
                 return Ok(_service.GetAll());
             }
 
 
-        [Authorize]
-        [Permission("create_user")]
-        [HttpPost("users_add")]
-            public IActionResult Add(UserCreateDto dto)
+        //[Authorize]
+        //[Permission("create_user")]
+        [HttpPost]
+        public IActionResult Add(UserCreateDto dto)
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
@@ -39,26 +40,41 @@ namespace WebProjectAPI.Controllers.UserC
                 return Ok(_service.Add(dto));
             }
 
-        [Authorize]
-        [Permission("edit_user")]
-        [HttpPut("users_edit")]
-            public IActionResult Update(UserUpdateDto dto)
-            {
-                return Ok(_service.Update(dto));
-            }
-        [Authorize]
-        [Permission("delete_user")]
-        [HttpDelete("users_delete/{id}")]
-            public IActionResult Delete(int id)
-            {
-                return Ok(_service.Delete(id));
-            }
 
-            [HttpPatch("users_status/{id}")]
-            public IActionResult Status(int id)
-            {
-                return Ok(_service.ToggleStatus(id));
-            }
+        //[Authorize]
+        //[Permission("edit_user")]
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var result = _service.GetById(id);
+            return Ok(result);
+        }
+
+
+
+
+        //[Authorize]
+        //[Permission("edit_user")]
+        [HttpPut("{id}")]
+        public IActionResult Update(int id,UserUpdateDto dto)
+        {
+            dto.Id = id;
+            return Ok(_service.Update(dto));
+        }
+
+        //[Authorize]
+        //[Permission("delete_user")]
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+                return Ok(_service.Delete(id));
+        }
+
+        [HttpPatch("{id}")]
+        public IActionResult Status(int id)
+        {
+            return Ok(_service.ToggleStatus(id));
+        }
         }
     }
 

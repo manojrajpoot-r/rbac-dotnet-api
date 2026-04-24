@@ -9,7 +9,7 @@ using System.Text;
 using WebProjectAPI.Data;
 using WebProjectAPI.DTOs;
 using WebProjectAPI.Models;
-using WebProjectAPI.Services;
+using WebProjectAPI.Services.Interfaces;
 namespace WebProjectAPI.Controllers.Auth
 {
     [Route("api/[controller]")]
@@ -80,52 +80,94 @@ namespace WebProjectAPI.Controllers.Auth
         }
 
         // 🔐 LOGIN
+      
         [HttpPost("login")]
-        public IActionResult UserLogin(UserLoginRequest request)
+        public IActionResult Login(UserLoginRequest request)
         {
-            
+            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            {
+                return BadRequest(new LoginResponse
+                {
+                    Success = false,
+                    Message = "Email and Password are required"
+                });
+            }
+
             var user = _context.Users.FirstOrDefault(x => x.Email == request.Email);
 
             if (user == null)
-                return Unauthorized(new { success = false, message = "User not found" });
+            {
+                return Unauthorized(new LoginResponse
+                {
+                    Success = false,
+                    Message = "User not found"
+                });
+            }
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.Password, request.Password);
 
             if (result == PasswordVerificationResult.Failed)
-                return Unauthorized(new { success = false, message = "Invalid password" });
+            {
+                return Unauthorized(new LoginResponse
+                {
+                    Success = false,
+                    Message = "Invalid password"
+                });
+            }
 
-            var token = _jwtService.GenerateJwt(user.Id, user.Email);
+            // ✅ JWT generate
+            var jwt = _jwtService.GenerateJwt(user.Id, user.Email);
 
+          
+            // ✅ Role fetch
+            var role = _context.UserRoles
+                .Where(ur => ur.UserId == user.Id)
+                .Select(ur => ur.Role.Name)
+                .FirstOrDefault();
+
+            // ✅ Refresh token
             var refreshToken = new RefreshToken
             {
                 UserId = user.Id,
                 Token = Guid.NewGuid().ToString(),
-                ExpiryDate = DateTime.Now.AddDays(7),
+                ExpiryDate = DateTime.UtcNow.AddDays(7),
                 IsRevoked = false
             };
 
             _context.RefreshTokens.Add(refreshToken);
             _context.SaveChanges();
 
-            return Ok(new
+            var expiresIn = (int)(jwt.Expiry - DateTime.UtcNow).TotalSeconds;
+
+            return Ok(new LoginResponse
             {
-                success = true,
-                message = "Login Successfully!",
-                token = token,
-                refreshToken = refreshToken.Token
+                Success = true,
+                Message = "Login Successfully!",
+                Data = new
+                {
+                    accessToken = jwt.Token,
+                    refreshToken = refreshToken.Token,
+                    expiresIn = expiresIn,
+                    user = new
+                    {
+                        id = user.Id,
+                        email = user.Email,
+                        role = role
+                    }
+                }
             });
         }
 
-      
 
+       
         [HttpPost("refresh")]
         public IActionResult Refresh(string refreshToken)
         {
             var token = _context.RefreshTokens
                 .FirstOrDefault(x => x.Token == refreshToken && !x.IsRevoked);
 
-            if (token == null || token.ExpiryDate < DateTime.Now)
-                return Unauthorized();
+            if (token == null || token.ExpiryDate < DateTime.UtcNow)
+                return Unauthorized(new { success = false, message = "Invalid refresh token" });
 
             // ❗ old token revoke
             token.IsRevoked = true;
@@ -135,21 +177,59 @@ namespace WebProjectAPI.Controllers.Auth
             {
                 UserId = token.UserId,
                 Token = Guid.NewGuid().ToString(),
-                ExpiryDate = DateTime.Now.AddDays(7),
+                ExpiryDate = DateTime.UtcNow.AddDays(7),
                 IsRevoked = false
             };
-
 
             _context.RefreshTokens.Add(newRefreshToken);
 
             var user = _context.Users.FirstOrDefault(x => x.Id == token.UserId);
-            var newJwt = _jwtService.GenerateJwt(token.UserId, user.Email);
+
+            // ✅ new JWT
+            var jwt = _jwtService.GenerateJwt(user.Id, user.Email);
+
+            var expiresIn = (int)(jwt.Expiry - DateTime.UtcNow).TotalSeconds;
+
             _context.SaveChanges();
 
             return Ok(new
             {
-                token = newJwt,
-                refreshToken = newRefreshToken.Token
+                success = true,
+                message = "Token refreshed",
+                data = new
+                {
+                    accessToken = jwt.Token,
+                    refreshToken = newRefreshToken.Token,
+                    expiresIn = expiresIn,
+                    user = new
+                    {
+                        id = user.Id,
+                        email = user.Email
+                    }
+                }
+            });
+        }
+
+        [HttpPost("logout-all")]
+        public IActionResult LogoutAll(int userId)
+        {
+            var tokens = _context.RefreshTokens
+                .Where(x => x.UserId == userId && !x.IsRevoked)
+                .ToList();
+            if (tokens == null)
+                return NotFound(new { success = false, message = "Token not found" });
+
+            foreach (var t in tokens)
+            {
+                t.IsRevoked = true;
+            }
+
+            _context.SaveChanges();
+
+            return Ok(new
+            {
+                success = true,
+                message = "Logged out from all devices"
             });
         }
     }

@@ -2,6 +2,7 @@
 {
     using AutoMapper;
     using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
     using WebProjectAPI.DTOs.UserD;
     using WebProjectAPI.Helpers;
     using WebProjectAPI.Models;
@@ -45,7 +46,27 @@
                 Data = result
             };
         }
+        public ApiResponse<UserUpdateDto> GetById(int id)
+        {
+            var user = _repo.GetById(id);
 
+            if (user == null)
+            {
+                return new ApiResponse<UserUpdateDto>
+                {
+                    Success = false,
+                    Message = "User not found"
+                };
+            }
+
+            var dto = _mapper.Map<UserUpdateDto>(user);
+
+            return new ApiResponse<UserUpdateDto>
+            {
+                Success = true,
+                Data = dto
+            };
+        }
         public ApiResponse<User> Update(UserUpdateDto dto)
         {
             var user = _mapper.Map<User>(dto);
@@ -63,8 +84,8 @@
             return new ApiResponse<User>
             {
                 Success = true,
-                Message = "Updated",
-                Data = result
+                Data = result,
+                Message = "User updated successfully"
             };
         }
 
