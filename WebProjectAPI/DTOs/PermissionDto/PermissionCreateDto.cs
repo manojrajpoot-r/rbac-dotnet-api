@@ -4,6 +4,10 @@
     public class PermissionCreateDto
     {
         [Required]
-        public string Name { get; set; }
+        public List<string> Permissions { get; set; }
+
+        [Required]
+        public string GroupName { get; set; }
+      
     }
 }

@@ -6,7 +6,7 @@ namespace WebProjectAPI.Services.Interfaces
 {
     public interface IUserService
     {
-        ApiResponse<List<User>> GetAll();
+        ApiResponse<List<User>> GetAll(int pageNumber, int pageSize, string search);
         ApiResponse<User> Add(UserCreateDto dto);
         ApiResponse<UserUpdateDto> GetById(int id);
 

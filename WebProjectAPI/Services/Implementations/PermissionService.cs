@@ -19,25 +19,66 @@ namespace WebProjectAPI.Services.Implementations
             _mapper = mapper;
         }
 
-        public ApiResponse<List<Permission>> GetAll()
+        public ApiResponse<List<Permission>> GetAll(int pageNumber, int pageSize, string search)
         {
+            int totalRecords;
+
+            var data = _repo.GetAll(pageNumber, pageSize, search, out totalRecords);
+
             return new ApiResponse<List<Permission>>
             {
                 Success = true,
-                Data = _repo.GetAll()
+                Data = data,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize
             };
         }
 
-        public ApiResponse<Permission> Add(PermissionCreateDto dto)
+        public ApiResponse<PermissionUpdateDto> GetById(int id)
         {
-            var p = _mapper.Map<Permission>(dto);
-            var result = _repo.Add(p);
+            var permission = _repo.GetById(id);
 
-            return new ApiResponse<Permission>
+            if (permission == null)
+            {
+                return new ApiResponse<PermissionUpdateDto>
+                {
+                    Success = false,
+                    Message = "Permission not found"
+                };
+            }
+
+            var dto = _mapper.Map<PermissionUpdateDto>(permission);
+
+            return new ApiResponse<PermissionUpdateDto>
             {
                 Success = true,
-                Message = "Permission added",
-                Data = result
+                Data = dto
+            };
+        }
+
+        public ApiResponse<List<Permission>> Add(PermissionCreateDto dto)
+        {
+            List<Permission> addedPermissions = new();
+
+            foreach (var item in dto.Permissions)
+            {
+                var permission = new Permission
+                {
+                    Name = item,
+                    GroupName = dto.GroupName
+                };
+
+                _repo.Add(permission);
+
+                addedPermissions.Add(permission);
+            }
+
+            return new ApiResponse<List<Permission>>
+            {
+                Success = true,
+                Message = "Permissions added successfully",
+                Data = addedPermissions
             };
         }
 

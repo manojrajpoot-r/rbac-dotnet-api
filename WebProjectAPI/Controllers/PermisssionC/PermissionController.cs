@@ -18,15 +18,19 @@ namespace WebProjectAPI.Controllers.PermisssionC
                 _service = service;
             }
 
-            [HttpGet("permissions")]
-            public IActionResult GetAll()
-            {
-                return Ok(_service.GetAll());
-            }
+        [Authorize]
+        [Permission("view_permission")]
+        [HttpGet]
+        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, string search = "")
+        {
+            var result = _service.GetAll(pageNumber, pageSize, search);
+            return Ok(result);
+        }
+
 
         [Authorize]
-        [Permission("create_permission")]
-        [HttpPost("permissions_add")]
+        [Permission("add_permission")]
+        [HttpPost]
             public IActionResult Add(PermissionCreateDto dto)
             {
                 if (!ModelState.IsValid)
@@ -35,9 +39,20 @@ namespace WebProjectAPI.Controllers.PermisssionC
                 return Ok(_service.Add(dto));
             }
 
+
+
+        [Authorize]
+        [Permission("view_permission")]
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var result = _service.GetById(id);
+            return Ok(result);
+        }
+
         [Authorize]
         [Permission("edit_permission")]
-        [HttpPut("permissions_edit")]
+        [HttpPut]
             public IActionResult Update(PermissionUpdateDto dto)
             {
                 if (!ModelState.IsValid)
@@ -48,7 +63,7 @@ namespace WebProjectAPI.Controllers.PermisssionC
 
         [Authorize]
         [Permission("delete_permission")]
-        [HttpDelete("permissions_delete/{id}")]
+        [HttpDelete("{id}")]
             public IActionResult Delete(int id)
             {
                 return Ok(_service.Delete(id));

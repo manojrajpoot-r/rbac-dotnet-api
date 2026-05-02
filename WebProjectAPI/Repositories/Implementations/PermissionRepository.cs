@@ -16,12 +16,28 @@ namespace WebProjectAPI.Repositories.Implementations
                 _context = context;
             }
 
-            public List<Permission> GetAll()
+        public List<Permission> GetAll(int pageNumber, int pageSize, string search, out int totalRecords)
+        {
+            var query = _context.Permissions.AsQueryable();
+
+            //  search
+            if (!string.IsNullOrEmpty(search))
             {
-                return _context.Permissions.ToList();
+                query = query.Where(x => x.GroupName.Contains(search));
             }
 
-            public Permission GetById(int id)
+            // 📊 total count
+            totalRecords = query.Count();
+
+            // 📄 pagination
+            return query
+                .OrderBy(x => x.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
+             public Permission GetById(int id)
             {
                 return _context.Permissions.FirstOrDefault(x => x.Id == id);
             }

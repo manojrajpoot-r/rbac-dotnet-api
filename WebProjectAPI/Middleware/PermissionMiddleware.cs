@@ -33,7 +33,7 @@ namespace WebProjectAPI.Middleware
                     .ToList();
 
                 // 🔥 ADMIN BYPASS
-                if (roles.Contains("Admin"))
+                if (roles.Any(r =>r.Equals("Admin",StringComparison.OrdinalIgnoreCase)))
                 {
                     await _next(context);
                     return;

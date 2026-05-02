@@ -22,12 +22,19 @@
             _hasher = new PasswordHasher<User>();
         }
 
-        public ApiResponse<List<User>> GetAll()
+        public ApiResponse<List<User>> GetAll(int pageNumber, int pageSize, string search)
         {
+            int totalRecords;
+
+            var data = _repo.GetAll(pageNumber, pageSize, search, out totalRecords);
+
             return new ApiResponse<List<User>>
             {
                 Success = true,
-                Data = _repo.GetAll()
+                Data = data,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber, // 🔥 ये important
+                PageSize = pageSize      // 🔥 ये important
             };
         }
 

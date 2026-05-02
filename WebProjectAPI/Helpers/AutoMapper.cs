@@ -11,12 +11,15 @@ namespace WebProjectAPI.Helpers
         {
             CreateMap<RoleCreateDto, Role>();
             CreateMap<RoleUpdateDto, Role>();
+            CreateMap<Role, RoleUpdateDto>();
+
             CreateMap<UserCreateDto, User>();
             CreateMap<UserUpdateDto, User>();
             CreateMap<User, UserUpdateDto>();
         
             CreateMap<PermissionCreateDto, Permission>();
             CreateMap<PermissionUpdateDto, Permission>();
+            CreateMap<Permission, PermissionUpdateDto>();
         }
     }
 }

@@ -22,4 +22,18 @@
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\carts\" />
+    <Folder Include="Features\cart_items\" />
+    <Folder Include="Features\addresses\" />
+    <Folder Include="Features\coupons\" />
+    <Folder Include="Features\reviews\" />
+    <Folder Include="Features\wishlists\" />
+    <Folder Include="Features\payments\" />
+    <Folder Include="Features\order_items\" />
+    <Folder Include="Features\orders\" />
+    <Folder Include="Features\product_variant_values\" />
+    <Folder Include="Features\product_variants\" />
+  </ItemGroup>
+
 </Project>

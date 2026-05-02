@@ -4,7 +4,7 @@ namespace WebProjectAPI.Repositories.Interfaces
 {
     public interface IRoleRepository
     {
-        List<Role> GetAll();
+        List<Role> GetAll(int pageNumber, int pageSize, string search, out int totalRecords);
         Role GetById(int id);
         Role Add(Role role);
         Role Update(Role role);

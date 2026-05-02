@@ -1,9 +1,10 @@
-﻿using WebProjectAPI.DTOs;
+﻿using AutoMapper;
+using WebProjectAPI.DTOs;
+using WebProjectAPI.DTOs.UserD;
 using WebProjectAPI.Helpers;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services.Interfaces;
-using AutoMapper;
 
 namespace WebProjectAPI.Services.Implementations
 {
@@ -18,12 +19,19 @@ namespace WebProjectAPI.Services.Implementations
             _mapper = mapper;
         }
 
-        public ApiResponse<List<Role>> GetAll()
+        public ApiResponse<List<Role>> GetAll(int pageNumber, int pageSize, string search)
         {
+            int totalRecords;
+
+            var data = _repo.GetAll(pageNumber, pageSize, search, out totalRecords);
+
             return new ApiResponse<List<Role>>
             {
                 Success = true,
-                Data = _repo.GetAll()
+                Data = data,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber, 
+                PageSize = pageSize      
             };
         }
 
@@ -40,6 +48,28 @@ namespace WebProjectAPI.Services.Implementations
             };
         }
 
+
+        public ApiResponse<RoleUpdateDto> GetById(int id)
+        {
+            var role = _repo.GetById(id);
+
+            if (role == null)
+            {
+                return new ApiResponse<RoleUpdateDto>
+                {
+                    Success = false,
+                    Message = "Role not found"
+                };
+            }
+
+            var dto = _mapper.Map<RoleUpdateDto>(role);
+
+            return new ApiResponse<RoleUpdateDto>
+            {
+                Success = true,
+                Data = dto
+            };
+        }
         public ApiResponse<Role> Update(RoleUpdateDto dto)
         {
             var role = _mapper.Map<Role>(dto);

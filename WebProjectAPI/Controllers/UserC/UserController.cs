@@ -22,15 +22,18 @@ namespace WebProjectAPI.Controllers.UserC
                 _service = service;
             }
 
-            [HttpGet]
-            public IActionResult GetAll()
-            {
-                return Ok(_service.GetAll());
-            }
+        [Authorize]
+        [Permission("view_user")]
+        [HttpGet]
+      
+       public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, string search = "")
+        {
+            var result = _service.GetAll(pageNumber, pageSize, search);
+            return Ok(result);
+        }
 
-
-        //[Authorize]
-        //[Permission("create_user")]
+        [Authorize]
+        [Permission("add_user")]
         [HttpPost]
         public IActionResult Add(UserCreateDto dto)
             {
@@ -41,8 +44,8 @@ namespace WebProjectAPI.Controllers.UserC
             }
 
 
-        //[Authorize]
-        //[Permission("edit_user")]
+        [Authorize]
+        [Permission("view_user")]
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -53,8 +56,8 @@ namespace WebProjectAPI.Controllers.UserC
 
 
 
-        //[Authorize]
-        //[Permission("edit_user")]
+        [Authorize]
+        [Permission("edit_user")]
         [HttpPut("{id}")]
         public IActionResult Update(int id,UserUpdateDto dto)
         {
@@ -62,14 +65,16 @@ namespace WebProjectAPI.Controllers.UserC
             return Ok(_service.Update(dto));
         }
 
-        //[Authorize]
-        //[Permission("delete_user")]
+        [Authorize]
+        [Permission("delete_user")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
                 return Ok(_service.Delete(id));
         }
 
+        [Authorize]
+        [Permission("status_user")]
         [HttpPatch("{id}")]
         public IActionResult Status(int id)
         {

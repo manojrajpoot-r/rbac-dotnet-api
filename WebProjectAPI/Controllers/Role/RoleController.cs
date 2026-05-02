@@ -17,15 +17,18 @@ namespace WebProjectAPI.Controllers.Role
             _service = service;
         }
 
-        [HttpGet("roles")]
-        public IActionResult GetAll()
+        [Authorize]
+        [Permission("view_role")]
+        [HttpGet]
+        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, string search = "")
         {
-            return Ok(_service.GetAll());
+            var result = _service.GetAll(pageNumber,pageSize,search);
+            return Ok(result);
         }
 
         [Authorize]
-        [Permission("create_role")]
-        [HttpPost("roles_add")]
+        [Permission("add_role")]
+        [HttpPost]
         public IActionResult Add(RoleCreateDto dto)
         {
             if (!ModelState.IsValid)
@@ -33,26 +36,40 @@ namespace WebProjectAPI.Controllers.Role
 
             return Ok(_service.Add(dto));
         }
+
+
+        [Authorize]
+        [Permission("view_role")]
+        [HttpGet("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var result = _service.GetById(id);
+            return Ok(result);
+        }
+
+
         [Authorize]
         [Permission("edit_role")]
-        [HttpPut("roles_edit")]
-        public IActionResult Update(RoleUpdateDto dto)
+        [HttpPut("{id}")]
+        public IActionResult Update(int id ,RoleUpdateDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            dto.Id = id;
             return Ok(_service.Update(dto));
         }
 
         [Authorize]
         [Permission("delete_role")]
-        [HttpDelete("roles_delete/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             return Ok(_service.Delete(id));
         }
 
-        [HttpPatch("roles_status/{id}")]
+        [Authorize]
+        [Permission("status_role")]
+        [HttpPatch("{id}")]
         public IActionResult Status(int id)
         {
             return Ok(_service.ToggleStatus(id));

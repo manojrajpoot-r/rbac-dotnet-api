@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.product_images.Models;
+using WebProjectAPI.Features.products.Models;
+using WebProjectAPI.Features.sub_categories.Models;
 using WebProjectAPI.Models;
-
 namespace WebProjectAPI.Data
 {
     public class AppDbContext : DbContext
@@ -15,7 +19,11 @@ namespace WebProjectAPI.Data
 
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
-
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<SubCategory> SubCategories { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Brand> Brands { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,6 +57,14 @@ namespace WebProjectAPI.Data
                 .HasForeignKey(rp => rp.PermissionId);
 
             base.OnModelCreating(modelBuilder);
+
+
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Brand)
+                .WithMany(b => b.Products)
+                .HasForeignKey(p => p.BrandId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

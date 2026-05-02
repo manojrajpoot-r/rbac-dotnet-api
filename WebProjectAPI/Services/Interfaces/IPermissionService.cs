@@ -7,8 +7,9 @@ namespace WebProjectAPI.Services.Interfaces
 {
     public interface IPermissionService
     {
-        ApiResponse<List<Permission>> GetAll();
-        ApiResponse<Permission> Add(PermissionCreateDto dto);
+        ApiResponse<List<Permission>> GetAll(int pageNumber, int pageSize, string search);
+        ApiResponse<PermissionUpdateDto> GetById(int id);
+        ApiResponse<List<Permission>> Add(PermissionCreateDto dto);
         ApiResponse<Permission> Update(PermissionUpdateDto dto);
         ApiResponse<string> Delete(int id);
        

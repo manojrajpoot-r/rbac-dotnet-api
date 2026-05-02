@@ -13,10 +13,27 @@ namespace WebProjectAPI.Repositories.Implementations
             _context = context;
         }
 
-        public List<Role> GetAll()
+        public List<Role> GetAll(int pageNumber, int pageSize, string search, out int totalRecords)
         {
-            return _context.Roles.ToList();
+            var query = _context.Roles.AsQueryable();
+
+            //  search
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(x => x.Name.Contains(search));
+            }
+
+            // 📊 total count
+            totalRecords = query.Count();
+
+            // 📄 pagination
+            return query
+                .OrderBy(x => x.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
         }
+
 
         public Role GetById(int id)
         {

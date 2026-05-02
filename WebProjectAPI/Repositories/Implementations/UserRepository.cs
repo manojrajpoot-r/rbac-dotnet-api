@@ -15,9 +15,25 @@ namespace WebProjectAPI.Repositories.Implementations
             _context = context;
         }
 
-        public List<User> GetAll()
+        public List<User> GetAll(int pageNumber, int pageSize, string search, out int totalRecords)
         {
-            return _context.Users.ToList();
+            var query = _context.Users.AsQueryable();
+
+            //  search
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(x => x.Name.Contains(search) || x.Email.Contains(search));
+            }
+
+            // 📊 total count
+            totalRecords = query.Count();
+
+            // 📄 pagination
+            return query
+                .OrderBy(x => x.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
         }
 
         public User GetById(int id)

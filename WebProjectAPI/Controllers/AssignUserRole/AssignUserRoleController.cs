@@ -19,27 +19,39 @@ namespace WebProjectAPI.Controllers.AssignUserRole
         
         }
 
+      
         [HttpPost("assign-role")]
         public IActionResult AssignRole(AssignRoleDto dto)
         {
-            var exists = _context.UserRoles
-                .Any(x => x.UserId == dto.UserId && x.RoleId == dto.RoleId);
+            if (dto.RoleIds == null || !dto.RoleIds.Any())
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Please select at least one role"
+                });
+            }
 
-            if (exists)
-                return BadRequest("Role already assigned");
+            var existingRoles = _context.UserRoles
+                .Where(x => x.UserId == dto.UserId)
+                .ToList();
 
-            _context.UserRoles.Add(new UserRole
+            _context.UserRoles.RemoveRange(existingRoles);
+
+            var userRoles = dto.RoleIds.Select(roleId => new UserRole
             {
                 UserId = dto.UserId,
-                RoleId = dto.RoleId
-            });
+                RoleId = roleId
+            }).ToList();
+
+            _context.UserRoles.AddRange(userRoles);
 
             _context.SaveChanges();
 
-            return Ok(new 
-            {   
-                success=true,
-                messsage="Role Assigned successfully!"
+            return Ok(new
+            {
+                success = true,
+                message = "Roles assigned successfully!"
             });
         }
 

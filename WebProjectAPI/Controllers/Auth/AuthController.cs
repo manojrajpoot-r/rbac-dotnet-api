@@ -80,7 +80,6 @@ namespace WebProjectAPI.Controllers.Auth
         }
 
         // 🔐 LOGIN
-      
         [HttpPost("login")]
         public IActionResult Login(UserLoginRequest request)
         {
@@ -115,17 +114,31 @@ namespace WebProjectAPI.Controllers.Auth
                 });
             }
 
-            // ✅ JWT generate
+            //  JWT generate
             var jwt = _jwtService.GenerateJwt(user.Id, user.Email);
 
-          
-            // ✅ Role fetch
-            var role = _context.UserRoles
-                .Where(ur => ur.UserId == user.Id)
-                .Select(ur => ur.Role.Name)
-                .FirstOrDefault();
+            //  Role fetch
+            var roles = _context.UserRoles
+                     .Where(ur => ur.UserId == user.Id)
+                     .Select(ur => ur.Role.Name)
+                     .Distinct()
+                     .ToList();
 
-            // ✅ Refresh token
+            //  Permission fetch
+            var permissions = _context.UserRoles
+                .Where(ur => ur.UserId == user.Id)
+                .Join(_context.RolePermissions,
+                    ur => ur.RoleId,
+                    rp => rp.RoleId,
+                    (ur, rp) => rp.PermissionId)
+                .Join(_context.Permissions,
+                    rp => rp,
+                    p => p.Id,
+                    (rp, p) => p.Name)
+                .Distinct()
+                .ToList();
+
+            //  Refresh token
             var refreshToken = new RefreshToken
             {
                 UserId = user.Id,
@@ -135,6 +148,7 @@ namespace WebProjectAPI.Controllers.Auth
             };
 
             _context.RefreshTokens.Add(refreshToken);
+
             _context.SaveChanges();
 
             var expiresIn = (int)(jwt.Expiry - DateTime.UtcNow).TotalSeconds;
@@ -148,18 +162,20 @@ namespace WebProjectAPI.Controllers.Auth
                     accessToken = jwt.Token,
                     refreshToken = refreshToken.Token,
                     expiresIn = expiresIn,
+
                     user = new
                     {
                         id = user.Id,
+                        name=user.Name,
                         email = user.Email,
-                        role = role
+                        roles = roles,
+                        permissions = permissions
                     }
                 }
             });
         }
 
 
-       
         [HttpPost("refresh")]
         public IActionResult Refresh(string refreshToken)
         {

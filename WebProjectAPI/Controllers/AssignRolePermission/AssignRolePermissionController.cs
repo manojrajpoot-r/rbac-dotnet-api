@@ -19,24 +19,30 @@ namespace WebProjectAPI.Controllers.AssignRolePermission
         [HttpPost("assign-permission")]
         public IActionResult AssignPermission(AssignPermissionDto dto)
         {
-            var exists = _context.RolePermissions
-                .Any(x => x.RoleId == dto.RoleId && x.PermissionId == dto.PermissionId);
-
-            if (exists)
-                return BadRequest("Already assigned");
-
-            _context.RolePermissions.Add(new RolePermission
+            foreach (var permissionId in dto.PermissionIds)
             {
-                RoleId = dto.RoleId,
-                PermissionId = dto.PermissionId
-            });
+                var exists = _context.RolePermissions
+                    .Any(x =>
+                        x.RoleId == dto.RoleId &&
+                        x.PermissionId == permissionId);
+
+                if (!exists)
+                {
+                    _context.RolePermissions.Add(
+                        new RolePermission
+                        {
+                            RoleId = dto.RoleId,
+                            PermissionId = permissionId
+                        });
+                }
+            }
 
             _context.SaveChanges();
 
             return Ok(new
             {
                 success = true,
-                message ="Permission Assigned Successfully!"
+                message = "Permissions Assigned Successfully!"
             });
         }
 
