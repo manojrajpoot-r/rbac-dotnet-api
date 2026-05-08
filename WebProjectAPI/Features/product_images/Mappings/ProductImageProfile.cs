@@ -10,11 +10,18 @@ namespace WebProjectAPI.Features.product_images.Mappings
         public ProductImageProfile()
         {
 
+            CreateMap<ProductImage, ProductImageDto>()
+
+            .ForMember(dest => dest.ProductName,
+                opt => opt.MapFrom(src => src.Product.Name));
+
+
+
             CreateMap<Product, ProductDto>()
            .ForMember(dest => dest.Images,
                opt => opt.MapFrom(src => src.ProductImages));
 
-            CreateMap<ProductImage, ProductImageDto>();
+           
         }
 
     }

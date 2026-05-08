@@ -27,6 +27,8 @@ namespace WebProjectAPI.Features.products.DTOs
         [Range(1, 999999)]
         public decimal Price { get; set; }
 
+        [Required]
+        public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountPrice { get; set; }
 
         [Required]
@@ -35,6 +37,7 @@ namespace WebProjectAPI.Features.products.DTOs
 
         public IFormFile? Image { get; set; }
 
+        public bool IsFeatured { get; set; }
 
     }
 }

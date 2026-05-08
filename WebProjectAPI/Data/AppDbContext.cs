@@ -61,10 +61,29 @@ namespace WebProjectAPI.Data
 
 
             modelBuilder.Entity<Product>()
-                .HasOne(p => p.Brand)
-                .WithMany(b => b.Products)
-                .HasForeignKey(p => p.BrandId)
+        .HasOne(p => p.Brand)
+        .WithMany(b => b.Products)
+        .HasForeignKey(p => p.BrandId)
+        .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.SubCategory)
+                .WithMany()
+                .HasForeignKey(p => p.SubCategoryId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany()
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+               modelBuilder.Entity<ProductImage>()
+                .HasOne(pi => pi.Product)
+                .WithMany(p => p.ProductImages)
+                .HasForeignKey(pi => pi.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

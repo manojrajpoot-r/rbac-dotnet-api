@@ -5,12 +5,12 @@ using WebProjectAPI.Features.products.Interfaces;
 namespace WebProjectAPI.Features.products.Controllers
 {
     [ApiController]
-    [Route("api/products")]
-    public class ProductController : ControllerBase
+    [Route("api/[controller]")]
+    public class ProductsController : ControllerBase
     {
         private readonly IProductService _service;
 
-        public ProductController(IProductService service)
+        public ProductsController(IProductService service)
         {
             _service = service;
         }

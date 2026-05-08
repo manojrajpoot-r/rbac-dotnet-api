@@ -67,24 +67,28 @@ namespace WebProjectAPI.Features.sub_categories.Services
             if (subCategory == null)
                 return null;
 
+            // 🔥 Important: Id map mat hone dena
             _mapper.Map(dto, subCategory);
 
+            // Image update
             if (dto.Image != null)
             {
                 if (!string.IsNullOrEmpty(subCategory.Image))
                 {
                     _imageService.DeleteImage(subCategory.Image);
                 }
-               
+
                 subCategory.Image = await _imageService
                     .UploadImageAsync(dto.Image, "uploads/subcategories");
             }
+
+            // Slug update
             subCategory.Slug = SlugHelper.GenerateSlug(dto.Name);
+
             var updatedSubCategory = await _repository.UpdateAsync(subCategory);
 
             return _mapper.Map<SubCategoryDto>(updatedSubCategory);
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
             var subCategory = await _repository.GetByIdAsync(id);

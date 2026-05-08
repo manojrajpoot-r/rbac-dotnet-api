@@ -2,6 +2,7 @@
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.product_images.Interfaces;
 using WebProjectAPI.Features.product_images.Models;
+using WebProjectAPI.Features.products.Models;
 
 namespace WebProjectAPI.Features.product_images.Repositories
 {
@@ -15,11 +16,15 @@ namespace WebProjectAPI.Features.product_images.Repositories
         }
 
         public async Task<(List<ProductImage>, int)> GetAllAsync(
+            int productId,
             int pageNumber,
             int pageSize,
             string search)
         {
             var query = _context.ProductImages
+               
+                .Include(x => x.Product)
+                .Where(x => x.ProductId == productId)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(search))

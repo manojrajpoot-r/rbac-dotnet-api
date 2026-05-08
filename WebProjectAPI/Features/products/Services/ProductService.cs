@@ -104,7 +104,7 @@ namespace WebProjectAPI.Features.products.Services
                     .UploadImageAsync(dto.Image, "uploads/products");
             }
             product.Slug = SlugHelper.GenerateSlug(dto.Name);
-            product.SKU = SKUHelper.GenerateSKU("PRD");
+          
             var updatedProduct = await _repository.UpdateAsync(product);
 
             return _mapper.Map<ProductDto>(updatedProduct);

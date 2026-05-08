@@ -8,13 +8,28 @@ namespace WebProjectAPI.Features.products.Mappings
 {
     public class ProductProfile : Profile
     {
-        public ProductProfile()
-        {
-            CreateMap<Product, ProductDto>();
+       
+            public ProductProfile()
+            {
+                CreateMap<Product, ProductDto>()
 
-            CreateMap<CreateProductDto, Product>();
+                    .ForMember(dest => dest.CategoryName,
+                        opt => opt.MapFrom(src => src.Category.Name))
 
-            CreateMap<UpdateProductDto, Product>();
-        }
+                    .ForMember(dest => dest.SubCategoryName,
+                        opt => opt.MapFrom(src => src.SubCategory.Name))
+
+                    .ForMember(dest => dest.BrandName,
+                        opt => opt.MapFrom(src => src.Brand.Name));
+
+                CreateMap<UpdateProductDto, Product>()
+                    .ForMember(dest => dest.Image,
+                        opt => opt.Ignore());
+
+                CreateMap<CreateProductDto, Product>();
+
+                
+            }
+        
     }
 }

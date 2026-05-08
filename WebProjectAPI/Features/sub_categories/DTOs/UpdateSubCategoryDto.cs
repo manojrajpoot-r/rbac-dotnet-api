@@ -3,7 +3,7 @@
     using Microsoft.AspNetCore.Http;
     public class UpdateSubCategoryDto
     {
-        public int Id { get; set; }
+        
 
         public int CategoryId { get; set; }
 

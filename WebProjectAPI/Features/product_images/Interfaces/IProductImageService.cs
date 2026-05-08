@@ -6,10 +6,10 @@ namespace WebProjectAPI.Features.product_images.Interfaces
     public interface IProductImageService
     {
         Task<ApiResponse<List<ProductImageDto>>> GetAllAsync(
+              int productId,
             int pageNumber,
             int pageSize,
             string search);
-
         Task<ApiResponse<List<ProductImageDto>>> CreateAsync(
             int productId,
             List<IFormFile> images);

@@ -5,7 +5,7 @@ using WebProjectAPI.Features.product_images.Interfaces;
 namespace WebProjectAPI.Features.product_images.Controllers
 {
     [ApiController]
-    [Route("api/product-images")]
+    [Route("api/[controller]")]
     public class ProductImageController : ControllerBase
     {
         private readonly IProductImageService _service;
@@ -16,12 +16,15 @@ namespace WebProjectAPI.Features.product_images.Controllers
         }
 
         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetAll(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string search = "")
+    int productId,
+    int pageNumber = 1,
+    int pageSize = 10,
+    string search = "")
         {
             var result = await _service.GetAllAsync(
+                productId,
                 pageNumber,
                 pageSize,
                 search);

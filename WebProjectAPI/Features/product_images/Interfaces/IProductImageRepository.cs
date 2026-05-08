@@ -5,6 +5,7 @@ namespace WebProjectAPI.Features.product_images.Interfaces
     public interface IProductImageRepository
     {
         Task<(List<ProductImage>, int)> GetAllAsync(
+            int productId,
             int pageNumber,
             int pageSize,
             string search);

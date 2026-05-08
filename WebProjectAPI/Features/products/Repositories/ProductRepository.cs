@@ -17,12 +17,16 @@ namespace WebProjectAPI.Features.products.Repositories
             _context = context;
         }
 
-        public async Task<(List<Product> Products, int TotalRecords)> GetAllAsync(
-              int pageNumber,
-              int pageSize,
-              string search)
+    public async Task<(List<Product> Products, int TotalRecords)> GetAllAsync(
+     int pageNumber,
+     int pageSize,
+     string search)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products
+                .Include(x => x.Category)
+                .Include(x => x.SubCategory)
+                .Include(x => x.Brand)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(search))
             {
@@ -32,15 +36,13 @@ namespace WebProjectAPI.Features.products.Repositories
             int totalRecords = await query.CountAsync();
 
             var products = await query
-             .Skip((pageNumber - 1) * pageSize)
-             .Take(pageSize)
-             .ToListAsync();
+                .OrderByDescending(x => x.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
 
-                    return (products, totalRecords);
-
-            
+            return (products, totalRecords);
         }
-
         public async Task<Product?> GetByIdAsync(int id)
         {
             return await _context.Products.FindAsync(id);

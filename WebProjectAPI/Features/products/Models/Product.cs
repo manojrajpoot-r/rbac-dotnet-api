@@ -1,5 +1,7 @@
 ﻿using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.product_images.Models;
+using WebProjectAPI.Features.sub_categories.Models;
 
 namespace WebProjectAPI.Features.products.Models
 {
@@ -22,7 +24,7 @@ namespace WebProjectAPI.Features.products.Models
         public string? Description { get; set; }
 
         public decimal Price { get; set; }
-
+        public decimal? DiscountPercentage { get; set; }
         public decimal? DiscountPrice { get; set; }
 
         public int Quantity { get; set; }
@@ -39,7 +41,11 @@ namespace WebProjectAPI.Features.products.Models
         public int BrandId { get; set; }
 
         public Brand Brand { get; set; }
+        public Category Category { get; set; }
 
+        public SubCategory SubCategory { get; set; }
+
+      
         public ICollection<ProductImage> ProductImages { get; set; }
             = new List<ProductImage>();
     }
