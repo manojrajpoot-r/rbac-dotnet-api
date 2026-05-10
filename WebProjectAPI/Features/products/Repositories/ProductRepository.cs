@@ -88,5 +88,14 @@ namespace WebProjectAPI.Features.products.Repositories
 
             return true;
         }
+        public IQueryable<Product> GetQueryable()
+        {
+            return _context.Products;
+        }
+
+        public IQueryable<Product> GetLatestProductsAsync()
+        {
+            return _context.Products;
+        }
     }
 }

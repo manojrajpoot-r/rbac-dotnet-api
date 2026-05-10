@@ -4,12 +4,26 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using WebProjectAPI.Data;
+using WebProjectAPI.Features.brands.Interfaces;
+using WebProjectAPI.Features.brands.Mappings;
+using WebProjectAPI.Features.brands.Repositories;
+using WebProjectAPI.Features.brands.Services;
+using WebProjectAPI.Features.carts.Interfaces;
+using WebProjectAPI.Features.carts.Repositories;
+using WebProjectAPI.Features.carts.Services;
 using WebProjectAPI.Features.Categories.Interfaces;
 using WebProjectAPI.Features.Categories.Mappings;
 using WebProjectAPI.Features.Categories.Repositories;
 using WebProjectAPI.Features.Categories.Services;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.Common.Services;
+using WebProjectAPI.Features.product_images.Interfaces;
+using WebProjectAPI.Features.product_images.Repositories;
+using WebProjectAPI.Features.product_images.Services;
+using WebProjectAPI.Features.products.Interfaces;
+using WebProjectAPI.Features.products.Mappings;
+using WebProjectAPI.Features.products.Repositories;
+using WebProjectAPI.Features.products.Services;
 using WebProjectAPI.Features.sub_categories.Interfaces;
 using WebProjectAPI.Features.sub_categories.Mappings;
 using WebProjectAPI.Features.sub_categories.Repositories;
@@ -20,17 +34,6 @@ using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services;
 using WebProjectAPI.Services.Implementations;
 using WebProjectAPI.Services.Interfaces;
-using WebProjectAPI.Features.products.Mappings;
-using WebProjectAPI.Features.products.Repositories;
-using WebProjectAPI.Features.products.Services;
-using WebProjectAPI.Features.products.Interfaces;
-using WebProjectAPI.Features.brands.Services;
-using WebProjectAPI.Features.brands.Interfaces;
-using WebProjectAPI.Features.brands.Repositories;
-using WebProjectAPI.Features.brands.Mappings;
-using WebProjectAPI.Features.product_images.Interfaces;
-using WebProjectAPI.Features.product_images.Repositories;
-using WebProjectAPI.Features.product_images.Services;
 
 
 
@@ -66,7 +69,8 @@ builder.Services.AddScoped<IBrandRepository, BrandRepository>();
 builder.Services.AddScoped<IBrandService, BrandService>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
-
+builder.Services.AddScoped<ICartRepository,CartRepository>();
+builder.Services.AddScoped<ICartService,CartService>();
 
 builder.Services.AddScoped<IImageService, ImageService>();
 

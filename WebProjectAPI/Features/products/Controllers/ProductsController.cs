@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 
@@ -91,6 +92,22 @@ namespace WebProjectAPI.Features.products.Controllers
             {
                 message = "Product deleted successfully"
             });
+        }
+
+        [HttpGet("featured")]
+        public async Task<IActionResult> GetFeaturedProducts()
+        {
+            var products = await _service.GetFeaturedProductsAsync();
+
+            return Ok(products);
+        }
+
+        [HttpGet("latest")]
+        public async Task<IActionResult> GetLatestProductsAsync()
+        {
+            var products = await _service.GetLatestProductsAsync();
+
+            return Ok(products);
         }
     }
 }

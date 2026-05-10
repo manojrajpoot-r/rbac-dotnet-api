@@ -1,5 +1,4 @@
-﻿using WebProjectAPI.Features.brands.Models;
-using WebProjectAPI.Features.products.Models;
+﻿using WebProjectAPI.Features.products.Models;
 
 namespace WebProjectAPI.Features.products.Interfaces
 {
@@ -19,5 +18,8 @@ namespace WebProjectAPI.Features.products.Interfaces
         Task<bool> DeleteAsync(Product product);
 
         Task<bool> ChangeStatusAsync(int id);
+
+        IQueryable<Product> GetQueryable();
+
     }
 }

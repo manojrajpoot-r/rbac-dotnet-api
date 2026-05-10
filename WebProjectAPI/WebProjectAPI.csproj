@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\carts\" />
+    <Folder Include="Features\carts\Repositories\" />
     <Folder Include="Features\cart_items\" />
     <Folder Include="Features\addresses\" />
     <Folder Include="Features\coupons\" />
@@ -34,6 +34,11 @@
     <Folder Include="Features\orders\" />
     <Folder Include="Features\product_variant_values\" />
     <Folder Include="Features\product_variants\" />
+    <Folder Include="Features\Wishlist\Controllers\" />
+    <Folder Include="Features\Wishlist\DTOs\" />
+    <Folder Include="Features\Wishlist\Interfaces\" />
+    <Folder Include="Features\Wishlist\Services\" />
+    <Folder Include="Features\Wishlist\Repositories\" />
   </ItemGroup>
 
 </Project>

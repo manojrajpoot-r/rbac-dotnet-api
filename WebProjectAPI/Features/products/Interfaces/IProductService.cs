@@ -20,5 +20,9 @@ namespace WebProjectAPI.Features.products.Interfaces
         Task<bool> DeleteAsync(int id);
 
         Task<bool> ChangeStatusAsync(int id);
+        Task<ApiResponse<List<ProductDto>>> GetFeaturedProductsAsync();
+
+        Task<ApiResponse<List<ProductDto>>> GetLatestProductsAsync();
     }
+
 }
