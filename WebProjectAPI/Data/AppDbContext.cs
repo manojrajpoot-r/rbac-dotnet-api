@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.carts.Models;
 using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.orders.Models;
 using WebProjectAPI.Features.product_images.Models;
 using WebProjectAPI.Features.products.Models;
 using WebProjectAPI.Features.sub_categories.Models;
+using WebProjectAPI.Features.wishlistItem.Models;
 using WebProjectAPI.Models;
 namespace WebProjectAPI.Data
 {
@@ -25,6 +28,11 @@ namespace WebProjectAPI.Data
         public DbSet<Brand> Brands { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
 
+        public DbSet<Cart> Carts { get; set; }
+
+        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // UserRoles (Composite Key)

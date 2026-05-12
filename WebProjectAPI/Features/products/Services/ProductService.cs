@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.products.DTOs;
@@ -24,9 +25,9 @@ namespace WebProjectAPI.Features.products.Services
         }
 
         public async Task<ApiResponse<List<ProductDto>>> GetAllAsync(
-      int pageNumber,
-      int pageSize,
-      string search)
+            int pageNumber,
+            int pageSize,
+             string search)
         {
             var result = await _repository.GetAllAsync(
                 pageNumber,
@@ -128,6 +129,54 @@ namespace WebProjectAPI.Features.products.Services
         public async Task<bool> ChangeStatusAsync(int id)
         {
             return await _repository.ChangeStatusAsync(id);
+        }
+
+        public async Task<ApiResponse<List<ProductDto>>> GetFeaturedProductsAsync()
+        {
+            var products = await _repository
+                .GetQueryable()
+                .Where(x => x.IsFeatured)
+                .Select(x => new ProductDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Price = x.Price,
+                    DiscountPrice = x.DiscountPrice,
+                   DiscountPercentage = x.DiscountPercentage,
+                    Image = x.Image,
+                    Status = x.Status
+                })
+                .ToListAsync();
+
+            return new ApiResponse<List<ProductDto>>
+            {
+                Success = true,
+                Data = products
+            };
+        }
+
+        public async Task<ApiResponse<List<ProductDto>>> GetLatestProductsAsync()
+        {
+            var products = await _repository
+                .GetQueryable()
+                .OrderByDescending(x => x.CreatedAt)
+                .Take(8)
+                .Select(x => new ProductDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Price = x.Price,
+                    DiscountPrice = x.DiscountPrice,
+                    DiscountPercentage = x.DiscountPercentage,
+                    Image = x.Image
+                })
+                .ToListAsync();
+
+            return new ApiResponse<List<ProductDto>>
+            {
+                Success = true,
+                Data = products
+            };
         }
     }
 }

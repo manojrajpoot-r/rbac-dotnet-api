@@ -19,21 +19,24 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Razorpay" Version="3.3.2" />
 	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\carts\" />
+    <Folder Include="Features\carts\Repositories\" />
     <Folder Include="Features\cart_items\" />
     <Folder Include="Features\addresses\" />
     <Folder Include="Features\coupons\" />
+    <Folder Include="Features\NewFolder\" />
     <Folder Include="Features\reviews\" />
-    <Folder Include="Features\wishlists\" />
     <Folder Include="Features\payments\" />
     <Folder Include="Features\order_items\" />
-    <Folder Include="Features\orders\" />
     <Folder Include="Features\product_variant_values\" />
     <Folder Include="Features\product_variants\" />
+    <Folder Include="Features\wishlistItem\Interfaces\" />
+    <Folder Include="Features\wishlistItem\Services\" />
+    <Folder Include="Features\wishlistItem\Repositories\" />
   </ItemGroup>
 
 </Project>
