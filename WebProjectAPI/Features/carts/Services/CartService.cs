@@ -1,6 +1,11 @@
-﻿using WebProjectAPI.Features.carts.DTOs;
+﻿// ================================
+// CartService
+// ================================
+
+using WebProjectAPI.Features.carts.DTOs;
 using WebProjectAPI.Features.carts.Interfaces;
 using WebProjectAPI.Features.carts.Models;
+
 namespace WebProjectAPI.Features.carts.Services
 {
     public class CartService : ICartService
@@ -13,8 +18,8 @@ namespace WebProjectAPI.Features.carts.Services
         }
 
         public async Task<string> AddToCartAsync(
-       int userId,
-       AddToCartDto dto)
+            int userId,
+            AddToCartDto dto)
         {
             var existing = await _repository
                 .GetCartItemAsync(userId, dto.ProductId);
@@ -47,14 +52,22 @@ namespace WebProjectAPI.Features.carts.Services
             return carts.Select(x => new CartDto
             {
                 Id = x.Id,
+
                 ProductId = x.ProductId,
-                ProductName = x.Product.Name,
-                Image = x.Product.Image,
-                Price = x.Product.Price,
-                DiscountPrice = x.Product.DiscountPrice,
+
+                ProductName = x.Product?.Name ?? "",
+
+                Image = x.Product?.Image ?? "",
+
+                Price = x.Product?.Price ?? 0,
+
+                DiscountPrice = x.Product?.DiscountPrice,
+
                 Quantity = x.Quantity,
+
                 Total =
-                    (x.Product.DiscountPrice ?? x.Product.Price)
+                    (x.Product?.DiscountPrice ??
+                     x.Product?.Price ?? 0)
                     * x.Quantity
 
             }).ToList();
@@ -62,7 +75,8 @@ namespace WebProjectAPI.Features.carts.Services
 
         public async Task<bool> RemoveCartAsync(int id)
         {
-            var cart = await _repository.GetByIdAsync(id);
+            var cart = await _repository
+                .GetByIdAsync(id);
 
             if (cart == null)
                 return false;
@@ -76,7 +90,8 @@ namespace WebProjectAPI.Features.carts.Services
 
         public async Task<bool> IncreaseQuantityAsync(int id)
         {
-            var cart = await _repository.GetByIdAsync(id);
+            var cart = await _repository
+                .GetByIdAsync(id);
 
             if (cart == null)
                 return false;
@@ -90,7 +105,8 @@ namespace WebProjectAPI.Features.carts.Services
 
         public async Task<bool> DecreaseQuantityAsync(int id)
         {
-            var cart = await _repository.GetByIdAsync(id);
+            var cart = await _repository
+                .GetByIdAsync(id);
 
             if (cart == null)
                 return false;
@@ -104,6 +120,19 @@ namespace WebProjectAPI.Features.carts.Services
 
             return true;
         }
-    }
 
+        public async Task<int> GetCartCountAsync(int userId)
+        {
+            return await _repository
+                .GetCartCountAsync(userId);
+        }
+
+        public async Task<bool> ClearCartAsync(int userId)
+        {
+            await _repository
+                .ClearCartAsync(userId);
+
+            return true;
+        }
+    }
 }

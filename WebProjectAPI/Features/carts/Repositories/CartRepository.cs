@@ -1,8 +1,12 @@
-﻿
-    using Microsoft.EntityFrameworkCore;
-    using WebProjectAPI.Data;
-    using WebProjectAPI.Features.carts.Interfaces;
-    using WebProjectAPI.Features.carts.Models;
+﻿// ================================
+// CartRepository
+// ================================
+
+using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Data;
+using WebProjectAPI.Features.carts.Interfaces;
+using WebProjectAPI.Features.carts.Models;
+
 namespace WebProjectAPI.Features.carts.Repositories
 {
     public class CartRepository : ICartRepository
@@ -19,14 +23,10 @@ namespace WebProjectAPI.Features.carts.Repositories
             int productId)
         {
             return await _context.Carts
+                .Include(x => x.Product)
                 .FirstOrDefaultAsync(x =>
                     x.UserId == userId &&
                     x.ProductId == productId);
-        }
-
-        public async Task AddAsync(Cart cart)
-        {
-            await _context.Carts.AddAsync(cart);
         }
 
         public async Task<List<Cart>> GetUserCartAsync(int userId)
@@ -42,6 +42,29 @@ namespace WebProjectAPI.Features.carts.Repositories
             return await _context.Carts
                 .Include(x => x.Product)
                 .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<int> GetCartCountAsync(int userId)
+        {
+            return await _context.Carts
+                .Where(x => x.UserId == userId)
+                .CountAsync();
+        }
+
+        public async Task ClearCartAsync(int userId)
+        {
+            var carts = await _context.Carts
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            _context.Carts.RemoveRange(carts);
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddAsync(Cart cart)
+        {
+            await _context.Carts.AddAsync(cart);
         }
 
         public async Task SaveAsync()

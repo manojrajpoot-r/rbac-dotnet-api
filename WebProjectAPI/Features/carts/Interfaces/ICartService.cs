@@ -1,4 +1,8 @@
-﻿using WebProjectAPI.Features.carts.DTOs;
+﻿// ================================
+// ICartService
+// ================================
+
+using WebProjectAPI.Features.carts.DTOs;
 
 public interface ICartService
 {
@@ -13,4 +17,8 @@ public interface ICartService
     Task<bool> IncreaseQuantityAsync(int id);
 
     Task<bool> DecreaseQuantityAsync(int id);
+
+    Task<int> GetCartCountAsync(int userId);
+
+    Task<bool> ClearCartAsync(int userId);
 }

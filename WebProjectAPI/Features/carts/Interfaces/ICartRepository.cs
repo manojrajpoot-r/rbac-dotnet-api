@@ -1,4 +1,8 @@
-﻿using WebProjectAPI.Features.carts.Models;
+﻿// ================================
+// ICartRepository
+// ================================
+
+using WebProjectAPI.Features.carts.Models;
 
 namespace WebProjectAPI.Features.carts.Interfaces
 {
@@ -13,6 +17,10 @@ namespace WebProjectAPI.Features.carts.Interfaces
         Task<List<Cart>> GetUserCartAsync(int userId);
 
         Task<Cart?> GetByIdAsync(int id);
+
+        Task<int> GetCartCountAsync(int userId);
+
+        Task ClearCartAsync(int userId);
 
         Task SaveAsync();
 

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebProjectAPI.Features.carts.DTOs;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;
@@ -12,22 +14,21 @@ public class CartController : ControllerBase
         _cartService = cartService;
     }
 
+    private int GetUserId()
+    {
+        return Convert.ToInt32(
+            User.FindFirst("id")?.Value
+        );
+    }
+
     [HttpPost("add")]
     public async Task<IActionResult> AddToCart(
         AddToCartDto dto)
     {
-        int userId = 1;
+        int userId = GetUserId();
 
         var message = await _cartService
             .AddToCartAsync(userId, dto);
-
-        if (message == "Product already added to cart")
-        {
-            return BadRequest(new
-            {
-                message = message
-            });
-        }
 
         return Ok(new
         {
@@ -38,12 +39,40 @@ public class CartController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCart()
     {
-        int userId = 1;
+        int userId = GetUserId();
 
         var result = await _cartService
             .GetCartAsync(userId);
 
         return Ok(result);
+    }
+
+    [HttpGet("count")]
+    public async Task<IActionResult> Count()
+    {
+        int userId = GetUserId();
+
+        var count = await _cartService
+            .GetCartCountAsync(userId);
+
+        return Ok(new
+        {
+            count
+        });
+    }
+
+    [HttpDelete("clear")]
+    public async Task<IActionResult> ClearCart()
+    {
+        int userId = GetUserId();
+
+        var result = await _cartService
+            .ClearCartAsync(userId);
+
+        return Ok(new
+        {
+            success = result
+        });
     }
 
     [HttpDelete("{id}")]
