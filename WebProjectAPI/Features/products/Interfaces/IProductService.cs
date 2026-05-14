@@ -23,6 +23,12 @@ namespace WebProjectAPI.Features.products.Interfaces
         Task<ApiResponse<List<ProductDto>>> GetFeaturedProductsAsync();
 
         Task<ApiResponse<List<ProductDto>>> GetLatestProductsAsync();
+        Task<ProductDto?> GetBySlugAsync(string slug);
+       
+        Task<List<ProductDto>> GetRelatedProductsAsync(
+            int categoryId,
+            int productId
+        );
     }
 
 }

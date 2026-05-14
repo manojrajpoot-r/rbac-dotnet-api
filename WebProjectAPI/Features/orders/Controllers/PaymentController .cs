@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.orders.DTOs;
 using WebProjectAPI.Features.orders.Models;
 using WebProjectAPI.Features.orders.services;
 using WebProjectAPI.Features.orders.Services;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.orders.Controllers
 {
@@ -29,7 +31,16 @@ namespace WebProjectAPI.Features.orders.Controllers
         [HttpPost("checkout")]
         public async Task<IActionResult> Checkout([FromBody] CheckoutDto dto)
         {
-            int userId = 1;
+
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+            {
+                return Unauthorized();
+            }
+
+            int userId = int.Parse(userIdClaim);
 
             var orderId = await _orderService.PlaceOrder(userId, dto);
 
@@ -42,11 +53,25 @@ namespace WebProjectAPI.Features.orders.Controllers
 
 
         [HttpPost("create-order")]
-        public IActionResult CreateOrder([FromBody] decimal amount)
+        public IActionResult CreateOrder(
+      [FromBody] decimal amount)
         {
-            var order = _razorpayService.CreateOrder(amount);
+            var order =
+                _razorpayService.CreateOrder(amount);
 
-            return Ok(order);
+            return Ok(new
+            {
+                key = _razorpayService.GetKey(),
+
+                orderId =
+                    order["id"].ToString(),
+
+                amount =
+                    order["amount"],
+
+                currency =
+                    order["currency"]
+            });
         }
 
         [HttpPost("verify")]
@@ -76,6 +101,30 @@ namespace WebProjectAPI.Features.orders.Controllers
             });
         }
 
-    
+        [HttpPost("payment-failed")]
+        public async Task<IActionResult> PaymentFailed(
+       [FromBody] PaymentFailedDto dto)
+        {
+            var order =
+                await _orderService
+                .GetOrder(dto.OrderId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            order.PaymentStatus = "Failed";
+
+            order.OrderStatus = "Cancelled";
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Payment failed status updated"
+            });
+        }
+
     }
 }

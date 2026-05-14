@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebProjectAPI.Features.carts.DTOs;
-
+using System.Security.Claims;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
@@ -16,18 +16,32 @@ public class CartController : ControllerBase
 
     private int GetUserId()
     {
-        return Convert.ToInt32(
-            User.FindFirst("id")?.Value
-        );
+        var userIdClaim =
+            User.FindFirst(
+                ClaimTypes.NameIdentifier
+            )?.Value;
+
+        if (string.IsNullOrEmpty(userIdClaim))
+        {
+            throw new UnauthorizedAccessException(
+                "User not found"
+            );
+        }
+
+        return Convert.ToInt32(userIdClaim);
     }
 
+
+    [Authorize]
     [HttpPost("add")]
-    public async Task<IActionResult> AddToCart(
-        AddToCartDto dto)
+
+    public async Task<IActionResult>
+       AddToCart(AddToCartDto dto)
     {
         int userId = GetUserId();
 
-        var message = await _cartService
+        var message =
+            await _cartService
             .AddToCartAsync(userId, dto);
 
         return Ok(new

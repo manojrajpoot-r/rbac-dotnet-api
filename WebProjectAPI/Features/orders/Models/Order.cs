@@ -15,9 +15,18 @@
         public string PaymentStatus { get; set; }  // pending, paid, failed
         public string OrderStatus { get; set; }    // pending, shipped, delivered
 
-        public string RazorpayOrderId { get; set; }
-        public string RazorpayPaymentId { get; set; }
-        public string RazorpaySignature { get; set; }
+        
+
+
+        public string? RazorpayOrderId { get; set; }
+
+        public string? RazorpayPaymentId { get; set; }
+
+        public string? RazorpaySignature { get; set; }
+
+
+
+
 
         // Billing Info
         public string FullName { get; set; }

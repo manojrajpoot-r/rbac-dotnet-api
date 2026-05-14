@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Data;
+using WebProjectAPI.Features.product_images.DTOs;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 
@@ -10,10 +12,12 @@ namespace WebProjectAPI.Features.products.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _service;
+        private readonly AppDbContext _context;
 
-        public ProductsController(IProductService service)
+        public ProductsController(IProductService service,AppDbContext context)
         {
             _service = service;
+            _context=context;
         }
 
         [HttpGet]
@@ -108,6 +112,151 @@ namespace WebProjectAPI.Features.products.Controllers
             var products = await _service.GetLatestProductsAsync();
 
             return Ok(products);
+        }
+      
+       
+        [HttpGet("slug/{slug}")]
+        public async Task<IActionResult> GetProduct(string slug)
+        {
+            var product =
+                await _service.GetBySlugAsync(slug);
+
+            if (product == null)
+            {
+                return NotFound(new
+                {
+                    message = "Product not found"
+                });
+            }
+
+            return Ok(product);
+        }
+
+        [HttpGet("related/{categoryId}/{productId}")]
+        public async Task<IActionResult>
+      RelatedProducts(
+          int categoryId,
+          int productId)
+        {
+            var products =
+                await _service
+                .GetRelatedProductsAsync(
+                    categoryId,
+                    productId
+                );
+
+            return Ok(products);
+        }
+
+
+        [HttpPost("filter")]
+        public async Task<IActionResult> FilterProducts(
+    ProductFilterDto dto)
+        {
+            var query = _context.Products
+                .AsQueryable();
+
+            // SEARCH
+
+            if (!string.IsNullOrEmpty(dto.Search))
+            {
+                query = query.Where(x =>
+                    x.Name.Contains(dto.Search));
+            }
+
+            // CATEGORY FILTER
+
+            if (dto.CategoryIds.Any())
+            {
+                query = query.Where(x =>
+                    dto.CategoryIds
+                        .Contains(x.CategoryId));
+            }
+
+            // BRAND FILTER
+
+            if (dto.BrandIds.Any())
+            {
+                query = query.Where(x =>
+                    dto.BrandIds
+                        .Contains(x.BrandId));
+            }
+
+            // PRICE FILTER
+
+            query = query.Where(x =>
+
+                (x.DiscountPrice ?? x.Price)
+                    >= dto.MinPrice
+
+                &&
+
+                (x.DiscountPrice ?? x.Price)
+                    <= dto.MaxPrice
+            );
+
+            // SORTING
+
+            switch (dto.SortBy)
+            {
+                case "lowToHigh":
+
+                    query = query.OrderBy(x =>
+                        x.DiscountPrice ?? x.Price);
+
+                    break;
+
+                case "highToLow":
+
+                    query = query.OrderByDescending(x =>
+                        x.DiscountPrice ?? x.Price);
+
+                    break;
+
+                case "latest":
+
+                    query = query.OrderByDescending(x =>
+                        x.Id);
+
+                    break;
+            }
+
+            // TOTAL COUNT
+
+            var totalCount =
+                await query.CountAsync();
+
+            // PAGINATION
+
+            var products = await query
+
+                .Skip(
+                    (dto.PageNumber - 1)
+                    * dto.PageSize
+                )
+
+                .Take(dto.PageSize)
+
+                .ToListAsync();
+
+            return Ok(new
+            {
+                data = products,
+
+                totalCount,
+
+                pageNumber =
+                    dto.PageNumber,
+
+                pageSize =
+                    dto.PageSize,
+
+                totalPages =
+                    (int)Math.Ceiling(
+                        totalCount /
+                        (double)dto.PageSize
+                    )
+            });
         }
     }
 }

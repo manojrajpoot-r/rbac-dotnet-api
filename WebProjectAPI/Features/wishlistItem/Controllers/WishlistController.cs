@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.wishlistItem.DTOs;
@@ -20,28 +21,36 @@ namespace WebProjectAPI.Features.wishlistItem.Controllers
 
        
 
+       
+      
+
+
+        [Authorize]
         [HttpPost("add")]
         public async Task<IActionResult> AddWishlist([FromBody] AddWishlistDto dto)
         {
-            var exists = await _context.Wishlists
-                .FirstOrDefaultAsync(x =>
-                    x.ProductId == dto.ProductId &&
-                    x.UserId == dto.UserId);
+            int userId =
+                int.Parse(
+                    User.FindFirst("id")?.Value
+                );
 
-            if (exists != null)
+            var exists = await _context.Wishlists
+                .AnyAsync(x =>
+                    x.UserId == userId &&
+                    x.ProductId == dto.ProductId);
+
+            if (exists)
             {
                 return BadRequest(new
                 {
-                    success = false,
-                    message = "Product already in wishlist"
+                    message = "Already Added"
                 });
             }
 
             var wishlist = new Wishlist
             {
-                ProductId = dto.ProductId,
-                UserId = dto.UserId,
-                CreatedAt = DateTime.Now
+                UserId = userId,
+                ProductId = dto.ProductId
             };
 
             _context.Wishlists.Add(wishlist);
@@ -50,10 +59,11 @@ namespace WebProjectAPI.Features.wishlistItem.Controllers
 
             return Ok(new
             {
-                success = true,
-                message = "Wishlist added successfully"
+                message = "Added To Wishlist"
             });
         }
+
+
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetWishlist(int userId)

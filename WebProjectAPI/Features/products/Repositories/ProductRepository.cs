@@ -97,5 +97,43 @@ namespace WebProjectAPI.Features.products.Repositories
         {
             return _context.Products;
         }
+        public async Task<Product?> GetBySlugAsync(string slug)
+        {
+            return await _context.Products
+
+                .Include(x => x.Brand)
+
+                .Include(x => x.Category)
+
+                .Include(x => x.SubCategory)
+
+                .Include(x => x.ProductImages)
+
+                .FirstOrDefaultAsync(x =>
+                    x.Slug == slug);
+        }
+
+        public async Task<List<Product>>
+    GetRelatedProductsAsync(
+        int categoryId,
+        int productId)
+        {
+            return await _context.Products
+
+                .Include(x => x.ProductImages)
+
+                .Where(x =>
+
+                    x.CategoryId == categoryId &&
+
+                    x.Id != productId &&
+
+                    x.Status == true
+                )
+
+                .Take(4)
+
+                .ToListAsync();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using WebProjectAPI.Features.products.Models;
+﻿using WebProjectAPI.Features.products.DTOs;
+using WebProjectAPI.Features.products.Models;
 
 namespace WebProjectAPI.Features.products.Interfaces
 {
@@ -20,6 +21,12 @@ namespace WebProjectAPI.Features.products.Interfaces
         Task<bool> ChangeStatusAsync(int id);
 
         IQueryable<Product> GetQueryable();
+        Task<Product?> GetBySlugAsync(string slug);
+
+        Task<List<Product>> GetRelatedProductsAsync(
+            int categoryId,
+            int productId
+        );
 
     }
 }

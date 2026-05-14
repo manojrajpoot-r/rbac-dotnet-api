@@ -28,7 +28,7 @@
     <Folder Include="Features\cart_items\" />
     <Folder Include="Features\addresses\" />
     <Folder Include="Features\coupons\" />
-    <Folder Include="Features\NewFolder\" />
+    <Folder Include="Features\products\DTOs\NewFolder\" />
     <Folder Include="Features\reviews\" />
     <Folder Include="Features\payments\" />
     <Folder Include="Features\order_items\" />

@@ -168,7 +168,8 @@ namespace WebProjectAPI.Features.products.Services
                     Price = x.Price,
                     DiscountPrice = x.DiscountPrice,
                     DiscountPercentage = x.DiscountPercentage,
-                    Image = x.Image
+                    Image = x.Image,
+                    Slug = x.Slug
                 })
                 .ToListAsync();
 
@@ -177,6 +178,35 @@ namespace WebProjectAPI.Features.products.Services
                 Success = true,
                 Data = products
             };
+        }
+
+
+        public async Task<ProductDto?> GetBySlugAsync(string slug)
+        {
+            var product =
+                await _repository.GetBySlugAsync(slug);
+
+            if (product == null)
+                return null;
+
+            return _mapper.Map<ProductDto>(product);
+        }
+
+        public async Task<List<ProductDto>>
+       GetRelatedProductsAsync(
+           int categoryId,
+           int productId)
+        {
+            var products =
+                await _repository
+                .GetRelatedProductsAsync(
+                    categoryId,
+                    productId
+                );
+
+            return _mapper.Map<List<ProductDto>>(
+                products
+            );
         }
     }
 }
