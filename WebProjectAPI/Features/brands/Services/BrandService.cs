@@ -2,11 +2,13 @@
 using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.brands.Interfaces;
 using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Models;
 using WebProjectAPI.Helpers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace WebProjectAPI.Features.brands.Services
 {
     public class BrandService : IBrandService
@@ -90,16 +92,20 @@ namespace WebProjectAPI.Features.brands.Services
             };
         }
 
-        public async Task<ApiResponse<BrandDto>> UpdateAsync(int id, UpdateBrandDto dto)
+        public async Task<ApiResponse<BrandDto>> UpdateAsync(
+            int id,
+            UpdateBrandDto dto)
         {
             var brand = await _repository.GetByIdAsync(id);
 
             if (brand == null)
+            {
                 return new ApiResponse<BrandDto>
                 {
                     Success = false,
                     Message = "Brand not found"
                 };
+            }
 
             _mapper.Map(dto, brand);
 
@@ -115,11 +121,17 @@ namespace WebProjectAPI.Features.brands.Services
             }
 
             brand.Slug = SlugHelper.GenerateSlug(dto.Name);
-            var updatedBrand = await _repository.UpdateAsync(brand);
 
-            return _mapper.Map<ApiResponse<BrandDto>>(updatedBrand);
+            var updatedBrand =
+                await _repository.UpdateAsync(brand);
+
+            return new ApiResponse<BrandDto>
+            {
+                Success = true,
+                Message = "Brand updated successfully",
+                Data = _mapper.Map<BrandDto>(updatedBrand)
+            };
         }
-
         public async Task<ApiResponse<bool>> DeleteAsync(int id)
         {
             var brand = await _repository.GetByIdAsync(id);
@@ -160,6 +172,25 @@ namespace WebProjectAPI.Features.brands.Services
             {
                 Success = true,
                 Data = result
+            };
+        }
+
+
+
+
+        public async Task<ApiResponse<List<BrandDto>>>
+     GetAllBrandsAsync()
+        {
+            var result =
+                await _repository.GetAllBrandsAsync();
+
+            var data =
+                _mapper.Map<List<BrandDto>>(result);
+
+            return new ApiResponse<List<BrandDto>>
+            {
+                Success = true,
+                Data = data
             };
         }
     }

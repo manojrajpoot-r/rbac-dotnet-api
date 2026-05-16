@@ -1,4 +1,5 @@
-﻿using WebProjectAPI.Features.Categories.Models;
+﻿using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.sub_categories.Models;
 
 namespace WebProjectAPI.Features.sub_categories.Interfaces
@@ -16,5 +17,6 @@ namespace WebProjectAPI.Features.sub_categories.Interfaces
         Task<bool> DeleteAsync(SubCategory category);
 
         Task<bool> ChangeStatusAsync(int id);
+        Task<List<SubCategory>> GetAllSubCategoriesAsync();
     }
 }

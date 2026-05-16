@@ -1,7 +1,8 @@
-﻿using WebProjectAPI.Data;
-using WebProjectAPI.Features.sub_categories.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Data;
+using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.sub_categories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Features.sub_categories.Models;
 
 namespace WebProjectAPI.Features.sub_categories.Repositories
 {
@@ -63,6 +64,15 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
             _context.SubCategories.Update(subCategory   );
             await _context.SaveChangesAsync();
             return true;
+        }
+
+
+        public async Task<List<SubCategory>> GetAllSubCategoriesAsync()
+        {
+            return await _context.SubCategories
+                .Where(x => x.Status == true)
+                .OrderBy(x => x.Name)
+                .ToListAsync();
         }
     }
 }

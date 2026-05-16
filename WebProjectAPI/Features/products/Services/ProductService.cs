@@ -131,23 +131,59 @@ namespace WebProjectAPI.Features.products.Services
             return await _repository.ChangeStatusAsync(id);
         }
 
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+        //frontend
+
         public async Task<ApiResponse<List<ProductDto>>> GetFeaturedProductsAsync()
         {
             var products = await _repository
-                .GetQueryable()
-                .Where(x => x.IsFeatured)
-                .Select(x => new ProductDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Price = x.Price,
-                    DiscountPrice = x.DiscountPrice,
-                   DiscountPercentage = x.DiscountPercentage,
-                    Image = x.Image,
-                    Status = x.Status
-                })
-                .ToListAsync();
+                    .GetQueryable()
+                    .Include(x => x.Category)
+                    .Include(x => x.Brand)
 
+                .Where(x => x.IsFeatured)
+            .Select(x => new ProductDto
+            {
+                Id = x.Id,
+
+                Name = x.Name,
+
+                Price = x.Price,
+
+                DiscountPrice = x.DiscountPrice,
+
+                DiscountPercentage = x.DiscountPercentage,
+
+                Image = x.Image,
+
+                Status = x.Status,
+
+                Slug = x.Slug,
+
+                CategoryId = x.CategoryId,
+
+                CategoryName = x.Category.Name,
+
+                BrandId = x.BrandId,
+
+                BrandName = x.Brand.Name
+            })
+                .ToListAsync();
+           
             return new ApiResponse<List<ProductDto>>
             {
                 Success = true,
@@ -172,7 +208,7 @@ namespace WebProjectAPI.Features.products.Services
                     Slug = x.Slug
                 })
                 .ToListAsync();
-
+           
             return new ApiResponse<List<ProductDto>>
             {
                 Success = true,

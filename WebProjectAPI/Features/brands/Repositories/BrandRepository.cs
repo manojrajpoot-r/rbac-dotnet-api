@@ -2,6 +2,7 @@
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.brands.Interfaces;
 using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.Categories.Models;
 
 
 
@@ -82,6 +83,15 @@ namespace WebProjectAPI.Features.brands.Repositories
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<List<Brand>>
+       GetAllBrandsAsync()
+        {
+            return await _context.Brands
+                .Where(x => x.Status)
+                .OrderBy(x => x.Name)
+                .ToListAsync();
         }
     }
 }

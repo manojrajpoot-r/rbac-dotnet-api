@@ -1,4 +1,5 @@
 ﻿using WebProjectAPI.Features.brands.DTOs;
+using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Helpers;
 
 
@@ -16,5 +17,7 @@ namespace WebProjectAPI.Features.brands.Interfaces
         Task<ApiResponse<bool>> DeleteAsync(int id);
 
         Task<ApiResponse<bool>> ChangeStatusAsync(int id);
+        Task<ApiResponse<List<BrandDto>>>
+     GetAllBrandsAsync();
     }
 }

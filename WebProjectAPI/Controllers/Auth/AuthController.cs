@@ -65,6 +65,18 @@ namespace WebProjectAPI.Controllers.Auth
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
+            // CUSTOMER ROLE
+
+            var userRole = new UserRole
+            {
+                UserId = user.Id,
+                RoleId = 9
+            };
+
+            _context.UserRoles.Add(userRole);
+
+            await _context.SaveChangesAsync();
+
             return Ok(new
             {
                 success = true,

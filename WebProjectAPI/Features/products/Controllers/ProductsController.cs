@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.product_images.DTOs;
@@ -19,7 +20,7 @@ namespace WebProjectAPI.Features.products.Controllers
             _service = service;
             _context=context;
         }
-
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll(
             int pageNumber = 1,
@@ -30,7 +31,7 @@ namespace WebProjectAPI.Features.products.Controllers
 
             return Ok(products);
         }
-
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -46,7 +47,7 @@ namespace WebProjectAPI.Features.products.Controllers
 
             return Ok(product);
         }
-
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateProductDto dto)
         {
@@ -58,7 +59,7 @@ namespace WebProjectAPI.Features.products.Controllers
                 data = product
             });
         }
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromForm] UpdateProductDto dto)
         {
@@ -78,7 +79,7 @@ namespace WebProjectAPI.Features.products.Controllers
                 data = product
             });
         }
-
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -97,7 +98,7 @@ namespace WebProjectAPI.Features.products.Controllers
                 message = "Product deleted successfully"
             });
         }
-
+       
         [HttpGet("featured")]
         public async Task<IActionResult> GetFeaturedProducts()
         {
@@ -105,7 +106,7 @@ namespace WebProjectAPI.Features.products.Controllers
 
             return Ok(products);
         }
-
+      
         [HttpGet("latest")]
         public async Task<IActionResult> GetLatestProductsAsync()
         {
@@ -113,9 +114,10 @@ namespace WebProjectAPI.Features.products.Controllers
 
             return Ok(products);
         }
-      
-       
+
+    
         [HttpGet("slug/{slug}")]
+        
         public async Task<IActionResult> GetProduct(string slug)
         {
             var product =
@@ -125,16 +127,21 @@ namespace WebProjectAPI.Features.products.Controllers
             {
                 return NotFound(new
                 {
+                    success = false,
                     message = "Product not found"
                 });
             }
 
-            return Ok(product);
+            return Ok(new
+            {
+                success = true,
+                data = product
+            });
         }
 
         [HttpGet("related/{categoryId}/{productId}")]
         public async Task<IActionResult>
-      RelatedProducts(
+            RelatedProducts(
           int categoryId,
           int productId)
         {
@@ -144,19 +151,21 @@ namespace WebProjectAPI.Features.products.Controllers
                     categoryId,
                     productId
                 );
-
-            return Ok(products);
+            return Ok(new
+            {
+                success = true,
+                data = products
+            });
+          
         }
-
 
         [HttpPost("filter")]
         public async Task<IActionResult> FilterProducts(
-    ProductFilterDto dto)
+     [FromBody] ProductFilterDto dto)
         {
             var query = _context.Products
-                .AsQueryable();
-
-            // SEARCH
+                    .Where(x => x.Status)
+                    .AsQueryable();
 
             if (!string.IsNullOrEmpty(dto.Search))
             {
@@ -164,35 +173,27 @@ namespace WebProjectAPI.Features.products.Controllers
                     x.Name.Contains(dto.Search));
             }
 
-            // CATEGORY FILTER
-
-            if (dto.CategoryIds.Any())
+            if (dto.CategoryIds?.Count > 0)
             {
                 query = query.Where(x =>
-                    dto.CategoryIds
-                        .Contains(x.CategoryId));
+                    dto.CategoryIds.Contains(x.CategoryId));
             }
 
-            // BRAND FILTER
-
-            if (dto.BrandIds.Any())
+            if (dto.BrandIds?.Count > 0)
             {
                 query = query.Where(x =>
-                    dto.BrandIds
-                        .Contains(x.BrandId));
+                    dto.BrandIds.Contains(x.BrandId));
             }
-
-            // PRICE FILTER
 
             query = query.Where(x =>
 
                 (x.DiscountPrice ?? x.Price)
-                    >= dto.MinPrice
+                >= dto.MinPrice
 
                 &&
 
                 (x.DiscountPrice ?? x.Price)
-                    <= dto.MaxPrice
+                <= dto.MaxPrice
             );
 
             // SORTING
@@ -213,7 +214,7 @@ namespace WebProjectAPI.Features.products.Controllers
 
                     break;
 
-                case "latest":
+                default:
 
                     query = query.OrderByDescending(x =>
                         x.Id);
@@ -221,12 +222,12 @@ namespace WebProjectAPI.Features.products.Controllers
                     break;
             }
 
-            // TOTAL COUNT
+            // TOTAL
 
             var totalCount =
                 await query.CountAsync();
 
-            // PAGINATION
+            // DATA
 
             var products = await query
 
@@ -245,11 +246,9 @@ namespace WebProjectAPI.Features.products.Controllers
 
                 totalCount,
 
-                pageNumber =
-                    dto.PageNumber,
+                pageNumber = dto.PageNumber,
 
-                pageSize =
-                    dto.PageSize,
+                pageSize = dto.PageSize,
 
                 totalPages =
                     (int)Math.Ceiling(

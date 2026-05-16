@@ -13,6 +13,8 @@ namespace WebProjectAPI.Features.products.Mappings
         {
             CreateMap<ProductImage, ProductImageDto>();
 
+            
+
             CreateMap<Product, ProductDto>()
 
                 .ForMember(dest => dest.CategoryName,

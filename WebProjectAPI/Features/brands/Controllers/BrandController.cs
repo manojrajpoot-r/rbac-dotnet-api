@@ -89,5 +89,20 @@ namespace WebProjectAPI.Features.Brands.Controllers
                 message = "Brand status changed successfully"
             });
         }
+
+        // FRONTEND
+
+        [HttpGet("frontend")]
+     
+        public async Task<IActionResult> GetAllBrands()
+        {
+            var result =
+                await _service.GetAllBrandsAsync();
+
+            return Ok(result);
+        }
+
+
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.products.Models;
@@ -102,6 +103,13 @@ namespace WebProjectAPI.Features.sub_categories.Services
         public async Task<bool> ChangeStatusAsync(int id)
         {
             return await _repository.ChangeStatusAsync(id);
+        }
+
+        public async Task<List<SubCategoryDto>> GetAllSubCategoriesAsync()
+        {
+            var sub_categories = await _repository.GetAllSubCategoriesAsync();
+
+            return _mapper.Map<List<SubCategoryDto>>(sub_categories);
         }
     }
 }

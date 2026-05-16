@@ -1,4 +1,5 @@
-﻿using WebProjectAPI.Features.sub_categories.DTOs;
+﻿using WebProjectAPI.Features.brands.DTOs;
+using WebProjectAPI.Features.sub_categories.DTOs;
 
 namespace WebProjectAPI.Features.sub_categories.Interfaces
 {
@@ -14,5 +15,7 @@ namespace WebProjectAPI.Features.sub_categories.Interfaces
         Task<bool> DeleteAsync(int id);
 
         Task<bool> ChangeStatusAsync(int id);
+
+        Task<List<SubCategoryDto>> GetAllSubCategoriesAsync();
     }
 }

@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.brands.Models;
-using WebProjectAPI.Features.brands.DTOs;
-using WebProjectAPI.Features.brands.Models;
+
 
 namespace WebProjectAPI.Features.brands.Mappings
 {

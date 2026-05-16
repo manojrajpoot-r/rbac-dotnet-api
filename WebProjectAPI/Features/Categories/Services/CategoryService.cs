@@ -3,6 +3,9 @@ using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Categories.Interfaces;
 using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.Common.Helpers;
+using WebProjectAPI.Helpers;
+using WebProjectAPI.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace WebProjectAPI.Features.Categories.Services
 {
     public class CategoryService : ICategoryService
@@ -18,11 +21,28 @@ namespace WebProjectAPI.Features.Categories.Services
             _mapper = mapper;
         }
 
-        public async Task<List<CategoryDto>> GetAllAsync()
+        public async Task<ApiResponse<List<CategoryDto>>> GetAllAsync(
+         int pageNumber,
+         int pageSize,
+         string search)
         {
-            var categories = await _repository.GetAllAsync();
+            var result = await _repository.GetAllAsync(
+                pageNumber,
+                pageSize,
+                search
+            );
 
-            return _mapper.Map<List<CategoryDto>>(categories);
+            var data =
+                _mapper.Map<List<CategoryDto>>(result.Data);
+
+            return new ApiResponse<List<CategoryDto>>
+            {
+                Success = true,
+                Data = data,
+                TotalRecords = result.TotalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
 
         public async Task<CategoryDto> GetByIdAsync(int id)
@@ -71,12 +91,33 @@ namespace WebProjectAPI.Features.Categories.Services
             return await _repository.DeleteAsync(category);
         }
 
+
         public async Task<bool> ChangeStatusAsync(int id)
         {
             return await _repository.ChangeStatusAsync(id);
         }
-    
 
-       
+
+
+
+
+        public async Task<ApiResponse<List<CategoryDto>>>
+         GetCategoriesAsync()
+        {
+            var categories =
+                await _repository.GetCategoriesAsync();
+
+            var data =
+                _mapper.Map<List<CategoryDto>>(
+                    categories
+                );
+
+            return new ApiResponse<List<CategoryDto>>
+            {
+                Success = true,
+                Data = data
+            };
+        }
+
     }
 }

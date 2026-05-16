@@ -17,10 +17,33 @@ namespace WebProjectAPI.Features.Categories.Repositories
             _context = context;
         }
 
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<(List<Category> Data, int TotalRecords)>
+    GetAllAsync(
+        int pageNumber,
+        int pageSize,
+        string search)
         {
-            return await _context.Categories.ToListAsync();
+            var query = _context.Categories.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(
+                    x => x.Name.Contains(search)
+                );
+            }
+
+            int totalRecords =
+                await query.CountAsync();
+
+            var data = await query
+                .OrderBy(x => x.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (data, totalRecords);
         }
+
 
         public async Task<Category?> GetByIdAsync(int id)
         {
@@ -63,6 +86,17 @@ namespace WebProjectAPI.Features.Categories.Repositories
             _context.Categories.Update(category);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+
+
+        public async Task<List<Category>>
+     GetCategoriesAsync()
+        {
+            return await _context.Categories
+                .Where(x => x.Status)
+                .OrderBy(x => x.Name)
+                .ToListAsync();
         }
     }
 }

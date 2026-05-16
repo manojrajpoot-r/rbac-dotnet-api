@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Categories.Interfaces;
 
@@ -14,15 +15,20 @@ namespace WebProjectAPI.Features.Categories.Controllers
         {
             _service = service;
         }
-
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+
+        public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10,string search = "")
         {
-            var data = await _service.GetAllAsync();
+            var data = await _service.GetAllAsync(
+                pageNumber,
+                pageSize,
+                search
+            );
 
             return Ok(data);
         }
-
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -38,7 +44,7 @@ namespace WebProjectAPI.Features.Categories.Controllers
 
             return Ok(data);
         }
-
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryDto dto)
         {
@@ -50,7 +56,7 @@ namespace WebProjectAPI.Features.Categories.Controllers
                 data
             });
         }
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateCategoryDto dto)
         {
@@ -70,7 +76,7 @@ namespace WebProjectAPI.Features.Categories.Controllers
                 data
             });
         }
-
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -89,7 +95,7 @@ namespace WebProjectAPI.Features.Categories.Controllers
                 message = "Category deleted successfully"
             });
         }
-
+        [Authorize]
         [HttpPatch("change-status/{id}")]
         public async Task<IActionResult> ChangeStatus(int id)
         {
@@ -107,6 +113,17 @@ namespace WebProjectAPI.Features.Categories.Controllers
             {
                 message = "Category status updated successfully"
             });
+        }
+
+
+        // FRONTEND
+
+        [HttpGet("frontend")]
+        public async Task<IActionResult> GetAllCategories()
+        {
+            var data = await _service.GetCategoriesAsync();
+
+            return Ok(data);
         }
     }
 }
