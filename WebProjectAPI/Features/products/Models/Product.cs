@@ -48,5 +48,7 @@ namespace WebProjectAPI.Features.products.Models
       
         public ICollection<ProductImage> ProductImages { get; set; }
             = new List<ProductImage>();
+
+        
     }
 }

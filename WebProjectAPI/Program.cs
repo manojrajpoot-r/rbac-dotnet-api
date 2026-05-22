@@ -15,6 +15,9 @@ using WebProjectAPI.Features.Categories.Interfaces;
 using WebProjectAPI.Features.Categories.Mappings;
 using WebProjectAPI.Features.Categories.Repositories;
 using WebProjectAPI.Features.Categories.Services;
+using WebProjectAPI.Features.colors.Interfaces;
+using WebProjectAPI.Features.colors.Repositories;
+using WebProjectAPI.Features.colors.Services;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.Common.Services;
 using WebProjectAPI.Features.orders.services;
@@ -22,10 +25,17 @@ using WebProjectAPI.Features.orders.Services;
 using WebProjectAPI.Features.product_images.Interfaces;
 using WebProjectAPI.Features.product_images.Repositories;
 using WebProjectAPI.Features.product_images.Services;
+using WebProjectAPI.Features.product_variant.Interfaces;
+using WebProjectAPI.Features.product_variant.Models;
+using WebProjectAPI.Features.product_variant.Services;
+using WebProjectAPI.Features.product_variant.Repositories;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Mappings;
 using WebProjectAPI.Features.products.Repositories;
 using WebProjectAPI.Features.products.Services;
+using WebProjectAPI.Features.sizes.Interfaces;
+using WebProjectAPI.Features.sizes.Repositories;
+using WebProjectAPI.Features.sizes.Services;
 using WebProjectAPI.Features.sub_categories.Interfaces;
 using WebProjectAPI.Features.sub_categories.Mappings;
 using WebProjectAPI.Features.sub_categories.Repositories;
@@ -73,12 +83,26 @@ builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<ICartRepository,CartRepository>();
 builder.Services.AddScoped<ICartService,CartService>();
-
 builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<RazorpayService>();
+builder.Services.AddScoped<IColorRepository, ColorRepository>();
+builder.Services.AddScoped<IColorService, ColorService>();
+builder.Services.AddScoped<ISizeRepository, SizeRepository>();
+builder.Services.AddScoped<ISizeService, SizeService>();
+builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
+builder.Services.AddScoped<IProductVariantService, ProductVariantService>();
 //Add Services
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+
+
+
+
+
+
+
+
 
 // 🔹 AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));

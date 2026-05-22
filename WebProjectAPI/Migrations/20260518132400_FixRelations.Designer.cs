@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebProjectAPI.Data;
 
@@ -11,9 +12,11 @@ using WebProjectAPI.Data;
 namespace WebProjectAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260518132400_FixRelations")]
+    partial class FixRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,39 +110,6 @@ namespace WebProjectAPI.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("Carts");
-                });
-
-            modelBuilder.Entity("WebProjectAPI.Features.colors.Models.Color", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Colors");
                 });
 
             modelBuilder.Entity("WebProjectAPI.Features.orders.Models.Order", b =>
@@ -282,56 +252,6 @@ namespace WebProjectAPI.Migrations
                     b.ToTable("ProductImages");
                 });
 
-            modelBuilder.Entity("WebProjectAPI.Features.product_variant.Models.ProductVariant", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ColorId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SKU")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("SizeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ColorId");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("SizeId");
-
-                    b.ToTable("ProductVariants");
-                });
-
             modelBuilder.Entity("WebProjectAPI.Features.products.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -403,35 +323,6 @@ namespace WebProjectAPI.Migrations
                     b.HasIndex("SubCategoryId");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("WebProjectAPI.Features.sizes.Models.Size", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Sizes");
                 });
 
             modelBuilder.Entity("WebProjectAPI.Features.sub_categories.Models.SubCategory", b =>
@@ -657,33 +548,6 @@ namespace WebProjectAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("WebProjectAPI.Features.product_variant.Models.ProductVariant", b =>
-                {
-                    b.HasOne("WebProjectAPI.Features.colors.Models.Color", "Color")
-                        .WithMany()
-                        .HasForeignKey("ColorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebProjectAPI.Features.products.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebProjectAPI.Features.sizes.Models.Size", "Size")
-                        .WithMany()
-                        .HasForeignKey("SizeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Color");
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Size");
                 });
 
             modelBuilder.Entity("WebProjectAPI.Features.products.Models.Product", b =>

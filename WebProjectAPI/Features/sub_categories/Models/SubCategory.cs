@@ -1,5 +1,5 @@
 ﻿using WebProjectAPI.Features.Categories.Models;
-
+using WebProjectAPI.Features.products.Models;
 namespace WebProjectAPI.Features.sub_categories.Models
 {
     public class SubCategory
@@ -23,5 +23,10 @@ namespace WebProjectAPI.Features.sub_categories.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public Category Category { get; set; }
+
+
+
+        public ICollection<Product> Products { get; set; }
+    = new List<Product>();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace WebProjectAPI.Features.sub_categories.DTOs
+﻿using WebProjectAPI.Features.products.DTOs;
+
+namespace WebProjectAPI.Features.sub_categories.DTOs
 {
     public class SubCategoryDto
     {
@@ -17,5 +19,7 @@
         public bool Status { get; set; } = true;
 
         public string? CategoryName { get; set; }
+
+
     }
 }

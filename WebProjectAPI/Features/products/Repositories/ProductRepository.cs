@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Models;
+using WebProjectAPI.Features.sub_categories.Models;
 using WebProjectAPI.Models;
 
 
@@ -139,6 +141,55 @@ namespace WebProjectAPI.Features.products.Repositories
                 .Take(4)
 
                 .ToListAsync();
+        }
+        public async Task<List<CategoryWithProductsDto>>
+        GetHomeCategoryProductsAsync()
+        {
+            return await _context.Categories
+
+            .Select(c => new CategoryWithProductsDto
+            {
+                Id = c.Id,
+
+                Name = c.Name,
+
+                SubCategories = c.SubCategories
+
+                .Select(sc => new SubCategoryWithProductsDto
+                {
+                   Id = sc.Id,
+
+                    Name = sc.Name,
+
+                    Products = sc.Products
+
+                    .Where(p => p.Status)
+
+                    .Select(p => new ProductDto
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Price = p.Price,
+                        DiscountPrice = p.DiscountPrice,
+                        Image = p.Image,
+                        Slug = p.Slug
+                    })
+
+                    .Take(4)
+
+                    .ToList()
+
+                })
+
+                .Where(x => x.Products.Any())
+
+                .ToList()
+
+            })
+
+            .Where(x => x.SubCategories.Any())
+
+            .ToListAsync();
         }
     }
 }

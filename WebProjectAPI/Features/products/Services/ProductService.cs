@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Data;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.products.DTOs;
@@ -244,5 +245,20 @@ namespace WebProjectAPI.Features.products.Services
                 products
             );
         }
+
+
+        public async Task<ApiResponse<List<CategoryWithProductsDto>>>
+            GetHomeCategoryProductsAsync()
+                    {
+                        var data = await _repository
+                            .GetHomeCategoryProductsAsync();
+
+                        return new ApiResponse<List<CategoryWithProductsDto>>
+                        {
+                            Success = true,
+                            Data = data
+                        };
+                    }
+
     }
 }

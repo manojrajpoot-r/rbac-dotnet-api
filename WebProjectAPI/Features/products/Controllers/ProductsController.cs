@@ -5,6 +5,7 @@ using WebProjectAPI.Data;
 using WebProjectAPI.Features.product_images.DTOs;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
+using WebProjectAPI.Features.products.Services;
 
 namespace WebProjectAPI.Features.products.Controllers
 {
@@ -173,28 +174,31 @@ namespace WebProjectAPI.Features.products.Controllers
                     x.Name.Contains(dto.Search));
             }
 
-            if (dto.CategoryIds?.Count > 0)
+            if (dto.CategoryIds?.Any() == true)
             {
                 query = query.Where(x =>
                     dto.CategoryIds.Contains(x.CategoryId));
             }
 
-            if (dto.BrandIds?.Count > 0)
+            if (dto.BrandIds?.Any() == true)
             {
                 query = query.Where(x =>
                     dto.BrandIds.Contains(x.BrandId));
             }
 
-            query = query.Where(x =>
+            if (dto.MinPrice > 0 || dto.MaxPrice > 0)
+            {
+                query = query.Where(x =>
 
-                (x.DiscountPrice ?? x.Price)
-                >= dto.MinPrice
+                    ((x.DiscountPrice) ?? 0)
+                    >= dto.MinPrice
 
-                &&
+                    &&
 
-                (x.DiscountPrice ?? x.Price)
-                <= dto.MaxPrice
-            );
+                    ((x.DiscountPrice) ?? 0)
+                    <= dto.MaxPrice
+                );
+            }
 
             // SORTING
 
@@ -257,5 +261,15 @@ namespace WebProjectAPI.Features.products.Controllers
                     )
             });
         }
+
+        [HttpGet("home-category-products")]
+        public async Task<IActionResult>
+            GetHomeCategoryProducts()
+                    {
+                        var result = await _service
+                            .GetHomeCategoryProductsAsync();
+
+                        return Ok(result);
+                    }
     }
 }

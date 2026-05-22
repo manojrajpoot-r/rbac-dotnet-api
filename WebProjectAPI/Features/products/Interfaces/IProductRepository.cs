@@ -28,5 +28,6 @@ namespace WebProjectAPI.Features.products.Interfaces
             int productId
         );
 
+        Task<List<CategoryWithProductsDto>>GetHomeCategoryProductsAsync();
     }
 }

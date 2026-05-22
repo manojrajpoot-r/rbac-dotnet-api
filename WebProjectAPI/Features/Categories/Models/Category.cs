@@ -1,4 +1,6 @@
-﻿namespace WebProjectAPI.Features.Categories.Models
+﻿using WebProjectAPI.Features.sub_categories.Models;
+
+namespace WebProjectAPI.Features.Categories.Models
 {
     public class Category
     {
@@ -12,5 +14,7 @@
         public string? Description { get; set; }
 
         public bool Status { get; set; } = true;
+
+        public ICollection<SubCategory> SubCategories { get; set; }
     }
 }

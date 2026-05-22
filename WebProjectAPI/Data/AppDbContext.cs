@@ -2,9 +2,12 @@
 using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.carts.Models;
 using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.colors.Models;
 using WebProjectAPI.Features.orders.Models;
 using WebProjectAPI.Features.product_images.Models;
+using WebProjectAPI.Features.product_variant.Models;
 using WebProjectAPI.Features.products.Models;
+using WebProjectAPI.Features.sizes.Models;
 using WebProjectAPI.Features.sub_categories.Models;
 using WebProjectAPI.Features.wishlistItem.Models;
 using WebProjectAPI.Models;
@@ -33,6 +36,9 @@ namespace WebProjectAPI.Data
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Color> Colors { get; set; }
+        public DbSet<Size> Sizes { get; set; }
+        public DbSet<ProductVariant> ProductVariants { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // UserRoles (Composite Key)
@@ -75,10 +81,10 @@ namespace WebProjectAPI.Data
         .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Product>()
-                .HasOne(p => p.SubCategory)
-                .WithMany()
-                .HasForeignKey(p => p.SubCategoryId)
-                .OnDelete(DeleteBehavior.NoAction);
+     .HasOne(p => p.SubCategory)
+     .WithMany(sc => sc.Products)
+     .HasForeignKey(p => p.SubCategoryId)
+     .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Category)
