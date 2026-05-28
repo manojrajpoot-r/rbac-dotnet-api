@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Features.booking.Models;
 using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.carts.Models;
 using WebProjectAPI.Features.Categories.Models;
@@ -39,6 +40,13 @@ namespace WebProjectAPI.Data
         public DbSet<Color> Colors { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
+        public DbSet<Service> Services { get; set; }
+        public DbSet<Booking> Bookings { get; set; }
+        public DbSet<BookingServiceItem> BookingServiceItems { get; set; }
+
+
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // UserRoles (Composite Key)
