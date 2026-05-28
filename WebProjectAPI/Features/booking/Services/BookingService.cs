@@ -51,7 +51,7 @@ namespace WebProjectAPI.Features.booking.Services
 
                 BookingDate = model.BookingDate,
 
-                BookingTime = model.BookingTime,
+                BookingTime = model.BookingTime.ToString(),
 
                 TotalAmount = total,
 
@@ -109,8 +109,8 @@ namespace WebProjectAPI.Features.booking.Services
 
             bookingData.BookingDate = model.BookingDate;
 
-            bookingData.BookingTime = model.BookingTime;
-
+            bookingData.BookingTime = model.BookingTime.ToString();
+        
             bookingData.TotalAmount = total;
 
             bookingData.PaymentMethod = model.PaymentMethod;

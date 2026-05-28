@@ -70,7 +70,7 @@ namespace WebProjectAPI.Controllers.Auth
             var userRole = new UserRole
             {
                 UserId = user.Id,
-                RoleId = 9
+                RoleId = 2
             };
 
             _context.UserRoles.Add(userRole);

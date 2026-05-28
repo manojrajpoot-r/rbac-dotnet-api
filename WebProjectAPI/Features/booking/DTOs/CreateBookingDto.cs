@@ -7,7 +7,7 @@
 
         public DateTime BookingDate { get; set; }
 
-        public string BookingTime { get; set; }
+        public TimeSpan BookingTime { get; set; }
 
         public List<int> ServiceIds { get; set; }
 
