@@ -22,22 +22,77 @@ namespace WebProjectAPI.Features.booking.Services
         }
 
         // LIST
-        public async Task<ApiResponse<List<Booking>>> GetAll(
-            PaginationRequest request)
+        public async Task<ApiResponse<List<BookingResponseDto>>> GetAll(
+        PaginationRequest request)
         {
-            return await _repository.GetAll(request);
+            var data = await _context.Bookings
+                .Include(x => x.BookingServiceItems)
+                .ToListAsync();
+
+            var result = data.Select(b => new BookingResponseDto
+            {
+                Id = b.Id,
+                UserId = b.UserId,
+                BookingDate = b.BookingDate.ToString("yyyy-MM-dd"),
+                BookingTime = b.BookingTime,
+                TotalAmount = b.TotalAmount,
+                BookingStatus = b.BookingStatus,
+                PaymentStatus = b.PaymentStatus,
+
+                Services = b.BookingServiceItems.Select(s => new BookingServiceItemDto
+                {
+                    ServiceId = s.ServiceId,
+                    Price = s.Price
+                }).ToList()
+            }).ToList();
+
+            return new ApiResponse<List<BookingResponseDto>>
+            {
+                Success = true,
+                Data = result
+            };
         }
 
         // GET BY ID
-        public async Task<ApiResponse<Booking>> GetById(
-            int id)
+        public async Task<ApiResponse<BookingResponseDto>> GetById(int id)
         {
-            return await _repository.GetById(id);
+            var b = await _context.Bookings
+                .Include(x => x.BookingServiceItems)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (b == null)
+            {
+                return new ApiResponse<BookingResponseDto>
+                {
+                    Success = false,
+                    Message = "Not found"
+                };
+            }
+
+            return new ApiResponse<BookingResponseDto>
+            {
+                Success = true,
+                Data = new BookingResponseDto
+                {
+                    Id = b.Id,
+                    UserId = b.UserId,
+                    BookingDate = b.BookingDate.ToString("yyyy-MM-dd"),
+                    BookingTime = b.BookingTime,
+                    TotalAmount = b.TotalAmount,
+                    BookingStatus = b.BookingStatus,
+                    PaymentStatus = b.PaymentStatus,
+
+                    Services = b.BookingServiceItems.Select(s => new BookingServiceItemDto
+                    {
+                        ServiceId = s.ServiceId,
+                        Price = s.Price
+                    }).ToList()
+                }
+            };
         }
 
         // ADD
-        public async Task<ApiResponse<Booking>> Add(
-            CreateBookingDto model)
+        public async Task<ApiResponse<BookingResponseDto>> Add(CreateBookingDto model)
         {
             var services = await _context.Services
                 .Where(x => model.ServiceIds.Contains(x.Id))
@@ -48,38 +103,50 @@ namespace WebProjectAPI.Features.booking.Services
             var booking = new Booking
             {
                 UserId = model.UserId,
-
                 BookingDate = model.BookingDate,
-
                 BookingTime = model.BookingTime.ToString(),
-
                 TotalAmount = total,
-
                 BookingStatus = "Pending",
-
                 PaymentStatus = "Pending",
-
                 PaymentMethod = model.PaymentMethod,
-
                 Notes = model.Notes,
-
                 Address = model.Address,
-
                 IsActive = true,
-
                 IsDeleted = false,
-
                 CreatedAt = DateTime.Now,
 
-                BookingServiceItems = services
-                    .Select(x => new BookingServiceItem
-                    {
-                        ServiceId = x.Id,
-                        Price = x.Price
-                    }).ToList()
+                BookingServiceItems = services.Select(x => new BookingServiceItem
+                {
+                    ServiceId = x.Id,
+                    Price = x.Price
+                }).ToList()
             };
 
-            return await _repository.Add(booking);
+            _context.Bookings.Add(booking);
+            await _context.SaveChangesAsync(); // IMPORTANT
+
+            var result = new BookingResponseDto
+            {
+                Id = booking.Id,
+                UserId = booking.UserId,
+                BookingDate = booking.BookingDate.ToString("yyyy-MM-dd"),
+                BookingTime = booking.BookingTime,
+                TotalAmount = booking.TotalAmount,
+                BookingStatus = booking.BookingStatus,
+                PaymentStatus = booking.PaymentStatus,
+
+                Services = booking.BookingServiceItems.Select(x => new BookingServiceItemDto
+                {
+                    ServiceId = x.ServiceId,
+                    Price = x.Price
+                }).ToList()
+            };
+
+            return new ApiResponse<BookingResponseDto>
+            {
+                Success = true,
+                Data = result
+            };
         }
 
         // UPDATE
@@ -122,7 +189,8 @@ namespace WebProjectAPI.Features.booking.Services
             bookingData.UpdatedAt = DateTime.Now;
 
             // REMOVE OLD SERVICES
-            bookingData.BookingServiceItems.Clear();
+            _context.BookingServiceItems.RemoveRange(
+      bookingData.BookingServiceItems);
 
             // ADD NEW SERVICES
             bookingData.BookingServiceItems = services

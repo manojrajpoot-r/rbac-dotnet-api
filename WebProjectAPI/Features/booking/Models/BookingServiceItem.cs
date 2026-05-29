@@ -8,14 +8,11 @@
 
         public int BookingId { get; set; }
 
-        [JsonIgnore]
-        public Booking Booking { get; set; }
-
         public int ServiceId { get; set; }
 
-        [JsonIgnore]
-        public Service Service { get; set; }
-
         public decimal Price { get; set; }
+
+        public Booking Booking { get; set; }   
+        public Service Service { get; set; }
     }
 }

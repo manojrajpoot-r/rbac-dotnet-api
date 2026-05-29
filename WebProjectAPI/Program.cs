@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.booking.Interfaces;
+using WebProjectAPI.Features.booking.Mappings;
 using WebProjectAPI.Features.booking.Repositories;
 using WebProjectAPI.Features.booking.Services;
 using WebProjectAPI.Features.brands.Interfaces;
@@ -121,6 +122,11 @@ builder.Services.AddAutoMapper(typeof(CategoryProfile));
 builder.Services.AddAutoMapper(typeof(SubCategoryProfile));
 builder.Services.AddAutoMapper(typeof(ProductProfile));
 builder.Services.AddAutoMapper(typeof(BrandProfile));
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+
+
+
 //foronted se backend api include krne ek liye permissom allow/deney
 builder.Services.AddCors(options =>
 {

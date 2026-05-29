@@ -7,12 +7,11 @@ namespace WebProjectAPI.Features.booking.Interfaces
 {
     public interface IBookingService
     {
-        Task<ApiResponse<List<Booking>>> GetAll(
-            PaginationRequest request);
+        Task<ApiResponse<List<BookingResponseDto>>> GetAll(
+       PaginationRequest request);
+        Task<ApiResponse<BookingResponseDto>> GetById(int id);
 
-        Task<ApiResponse<Booking>> GetById(int id);
-
-        Task<ApiResponse<Booking>> Add(
+        Task<ApiResponse<BookingResponseDto>> Add(
             CreateBookingDto model);
 
         Task<ApiResponse<Booking>> Update(

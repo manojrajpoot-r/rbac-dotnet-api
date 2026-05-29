@@ -44,8 +44,6 @@ namespace WebProjectAPI.Features.booking.Models
 
         public DateTime? UpdatedAt { get; set; }
 
-        public ICollection<BookingServiceItem>
-            BookingServiceItems
-        { get; set; }
+        public List<BookingServiceItem> BookingServiceItems { get; set; }
     }
 }
