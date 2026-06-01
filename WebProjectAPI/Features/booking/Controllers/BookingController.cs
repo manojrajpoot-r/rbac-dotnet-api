@@ -76,5 +76,13 @@ namespace WebProjectAPI.Features.booking.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("user/{userId}")]
+        public async Task<IActionResult> GetByUser(int userId)
+        {
+            var result = await _service.GetByUser(userId);
+
+            return Ok(result);
+        }
     }
 }

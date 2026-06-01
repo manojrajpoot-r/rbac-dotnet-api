@@ -56,11 +56,9 @@ namespace WebProjectAPI.Features.booking.Services
         // GET BY ID
         public async Task<ApiResponse<BookingResponseDto>> GetById(int id)
         {
-            var b = await _context.Bookings
-                .Include(x => x.BookingServiceItems)
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var data = await _repository.GetById(id);
 
-            if (b == null)
+            if (data == null)
             {
                 return new ApiResponse<BookingResponseDto>
                 {
@@ -74,18 +72,19 @@ namespace WebProjectAPI.Features.booking.Services
                 Success = true,
                 Data = new BookingResponseDto
                 {
-                    Id = b.Id,
-                    UserId = b.UserId,
-                    BookingDate = b.BookingDate.ToString("yyyy-MM-dd"),
-                    BookingTime = b.BookingTime,
-                    TotalAmount = b.TotalAmount,
-                    BookingStatus = b.BookingStatus,
-                    PaymentStatus = b.PaymentStatus,
+                    Id = data.Id,
+                    UserId = data.UserId,
+                    BookingDate = data.BookingDate.ToString("yyyy-MM-dd"),
+                    BookingTime = data.BookingTime,
+                    TotalAmount = data.TotalAmount,
+                    BookingStatus = data.BookingStatus,
+                    PaymentStatus = data.PaymentStatus,
 
-                    Services = b.BookingServiceItems.Select(s => new BookingServiceItemDto
+                    Services = data.BookingServiceItems.Select(x => new BookingServiceItemDto
                     {
-                        ServiceId = s.ServiceId,
-                        Price = s.Price
+                        ServiceId = x.ServiceId,
+                        ServiceName = x.Service.ServiceName,
+                        Price = x.Price
                     }).ToList()
                 }
             };
@@ -215,6 +214,49 @@ namespace WebProjectAPI.Features.booking.Services
             int id)
         {
             return await _repository.ChangeStatus(id);
+        }
+
+        public async Task<ApiResponse<List<BookingResponseDto>>> GetByUser(int userId)
+        {
+            
+
+            var data = await _repository.GetByUser(userId);
+
+            if (data == null || !data.Any())
+            {
+                return new ApiResponse<List<BookingResponseDto>>
+                {
+                    Success = true,
+                    Data = new List<BookingResponseDto>()
+                };
+            }
+
+            var result = data.Select(x => new BookingResponseDto
+            {
+                Id = x.Id,
+                UserId = x.UserId,
+                UserName = x.User?.Name,
+                BookingStatus = x.BookingStatus,
+                PaymentStatus = x.PaymentStatus,
+                TotalAmount = x.TotalAmount,
+                BookingDate = x.BookingDate.ToString("yyyy-MM-dd"),
+                BookingTime = x.BookingTime,
+
+                Services = x.BookingServiceItems?
+                    .Select(s => new BookingServiceItemDto
+                    {
+                        ServiceId = s.ServiceId,
+                        Price = s.Price,
+                        ServiceName = s.Service?.ServiceName
+                    })
+                    .ToList() ?? new List<BookingServiceItemDto>()
+            }).ToList();
+
+            return new ApiResponse<List<BookingResponseDto>>
+            {
+                Success = true,
+                Data = result
+            };
         }
     }
 }

@@ -20,5 +20,7 @@ namespace WebProjectAPI.Features.booking.Interfaces
         Task<ApiResponse<string>> Delete(int id);
 
         Task<ApiResponse<string>> ChangeStatus(int id);
+
+        Task<ApiResponse<List<BookingResponseDto>>> GetByUser(int userId);
     }
 }

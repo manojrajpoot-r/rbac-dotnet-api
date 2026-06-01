@@ -45,21 +45,12 @@ namespace WebProjectAPI.Features.booking.Repositories
         }
 
         // GET BY ID
-        public async Task<ApiResponse<Booking>> GetById(int id)
+        public async Task<Booking?> GetById(int id)
         {
-            var data = await _context.Bookings
+            return await _context.Bookings
                 .Include(x => x.BookingServiceItems)
-                .ThenInclude(x => x.Service)
-                .FirstOrDefaultAsync(x =>
-                    x.Id == id &&
-                    !x.IsDeleted);
-
-            return new ApiResponse<Booking>
-            {
-                Success = true,
-                Message = "Booking fetched successfully",
-                Data = data
-            };
+                    .ThenInclude(x => x.Service)
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
         // ADD
@@ -186,6 +177,13 @@ namespace WebProjectAPI.Features.booking.Repositories
                 Success = true,
                 Message = "Status changed successfully"
             };
+        }
+
+        public async Task<List<Booking>> GetByUser(int userId)
+        {
+            return await _context.Bookings
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
         }
     }
 }

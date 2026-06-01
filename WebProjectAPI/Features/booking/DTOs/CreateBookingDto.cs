@@ -19,7 +19,7 @@
 
         public string Notes { get; set; }
 
-        public List<BookingServiceItemDto> Services { get; set; }
+        public List<BookingServiceItemDto> Services { get; set; } = new();
     }
 
 }

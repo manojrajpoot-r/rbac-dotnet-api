@@ -9,8 +9,7 @@ namespace WebProjectAPI.Features.booking.Interfaces
         Task<ApiResponse<List<Booking>>> GetAll(
             PaginationRequest request);
 
-        Task<ApiResponse<Booking>> GetById(int id);
-
+        Task<Booking?> GetById(int id);
         Task<ApiResponse<Booking>> Add(Booking model);
 
         Task<ApiResponse<Booking>> Update(Booking model);
@@ -18,5 +17,9 @@ namespace WebProjectAPI.Features.booking.Interfaces
         Task<ApiResponse<string>> Delete(int id);
 
         Task<ApiResponse<string>> ChangeStatus(int id);
+
+        Task<List<Booking>> GetByUser(int userId);
+
+
     }
 }
