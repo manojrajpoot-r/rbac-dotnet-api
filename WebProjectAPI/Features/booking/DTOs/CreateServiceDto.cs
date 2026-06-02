@@ -9,5 +9,10 @@
         public decimal Price { get; set; }
 
         public int DurationMinutes { get; set; }
+        public string Description { get; set; }
+        = string.Empty;
+
+
+        public IFormFile? ImageUrl { get; set; }
     }
 }

@@ -48,6 +48,7 @@ namespace WebProjectAPI.Features.booking.Repositories
         public async Task<Booking?> GetById(int id)
         {
             return await _context.Bookings
+                .Include(x => x.User) 
                 .Include(x => x.BookingServiceItems)
                     .ThenInclude(x => x.Service)
                 .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);

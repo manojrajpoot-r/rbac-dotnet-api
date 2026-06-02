@@ -74,11 +74,15 @@ namespace WebProjectAPI.Features.booking.Services
                 {
                     Id = data.Id,
                     UserId = data.UserId,
+                    UserName = data.User?.Name, 
                     BookingDate = data.BookingDate.ToString("yyyy-MM-dd"),
                     BookingTime = data.BookingTime,
                     TotalAmount = data.TotalAmount,
                     BookingStatus = data.BookingStatus,
                     PaymentStatus = data.PaymentStatus,
+                    Address       = data.Address,
+                    Notes         = data.Notes,
+                    PaymentMethod = data.PaymentMethod,
 
                     Services = data.BookingServiceItems.Select(x => new BookingServiceItemDto
                     {
@@ -238,9 +242,13 @@ namespace WebProjectAPI.Features.booking.Services
                 UserName = x.User?.Name,
                 BookingStatus = x.BookingStatus,
                 PaymentStatus = x.PaymentStatus,
+                PaymentMethod = x.PaymentMethod,
                 TotalAmount = x.TotalAmount,
                 BookingDate = x.BookingDate.ToString("yyyy-MM-dd"),
                 BookingTime = x.BookingTime,
+                Address     = x.Address,
+                Notes        = x.Notes,
+
 
                 Services = x.BookingServiceItems?
                     .Select(s => new BookingServiceItemDto
