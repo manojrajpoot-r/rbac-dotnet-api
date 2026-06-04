@@ -5,11 +5,12 @@ using WebProjectAPI.Features.booking.Interfaces;
 using WebProjectAPI.Features.booking.Models;
 using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.booking.Services
 {
     public class BookingService : IBookingService
-    {
+   {
         private readonly IBookingRepository _repository;
         private readonly AppDbContext _context;
 
@@ -23,33 +24,41 @@ namespace WebProjectAPI.Features.booking.Services
 
         // LIST
         public async Task<ApiResponse<List<BookingResponseDto>>> GetAll(
-        PaginationRequest request)
+     PaginationRequest request)
         {
-            var data = await _context.Bookings
-                .Include(x => x.BookingServiceItems)
-                .ToListAsync();
+            var data = await _repository.GetAll(request);
 
-            var result = data.Select(b => new BookingResponseDto
+            var result = data.Data.Select(x => new BookingResponseDto
             {
-                Id = b.Id,
-                UserId = b.UserId,
-                BookingDate = b.BookingDate.ToString("yyyy-MM-dd"),
-                BookingTime = b.BookingTime,
-                TotalAmount = b.TotalAmount,
-                BookingStatus = b.BookingStatus,
-                PaymentStatus = b.PaymentStatus,
+                Id = x.Id,
+                UserId = x.UserId,
+                UserName = x.User?.Name,
+                BookingStatus = x.BookingStatus,
+                PaymentStatus = x.PaymentStatus,
+                PaymentMethod = x.PaymentMethod,
+                TotalAmount = x.TotalAmount,
+                BookingDate = x.BookingDate.ToString("yyyy-MM-dd"),
+                BookingTime = x.BookingTime,
+                Address = x.Address,
+                Notes = x.Notes,
+                IsActive = x.IsActive,
 
-                Services = b.BookingServiceItems.Select(s => new BookingServiceItemDto
-                {
-                    ServiceId = s.ServiceId,
-                    Price = s.Price
-                }).ToList()
+                Services = x.BookingServiceItems?
+                    .Select(s => new BookingServiceItemDto
+                    {
+                        ServiceId = s.ServiceId,
+                        Price = s.Price,
+                        ServiceName = s.Service?.ServiceName
+                    })
+                    .ToList() ?? new List<BookingServiceItemDto>()
             }).ToList();
 
             return new ApiResponse<List<BookingResponseDto>>
             {
                 Success = true,
-                Data = result
+                Message = data.Message,
+                Data = result,
+                TotalRecords = data.TotalRecords
             };
         }
 
@@ -214,11 +223,27 @@ namespace WebProjectAPI.Features.booking.Services
         }
 
         // STATUS
-        public async Task<ApiResponse<string>> ChangeStatus(
-            int id)
+        public async Task<ApiResponse<string>> ChangeStatus(int id)
         {
             return await _repository.ChangeStatus(id);
         }
+
+        public async Task<ApiResponse<string>> ChangePaymentStatus(int id)
+        {
+            return await _repository.PaymentStatus(id);
+        }
+
+        public async Task<ApiResponse<string>> ChangeBookingStatus(int id)
+        {
+            return await _repository.BookingStatus(id);
+        }
+
+
+
+
+
+
+
 
         public async Task<ApiResponse<List<BookingResponseDto>>> GetByUser(int userId)
         {

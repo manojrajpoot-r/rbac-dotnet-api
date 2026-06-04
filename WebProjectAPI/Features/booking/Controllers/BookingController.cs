@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Features.booking.DTOs;
 using WebProjectAPI.Features.booking.Interfaces;
 using WebProjectAPI.Features.Common.Paginations;
@@ -68,14 +69,25 @@ namespace WebProjectAPI.Features.booking.Controllers
         }
 
         // STATUS
-        [HttpPatch("status/{id}")]
-        public async Task<IActionResult> ChangeStatus(
-            int id)
+        [HttpPut("change-status/{id}")]
+        public async Task<IActionResult> ChangeStatus(int id)
         {
-            var result = await _service.ChangeStatus(id);
-
-            return Ok(result);
+            return Ok(await _service.ChangeStatus(id));
         }
+
+        [HttpPut("change-payment-status/{id}")]
+        public async Task<IActionResult> ChangePaymentStatus(int id)
+        {
+            return Ok(await _service.ChangePaymentStatus(id));
+        }
+
+        [HttpPut("change-booking-status/{id}")]
+        public async Task<IActionResult> ChangeBookingStatus(int id)
+        {
+            return Ok(await _service.ChangeBookingStatus(id));
+        }
+
+
 
         [HttpGet("user/{userId}")]
         public async Task<IActionResult> GetByUser(int userId)

@@ -26,8 +26,7 @@ namespace WebProjectAPI.Features.booking.Repositories
 
             if (!string.IsNullOrEmpty(request.Search))
             {
-                query = query.Where(x =>
-                    x.ServiceName.Contains(request.Search));
+                query = query.Where(x => x.ServiceName.Contains(request.Search));
             }
 
             var totalRecords = await query.CountAsync();
@@ -116,11 +115,14 @@ namespace WebProjectAPI.Features.booking.Repositories
 
             service.ServiceName = model.ServiceName;
             service.Price = model.Price;
-            service.DurationMinutes =
-                model.DurationMinutes;
+            service.DurationMinutes = model.DurationMinutes;
 
             service.UpdatedAt = DateTime.Now;
-
+            service.Description = model.Description;
+            if (!string.IsNullOrEmpty(model.ImageUrl))
+            {
+                service.ImageUrl = model.ImageUrl;
+            }
             await _context.SaveChangesAsync();
 
             return new ApiResponse<Service>

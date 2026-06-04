@@ -19,6 +19,7 @@
         public string Address { get; set; }
         public string Notes { get; set; }
 
+        public bool IsActive { get; set; }
         public List<BookingServiceItemDto> Services { get; set; }
     }
 }

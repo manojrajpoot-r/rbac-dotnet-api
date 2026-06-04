@@ -17,6 +17,8 @@ namespace WebProjectAPI.Features.booking.Interfaces
         Task<ApiResponse<string>> Delete(int id);
 
         Task<ApiResponse<string>> ChangeStatus(int id);
+        Task<ApiResponse<string>> BookingStatus(int id);
+        Task<ApiResponse<string>> PaymentStatus(int id);
 
         Task<List<Booking>> GetByUser(int userId);
 

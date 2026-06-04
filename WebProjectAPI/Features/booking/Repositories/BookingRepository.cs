@@ -21,10 +21,11 @@ namespace WebProjectAPI.Features.booking.Repositories
             PaginationRequest request)
         {
             var query = _context.Bookings
-                .Where(x => !x.IsDeleted)
-                .Include(x => x.BookingServiceItems)
-                .ThenInclude(x => x.Service)
-                .AsQueryable();
+                 .Where(x => !x.IsDeleted)
+                 .Include(x => x.User)
+                 .Include(x => x.BookingServiceItems)
+                     .ThenInclude(x => x.Service)
+                 .AsQueryable();
 
             var totalRecords = await query.CountAsync();
 
@@ -179,6 +180,68 @@ namespace WebProjectAPI.Features.booking.Repositories
                 Message = "Status changed successfully"
             };
         }
+
+        public async Task<ApiResponse<string>> BookingStatus(int id)
+        {
+            var booking = await _context.Bookings
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (booking == null)
+            {
+                return new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Booking not found"
+                };
+            }
+
+            booking.BookingStatus =
+                booking.BookingStatus == "Pending"
+                ? "Confirmed"
+                : "Pending";
+
+            await _context.SaveChangesAsync();
+
+            return new ApiResponse<string>
+            {
+                Success = true,
+                Message = "Booking status updated successfully"
+            };
+        }
+
+
+        public async Task<ApiResponse<string>> PaymentStatus(int id)
+        {
+            var payment = await _context.Bookings
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (payment == null)
+            {
+                return new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Payment not found"
+                };
+            }
+
+            payment.PaymentStatus =
+                payment.PaymentStatus == "Pending"
+                ? "Paid"
+                : "Pending";
+
+            await _context.SaveChangesAsync();
+
+            return new ApiResponse<string>
+            {
+                Success = true,
+                Message = "Payment status updated successfully"
+            };
+        }
+
+
+
+
+
 
         public async Task<List<Booking>> GetByUser(int userId)
         {
