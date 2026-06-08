@@ -4,15 +4,23 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebProjectAPI.Models
 {
-    public class AuditLog
+        public abstract class AuditLog : BaseEntity
     {
-        public int Id { get; set; }
-        public int UserId { get; set; }
-        public string Action {get;set;}
-        public string TableName { get; set;}
-        public string OldValue { get;set; }
-        public string NewValue {  get;set; }
-        public DateTime? CreatedAt { get; set; } 
+        public Guid TenantId { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public Guid? CreatedBy { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
+        public Guid? UpdatedBy { get; set; }
+
+        public bool IsDeleted { get; set; }
+
+        public DateTime? DeletedAt { get; set; }
+
+        public Guid? DeletedBy { get; set; }
 
 
     }

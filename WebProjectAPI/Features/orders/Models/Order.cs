@@ -1,6 +1,8 @@
-﻿namespace WebProjectAPI.Features.orders.Models
+﻿using WebProjectAPI.Models;
+
+namespace WebProjectAPI.Features.orders.Models
 {
-    public class Order
+    public class Order : TenantEntity
     {
         public int Id { get; set; }
 

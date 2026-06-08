@@ -1,10 +1,11 @@
 ﻿using WebProjectAPI.Features.products.Models;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.product_images.Models
 {
    
-        public class ProductImage
-        {
+        public class ProductImage : TenantEntity
+    {
             public int Id { get; set; }
 
             public int ProductId { get; set; }

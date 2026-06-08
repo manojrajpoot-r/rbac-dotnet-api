@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 using WebProjectAPI.Data;
+using WebProjectAPI.Data.Services;
 using WebProjectAPI.Features.booking.Interfaces;
 using WebProjectAPI.Features.booking.Mappings;
 using WebProjectAPI.Features.booking.Repositories;
@@ -65,6 +66,10 @@ builder.Services.AddControllers()
 });
 
 
+// 🔹 Access HttpContext in services
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ICurrentTenantService, CurrentTenantService>();
 // 🔹 Database
 builder.Services.AddDbContext<AppDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

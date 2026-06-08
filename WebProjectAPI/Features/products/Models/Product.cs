@@ -2,10 +2,11 @@
 using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.product_images.Models;
 using WebProjectAPI.Features.sub_categories.Models;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.products.Models
 {
-    public class Product
+    public class Product : TenantEntity
     {
         public int Id { get; set; }
 

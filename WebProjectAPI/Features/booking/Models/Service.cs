@@ -1,6 +1,8 @@
-﻿namespace WebProjectAPI.Features.booking.Models
+﻿using WebProjectAPI.Models;
+
+namespace WebProjectAPI.Features.booking.Models
 {
-    public class Service
+    public class Service : TenantEntity
     {
         public int Id { get; set; }
 

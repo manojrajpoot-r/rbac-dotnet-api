@@ -1,6 +1,8 @@
-﻿namespace WebProjectAPI.Features.colors.Models
+﻿using WebProjectAPI.Models;
+
+namespace WebProjectAPI.Features.colors.Models
 {
-    public class Color
+    public class Color : TenantEntity
     {
         public int Id { get; set; }
 

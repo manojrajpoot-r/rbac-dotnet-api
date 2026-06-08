@@ -1,8 +1,9 @@
 ﻿using WebProjectAPI.Features.products.Models;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.brands.Models
 {
-    public class Brand
+    public class Brand : TenantEntity
     {
         public int Id { get; set; }
 

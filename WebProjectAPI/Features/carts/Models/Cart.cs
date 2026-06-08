@@ -1,8 +1,9 @@
 ﻿using WebProjectAPI.Features.products.Models;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.carts.Models
 {
-    public class Cart
+    public class Cart : TenantEntity
     {
         public int Id { get; set; }
 

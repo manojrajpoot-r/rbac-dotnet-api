@@ -2,7 +2,7 @@
 
 namespace WebProjectAPI.Features.booking.Models
 {
-    public class Booking
+    public class Booking : TenantEntity
     {
         public int Id { get; set; }
 

@@ -1,8 +1,9 @@
 ﻿using WebProjectAPI.Features.products.Models;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.wishlistItem.Models
 {
-    public class Wishlist
+    public class Wishlist : TenantEntity
     {
         public int Id { get; set; }
 

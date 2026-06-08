@@ -1,8 +1,9 @@
 ﻿using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.products.Models;
+using WebProjectAPI.Models;
 namespace WebProjectAPI.Features.sub_categories.Models
 {
-    public class SubCategory
+    public class SubCategory : TenantEntity
     {
         public int Id { get; set; }
 

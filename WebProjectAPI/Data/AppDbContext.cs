@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Data.Services;
 using WebProjectAPI.Features.booking.Models;
 using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.carts.Models;
@@ -12,100 +13,82 @@ using WebProjectAPI.Features.sizes.Models;
 using WebProjectAPI.Features.sub_categories.Models;
 using WebProjectAPI.Features.wishlistItem.Models;
 using WebProjectAPI.Models;
+
 namespace WebProjectAPI.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> option) : base(option) { }
+        private readonly ICurrentTenantService _tenantService;
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Role> Roles { get; set; }
-        public DbSet<Permission> Permissions { get; set; }
-        public DbSet<RolePermission> RolePermissions { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
-
-        public DbSet<RefreshToken> RefreshTokens { get; set; }
-
-        public DbSet<Category> Categories { get; set; }
-        public DbSet<SubCategory> SubCategories { get; set; }
-        public DbSet<Product> Products { get; set; }
-        public DbSet<Brand> Brands { get; set; }
-        public DbSet<ProductImage> ProductImages { get; set; }
-
-        public DbSet<Cart> Carts { get; set; }
-
-        public DbSet<Wishlist> Wishlists { get; set; }
-        public DbSet<Order> Orders { get; set; }
-        public DbSet<OrderItem> OrderItems { get; set; }
-        public DbSet<Color> Colors { get; set; }
-        public DbSet<Size> Sizes { get; set; }
-        public DbSet<ProductVariant> ProductVariants { get; set; }
-        public DbSet<Service> Services { get; set; }
-        public DbSet<Booking> Bookings { get; set; }
-        public DbSet<BookingServiceItem> BookingServiceItems { get; set; }
-
-
-
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public AppDbContext(
+            DbContextOptions<AppDbContext> options,
+            ICurrentTenantService tenantService)
+            : base(options)
         {
-            // UserRoles (Composite Key)
-            modelBuilder.Entity<UserRole>()
-                .HasKey(ur => new { ur.UserId, ur.RoleId });
+            _tenantService = tenantService;
+        }
 
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.User)
-                .WithMany(u => u.UserRoles)
-                .HasForeignKey(ur => ur.UserId);
+        // Shared
+        public DbSet<PlatformUser> PlatformUsers => Set<PlatformUser>();
+        public DbSet<Tenant> Tenants => Set<Tenant>();
+        public DbSet<Permission> Permissions => Set<Permission>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
-            modelBuilder.Entity<UserRole>()
-                .HasOne(ur => ur.Role)
-                .WithMany(r => r.UserRoles)
-                .HasForeignKey(ur => ur.RoleId);
-            // Composite Key
-            modelBuilder.Entity<RolePermission>()
-                .HasKey(rp => new { rp.RoleId, rp.PermissionId });
+        // Identity
+        public DbSet<User> Users => Set<User>();
+        public DbSet<Role> Roles => Set<Role>();
+        public DbSet<UserRole> UserRoles => Set<UserRole>();
+        public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
 
-            // Role → RolePermission
-            modelBuilder.Entity<RolePermission>()
-                .HasOne(rp => rp.Role)
-                .WithMany(r => r.RolePermissions)
-                .HasForeignKey(rp => rp.RoleId);
+        // Ecommerce
+        public DbSet<Category> Categories => Set<Category>();
+        public DbSet<SubCategory> SubCategories => Set<SubCategory>();
+        public DbSet<Product> Products => Set<Product>();
+        public DbSet<Brand> Brands => Set<Brand>();
+        public DbSet<ProductImage> ProductImages => Set<ProductImage>();
 
-            // Permission → RolePermission
-            modelBuilder.Entity<RolePermission>()
-                .HasOne(rp => rp.Permission)
-                .WithMany(p => p.RolePermissions)
-                .HasForeignKey(rp => rp.PermissionId);
+        public DbSet<Cart> Carts => Set<Cart>();
+        public DbSet<Wishlist> Wishlists => Set<Wishlist>();
 
-            base.OnModelCreating(modelBuilder);
+        public DbSet<Order> Orders => Set<Order>();
+        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
+        public DbSet<Color> Colors => Set<Color>();
+        public DbSet<Size> Sizes => Set<Size>();
+        public DbSet<ProductVariant> ProductVariants => Set<ProductVariant>();
+
+        // Beauty Parlour
+        public DbSet<Service> Services => Set<Service>();
+        public DbSet<Booking> Bookings => Set<Booking>();
+        public DbSet<BookingServiceItem> BookingServiceItems => Set<BookingServiceItem>();
 
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
 
-            modelBuilder.Entity<Product>()
-        .HasOne(p => p.Brand)
-        .WithMany(b => b.Products)
-        .HasForeignKey(p => p.BrandId)
-        .OnDelete(DeleteBehavior.NoAction);
+            // Automatically load all IEntityTypeConfiguration classes
+            builder.ApplyConfigurationsFromAssembly(
+                typeof(AppDbContext).Assembly);
 
-            modelBuilder.Entity<Product>()
-     .HasOne(p => p.SubCategory)
-     .WithMany(sc => sc.Products)
-     .HasForeignKey(p => p.SubCategoryId)
-     .OnDelete(DeleteBehavior.NoAction);
+            ApplyGlobalFilters(builder);
+        }
 
-            modelBuilder.Entity<Product>()
-                .HasOne(p => p.Category)
-                .WithMany()
-                .HasForeignKey(p => p.CategoryId)
-                .OnDelete(DeleteBehavior.NoAction);
+        private void ApplyGlobalFilters(ModelBuilder builder)
+        {
+            builder.Entity<User>()
+                .HasQueryFilter(x =>
+                    !x.IsDeleted &&
+                    (_tenantService.TenantId == null ||
+                     x.TenantId == _tenantService.TenantId));
 
-               modelBuilder.Entity<ProductImage>()
-                .HasOne(pi => pi.Product)
-                .WithMany(p => p.ProductImages)
-                .HasForeignKey(pi => pi.ProductId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Role>()
+                .HasQueryFilter(x =>
+                    !x.IsDeleted &&
+                    (_tenantService.TenantId == null ||
+                     x.TenantId == _tenantService.TenantId));
 
+            
         }
     }
 }

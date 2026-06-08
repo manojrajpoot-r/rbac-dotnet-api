@@ -1,9 +1,11 @@
 ﻿namespace WebProjectAPI.Features.product_variant.Models
 {
     using WebProjectAPI.Features.colors.Models;
-    using WebProjectAPI.Features.sizes.Models;
     using WebProjectAPI.Features.products.Models;
-    public class ProductVariant
+    using WebProjectAPI.Features.sizes.Models;
+    using WebProjectAPI.Models;
+
+    public class ProductVariant : TenantEntity
     {
         public int Id { get; set; }
 

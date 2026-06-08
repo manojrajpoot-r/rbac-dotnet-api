@@ -1,6 +1,6 @@
 ﻿namespace WebProjectAPI.Models
 {
-    public class RefreshToken
+    public class RefreshToken: TenantEntity
     {
         public int Id { get; set; }
         public int UserId { get; set; }

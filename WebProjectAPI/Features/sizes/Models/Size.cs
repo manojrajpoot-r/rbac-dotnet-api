@@ -1,6 +1,8 @@
-﻿namespace WebProjectAPI.Features.sizes.Models
+﻿using WebProjectAPI.Models;
+
+namespace WebProjectAPI.Features.sizes.Models
 {
-    public class Size
+    public class Size : TenantEntity
     {
         public int Id { get; set; }
 
