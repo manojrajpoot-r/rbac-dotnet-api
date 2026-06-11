@@ -5,7 +5,7 @@ namespace WebProjectAPI.Features.wishlistItem.Models
 {
     public class Wishlist : TenantEntity
     {
-        public int Id { get; set; }
+        
 
         public int UserId { get; set; }
 

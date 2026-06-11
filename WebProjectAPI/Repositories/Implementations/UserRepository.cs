@@ -22,7 +22,7 @@ namespace WebProjectAPI.Repositories.Implementations
             //  search
             if (!string.IsNullOrEmpty(search))
             {
-                query = query.Where(x => x.Name.Contains(search) || x.Email.Contains(search));
+                query = query.Where(x => x.FullName.Contains(search) || x.Email.Contains(search));
             }
 
             // 📊 total count
@@ -53,7 +53,7 @@ namespace WebProjectAPI.Repositories.Implementations
             var existing = _context.Users.Find(user.Id);
             if (existing == null) return null;
 
-            existing.Name = user.Name ?? existing.Name;
+            existing.FullName = user.FullName ?? existing.FullName;
           
 
             _context.SaveChanges();

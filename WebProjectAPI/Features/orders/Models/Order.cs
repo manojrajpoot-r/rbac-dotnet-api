@@ -4,7 +4,7 @@ namespace WebProjectAPI.Features.orders.Models
 {
     public class Order : TenantEntity
     {
-        public int Id { get; set; }
+       
 
         public int UserId { get; set; }
         public string OrderNumber { get; set; }
@@ -40,5 +40,8 @@ namespace WebProjectAPI.Features.orders.Models
         public string ZipCode { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public ICollection<OrderItem> OrderItems { get; set; }
+      = new List<OrderItem>();
     }
 }

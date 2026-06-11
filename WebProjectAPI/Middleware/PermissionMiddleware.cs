@@ -17,50 +17,66 @@ namespace WebProjectAPI.Middleware
             var endpoint = context.GetEndpoint();
             var permissionAttr = endpoint?.Metadata.GetMetadata<PermissionAttribute>();
 
-            if (permissionAttr != null)
+            if (permissionAttr == null)
             {
-                var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                await _next(context);
+                return;
+            }
 
-                if (userId == null)
-                {
-                    context.Response.StatusCode = 401;
-                    return;
-                }
+            var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                var roles = db.UserRoles
-                    .Where(ur => ur.UserId == int.Parse(userId))
-                    .Select(ur => ur.Role.Name)
-                    .ToList();
+            if (userId == null)
+            {
+                context.Response.StatusCode = 401;
+                return;
+            }
 
-                // 🔥 ADMIN BYPASS
-                if (roles.Any(r =>r.Equals("Admin",StringComparison.OrdinalIgnoreCase)))
-                {
-                    await _next(context);
-                    return;
-                }
+            var userIdInt = int.Parse(userId);
 
-                var hasPermission = db.UserRoles
-                    .Where(ur => ur.UserId == int.Parse(userId))
-                    .Join(db.RolePermissions,
-                        ur => ur.RoleId,
-                        rp => rp.RoleId,
-                        (ur, rp) => rp.PermissionId)
-                    .Join(db.Permissions,
-                        rp => rp,
-                        p => p.Id,
-                        (rp, p) => p.Name)
-                    .Any(p => p == permissionAttr.Name);
+            var roles = db.UserRoles
+                .Where(ur => ur.UserId == userIdInt)
+                .Select(ur => ur.Role.Name)
+                .ToList();
 
-                if (!hasPermission)
-                {
-                    context.Response.StatusCode = 403;
-                    await context.Response.WriteAsync("Forbidden");
-                    return;
-                }
+            // Admin bypass
+            //if (roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase)))
+            //{
+            //    await _next(context);
+            //    return;
+            //}
+
+
+
+       
+
+            // SuperAdmin bypass
+            if (context.User.IsInRole("SuperAdmin"))
+            {
+                await _next(context);
+                return;
+            }
+
+
+            var hasPermission = db.UserRoles
+                .Where(ur => ur.UserId == userIdInt)
+                .Join(db.RolePermissions,
+                    ur => ur.RoleId,
+                    rp => rp.RoleId,
+                    (ur, rp) => rp.PermissionId)
+                .Join(db.Permissions,
+                    rp => rp,
+                    p => p.Id,
+                    (rp, p) => p.Name)
+                .Any(p => p == permissionAttr.Name);
+
+            if (!hasPermission)
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync("Forbidden");
+                return;
             }
 
             await _next(context);
         }
-
     }
 }

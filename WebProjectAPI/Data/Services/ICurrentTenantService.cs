@@ -2,6 +2,9 @@
 {
     public interface ICurrentTenantService
     {
-        Guid? TenantId { get; }
+        
+        int? UserId { get; }
+        int? TenantId { get; }
+        string? Email { get; }
     }
 }

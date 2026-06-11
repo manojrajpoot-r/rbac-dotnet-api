@@ -8,7 +8,6 @@ namespace WebProjectAPI.Features.products.Models
 {
     public class Product : TenantEntity
     {
-        public int Id { get; set; }
 
         public int CategoryId { get; set; }
 

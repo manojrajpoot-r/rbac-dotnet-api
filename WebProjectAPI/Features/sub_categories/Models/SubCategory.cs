@@ -5,7 +5,7 @@ namespace WebProjectAPI.Features.sub_categories.Models
 {
     public class SubCategory : TenantEntity
     {
-        public int Id { get; set; }
+       
 
         public int CategoryId { get; set; }
 

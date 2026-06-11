@@ -42,7 +42,7 @@
         {
             var user = _mapper.Map<User>(dto);
 
-            user.Password = _hasher.HashPassword(user, dto.Password);
+            user.PasswordHash = _hasher.HashPassword(user, dto.Password);
 
             var result = _repo.Add(user);
 

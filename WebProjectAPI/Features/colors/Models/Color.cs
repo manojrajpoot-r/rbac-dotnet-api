@@ -4,7 +4,7 @@ namespace WebProjectAPI.Features.colors.Models
 {
     public class Color : TenantEntity
     {
-        public int Id { get; set; }
+   
 
         public string Name { get; set; }
 

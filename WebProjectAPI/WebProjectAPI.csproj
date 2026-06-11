@@ -8,6 +8,7 @@
 
 <ItemGroup>
   <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+  <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
 
   <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
 
@@ -41,6 +42,7 @@
     <Folder Include="Features\order_items\" />
     <Folder Include="Features\product_variant_values\" />
     <Folder Include="Features\product_variants\" />
+    <Folder Include="Features\Tenants\Models\" />
     <Folder Include="Features\wishlistItem\Interfaces\" />
     <Folder Include="Features\wishlistItem\Services\" />
     <Folder Include="Features\wishlistItem\Repositories\" />

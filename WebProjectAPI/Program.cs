@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -46,10 +47,13 @@ using WebProjectAPI.Features.sub_categories.Interfaces;
 using WebProjectAPI.Features.sub_categories.Mappings;
 using WebProjectAPI.Features.sub_categories.Repositories;
 using WebProjectAPI.Features.sub_categories.Services;
+using WebProjectAPI.Features.Tenants.Interfaces;
+using WebProjectAPI.Features.Tenants.Repositories;
+using WebProjectAPI.Features.Tenants.Services;
 using WebProjectAPI.Middleware;
+using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Implementations;
 using WebProjectAPI.Repositories.Interfaces;
-using WebProjectAPI.Services;
 using WebProjectAPI.Services.Implementations;
 using WebProjectAPI.Services.Interfaces;
 
@@ -69,7 +73,6 @@ builder.Services.AddControllers()
 // 🔹 Access HttpContext in services
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped<ICurrentTenantService, CurrentTenantService>();
 // 🔹 Database
 builder.Services.AddDbContext<AppDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -78,6 +81,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers();
 
 // 🔹 Dependency Injection
+
+builder.Services.AddScoped<ITenantService, TenantService>();
+builder.Services.AddScoped<ICurrentTenantService, CurrentTenantService>();
+
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<IPasswordHasher<PlatformUser>, PasswordHasher<PlatformUser>>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -109,6 +118,8 @@ builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IBookingService, BookingService>();
 builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
+
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 //Add Services
 builder.Services.AddScoped<IJwtService, JwtService>();
 
@@ -197,16 +208,35 @@ builder.Services.AddAuthentication(options =>
 	};
 });
 
+
+
+
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 //Image show
 app.UseStaticFiles();
 //fronted add
 app.UseCors("AllowAll");
 
+//Seeder for super admin
 
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+Console.WriteLine("=== PROGRAM STARTED ===");
+
+using (var scope = app.Services.CreateScope())
+{
+    Console.WriteLine("=== CALLING SEEDER ===");
+
+    var services = scope.ServiceProvider;
+
+    await SuperAdminSeeder.Seed(services);
+}
+
+
+
 
 
 //Swagger
@@ -218,7 +248,7 @@ if (app.Environment.IsDevelopment())
 }
 // 🔹 Middleware
 app.UseHttpsRedirection();
-
+app.UseMiddleware<TenantResolutionMiddleware>();
 app.UseRouting();
 
 // 🔐 Authentication FIRST
@@ -233,5 +263,8 @@ app.UseMiddleware<PermissionMiddleware>();
 // 🔐 Then Authorization
 app.UseAuthorization();
 app.MapControllers();
+
+
+
 
 app.Run();

@@ -4,7 +4,7 @@ namespace WebProjectAPI.Features.booking.Models
 {
     public class Service : TenantEntity
     {
-        public int Id { get; set; }
+    
 
         public string ServiceName { get; set; }
 

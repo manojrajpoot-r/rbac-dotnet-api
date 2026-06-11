@@ -1,13 +1,16 @@
 ﻿namespace WebProjectAPI.Attributes
 {
-    [AttributeUsage(AttributeTargets.Method)]
-    public class PermissionAttribute : Attribute
-    {
-        public string Name { get; }
-
-        public PermissionAttribute(string name)
+   
+  
+        [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
+        public class PermissionAttribute : Attribute
         {
-            Name = name;
+            public string Name { get; }
+
+            public PermissionAttribute(string name)
+            {
+                Name = name;
+            }
         }
-    }
+    
 }

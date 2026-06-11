@@ -7,7 +7,7 @@
 
     public class ProductVariant : TenantEntity
     {
-        public int Id { get; set; }
+      
 
         public int ProductId { get; set; }
 

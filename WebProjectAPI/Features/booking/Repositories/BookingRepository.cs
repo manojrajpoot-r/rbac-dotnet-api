@@ -107,7 +107,7 @@ namespace WebProjectAPI.Features.booking.Repositories
 
             booking.Address = model.Address;
 
-            booking.UpdatedAt = DateTime.Now;
+          
 
             // REMOVE OLD SERVICES
             _context.BookingServiceItems.RemoveRange(
@@ -170,7 +170,7 @@ namespace WebProjectAPI.Features.booking.Repositories
                 };
             }
 
-            booking.IsActive = !booking.IsActive;
+           
 
             await _context.SaveChangesAsync();
 

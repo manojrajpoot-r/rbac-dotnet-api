@@ -5,7 +5,7 @@ namespace WebProjectAPI.Features.Categories.Models
 {
     public class Category : TenantEntity
     {
-        public int Id { get; set; }
+        
 
         public string Name { get; set; } = string.Empty;
 

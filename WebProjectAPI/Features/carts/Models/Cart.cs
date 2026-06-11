@@ -5,7 +5,7 @@ namespace WebProjectAPI.Features.carts.Models
 {
     public class Cart : TenantEntity
     {
-        public int Id { get; set; }
+      
 
         public int UserId { get; set; }
 

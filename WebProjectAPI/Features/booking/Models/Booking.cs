@@ -4,46 +4,31 @@ namespace WebProjectAPI.Features.booking.Models
 {
     public class Booking : TenantEntity
     {
-        public int Id { get; set; }
-
         public int UserId { get; set; }
 
-        public User User { get; set; }
+        public User User { get; set; } = null!;
 
         public DateTime BookingDate { get; set; }
 
         // TIME SLOT
-        public string BookingTime { get; set; }
+        public string BookingTime { get; set; } = string.Empty;
 
         // TOTAL
         public decimal TotalAmount { get; set; }
 
-        // BOOKING STATUS
-        public string BookingStatus { get; set; }
-        // Pending / Confirmed / Completed / Cancelled
+        // STATUS
+        public string BookingStatus { get; set; } = "Pending";
 
-        // PAYMENT
-        public string PaymentStatus { get; set; }
-        // Pending / Paid
+        public string PaymentStatus { get; set; } = "Pending";
 
-        public string PaymentMethod { get; set; }
-        // Cash / UPI / Card
+        public string PaymentMethod { get; set; } = string.Empty;
 
-        // EXTRA
         public string? Notes { get; set; }
 
         public string? Address { get; set; }
 
-        // ACTIVE
-        public bool IsActive { get; set; } = true;
-
-        public bool IsDeleted { get; set; } = false;
-
-        public DateTime CreatedAt { get; set; }
-            = DateTime.Now;
-
-        public DateTime? UpdatedAt { get; set; }
-
+        // NAVIGATION
         public List<BookingServiceItem> BookingServiceItems { get; set; }
+            = new List<BookingServiceItem>();
     }
 }

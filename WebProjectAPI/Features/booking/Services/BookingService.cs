@@ -32,7 +32,7 @@ namespace WebProjectAPI.Features.booking.Services
             {
                 Id = x.Id,
                 UserId = x.UserId,
-                UserName = x.User?.Name,
+                UserName = x.User?.FullName,
                 BookingStatus = x.BookingStatus,
                 PaymentStatus = x.PaymentStatus,
                 PaymentMethod = x.PaymentMethod,
@@ -41,8 +41,7 @@ namespace WebProjectAPI.Features.booking.Services
                 BookingTime = x.BookingTime,
                 Address = x.Address,
                 Notes = x.Notes,
-                IsActive = x.IsActive,
-
+              
                 Services = x.BookingServiceItems?
                     .Select(s => new BookingServiceItemDto
                     {
@@ -83,7 +82,7 @@ namespace WebProjectAPI.Features.booking.Services
                 {
                     Id = data.Id,
                     UserId = data.UserId,
-                    UserName = data.User?.Name, 
+                    UserName = data.User?.FullName, 
                     BookingDate = data.BookingDate.ToString("yyyy-MM-dd"),
                     BookingTime = data.BookingTime,
                     TotalAmount = data.TotalAmount,
@@ -123,9 +122,7 @@ namespace WebProjectAPI.Features.booking.Services
                 PaymentMethod = model.PaymentMethod,
                 Notes = model.Notes,
                 Address = model.Address,
-                IsActive = true,
-                IsDeleted = false,
-                CreatedAt = DateTime.Now,
+             
 
                 BookingServiceItems = services.Select(x => new BookingServiceItem
                 {
@@ -198,8 +195,7 @@ namespace WebProjectAPI.Features.booking.Services
 
             bookingData.Address = model.Address;
 
-            bookingData.UpdatedAt = DateTime.Now;
-
+           
             // REMOVE OLD SERVICES
             _context.BookingServiceItems.RemoveRange(
       bookingData.BookingServiceItems);
@@ -264,7 +260,7 @@ namespace WebProjectAPI.Features.booking.Services
             {
                 Id = x.Id,
                 UserId = x.UserId,
-                UserName = x.User?.Name,
+                UserName = x.User?.FullName,
                 BookingStatus = x.BookingStatus,
                 PaymentStatus = x.PaymentStatus,
                 PaymentMethod = x.PaymentMethod,

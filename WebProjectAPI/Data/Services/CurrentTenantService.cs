@@ -1,33 +1,36 @@
-﻿
-namespace WebProjectAPI.Data.Services
+﻿namespace WebProjectAPI.Data.Services
 {
     public class CurrentTenantService : ICurrentTenantService
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CurrentTenantService(IHttpContextAccessor httpContextAccessor)
+        public CurrentTenantService(
+            IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Guid? TenantId
-        {
-            get
-            {
-                var value = _httpContextAccessor.HttpContext?
-                    .Request.Headers["X-Tenant-Id"]
-                    .FirstOrDefault();
+        public int? UserId =>
+            int.TryParse(
+                _httpContextAccessor.HttpContext?
+                    .User?
+                    .FindFirst("userId")?.Value,
+                out var id)
+                    ? id
+                    : null;
 
-                if (Guid.TryParse(value, out var tenantId))
-                {
-                    return tenantId;
-                }
+        public int? TenantId =>
+            int.TryParse(
+                _httpContextAccessor.HttpContext?
+                    .User?
+                    .FindFirst("tenantId")?.Value,
+                out var id)
+                    ? id
+                    : null;
 
-                return null;
-            }
-        }
-
-
+        public string? Email =>
+            _httpContextAccessor.HttpContext?
+                .User?
+                .FindFirst("email")?.Value;
     }
-
 }

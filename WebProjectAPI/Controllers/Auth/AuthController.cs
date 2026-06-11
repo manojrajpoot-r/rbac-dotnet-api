@@ -29,21 +29,19 @@ namespace WebProjectAPI.Controllers.Auth
             _jwtService = jwtService;
         }
 
-        // 🔐 REGISTER
         [HttpPost("register")]
         public async Task<IActionResult> Register(UserRegisterRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    success = false,
-                    message = "Validation failed",
-                    errors = ModelState
-                });
+                return BadRequest(ModelState);
             }
 
-            var exists = _context.Users.Any(x => x.Email == request.Email);
+            var exists = await _context.Users
+                .AnyAsync(x =>
+                    x.Email == request.Email &&
+                    x.TenantId == request.TenantId);
+
             if (exists)
             {
                 return BadRequest(new
@@ -55,27 +53,32 @@ namespace WebProjectAPI.Controllers.Auth
 
             var user = new User
             {
-                Name = request.Name,
+                FullName = request.Name,
                 Email = request.Email,
-
+                TenantId = request.TenantId
             };
 
-            user.Password = _passwordHasher.HashPassword(user, request.Password);
+            user.PasswordHash =
+                _passwordHasher.HashPassword(user, request.Password);
 
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
-            // CUSTOMER ROLE
+            var customerRole = await _context.Roles
+                .FirstOrDefaultAsync(x =>
+                    x.Name == "Customer" &&
+                    x.TenantId == request.TenantId);
 
-            var userRole = new UserRole
+            if (customerRole != null)
             {
-                UserId = user.Id,
-                RoleId = 3
-            };
+                await _context.UserRoles.AddAsync(new UserRole
+                {
+                    UserId = user.Id,
+                    RoleId = customerRole.Id
+                });
 
-            _context.UserRoles.Add(userRole);
-
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
+            }
 
             return Ok(new
             {
@@ -84,73 +87,125 @@ namespace WebProjectAPI.Controllers.Auth
                 data = new
                 {
                     user.Id,
-                    user.Name,
+                    user.FullName,
                     user.Email,
-
+                    user.TenantId
                 }
             });
         }
-
         // 🔐 LOGIN
+
+
         [HttpPost("login")]
         public IActionResult Login(UserLoginRequest request)
         {
-            if (string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Password))
+            if (request.IsPlatformUser)
             {
-                return BadRequest(new LoginResponse
+                var admin = _context.PlatformUsers
+                    .FirstOrDefault(x => x.Email == request.Email);
+
+                if (admin == null)
                 {
-                    Success = false,
-                    Message = "Email and Password are required"
+                    return Unauthorized(new
+                    {
+                        success = false,
+                        message = "Super admin not found"
+                    });
+                }
+
+                var verify = _passwordHasher.VerifyHashedPassword(
+                    null,
+                    admin.PasswordHash,
+                    request.Password);
+
+                if (verify == PasswordVerificationResult.Failed)
+                {
+                    return Unauthorized(new
+                    {
+                        success = false,
+                        message = "Invalid password"
+                    });
+                }
+
+                var roles = new List<string>
+                {
+                    "SuperAdmin"
+                };
+
+                var permissions = _context.Permissions
+                    .Select(x => x.Name)
+                    .ToList();
+
+                var jwt = _jwtService.GenerateJwt(
+                    admin.Id,
+                    admin.Email,
+                    null,
+                    roles,
+                    permissions);
+
+                return Ok(new
+                {
+                    success = true,
+                    data = new
+                    {
+                        accessToken = jwt.Token,
+                        expiresAt = jwt.Expiry
+                    }
                 });
             }
 
-            var user = _context.Users.FirstOrDefault(x => x.Email == request.Email);
+            var user = _context.Users
+                .FirstOrDefault(x => x.Email == request.Email);
 
             if (user == null)
             {
-                return Unauthorized(new LoginResponse
+                return Unauthorized(new
                 {
-                    Success = false,
-                    Message = "User not found"
+                    success = false,
+                    message = "User not found"
                 });
             }
 
-            var result = _passwordHasher.VerifyHashedPassword(user, user.Password, request.Password);
+            var result = _passwordHasher.VerifyHashedPassword(
+                user,
+                user.PasswordHash,
+                request.Password);
 
             if (result == PasswordVerificationResult.Failed)
             {
-                return Unauthorized(new LoginResponse
+                return Unauthorized(new
                 {
-                    Success = false,
-                    Message = "Invalid password"
+                    success = false,
+                    message = "Invalid password"
                 });
             }
 
-            //  JWT generate
-            var jwt = _jwtService.GenerateJwt(user.Id, user.Email);
+            var rolesList = _context.UserRoles
+                .Where(x => x.UserId == user.Id)
+                .Select(x => x.Role.Name)
+                .Distinct()
+                .ToList();
 
-            //  Role fetch
-            var roles = _context.UserRoles
-                     .Where(ur => ur.UserId == user.Id)
-                     .Select(ur => ur.Role.Name)
-                     .Distinct()
-                     .ToList();
-
-            //  Permission fetch
-            var permissions = _context.UserRoles
+            var permissionsList = _context.UserRoles
                 .Where(ur => ur.UserId == user.Id)
                 .Join(_context.RolePermissions,
                     ur => ur.RoleId,
                     rp => rp.RoleId,
                     (ur, rp) => rp.PermissionId)
                 .Join(_context.Permissions,
-                    rp => rp,
+                    id => id,
                     p => p.Id,
-                    (rp, p) => p.Name)
+                    (id, p) => p.Name)
                 .Distinct()
                 .ToList();
 
-            //  Refresh token
+            var token = _jwtService.GenerateJwt(
+                user.Id,
+                user.Email,
+                user.TenantId,
+                rolesList,
+                permissionsList);
+
             var refreshToken = new RefreshToken
             {
                 UserId = user.Id,
@@ -163,30 +218,27 @@ namespace WebProjectAPI.Controllers.Auth
 
             _context.SaveChanges();
 
-            var expiresIn = (int)(jwt.Expiry - DateTime.UtcNow).TotalSeconds;
-
-            return Ok(new LoginResponse
+            return Ok(new
             {
-                Success = true,
-                Message = "Login Successfully!",
-                Data = new
+                success = true,
+                message = "Login Successfully",
+                data = new
                 {
-                    accessToken = jwt.Token,
+                    accessToken = token.Token,
                     refreshToken = refreshToken.Token,
-                    expiresIn = expiresIn,
-
+                    expiresAt = token.Expiry,
                     user = new
                     {
-                        id = user.Id,
-                        name=user.Name,
-                        email = user.Email,
-                        roles = roles,
-                        permissions = permissions
+                        user.Id,
+                        user.FullName,
+                        user.Email,
+                        user.TenantId,
+                        roles = rolesList,
+                        permissions = permissionsList
                     }
                 }
             });
         }
-
 
         [HttpPost("refresh")]
         public IActionResult Refresh(string refreshToken)
@@ -214,7 +266,7 @@ namespace WebProjectAPI.Controllers.Auth
             var user = _context.Users.FirstOrDefault(x => x.Id == token.UserId);
 
             // ✅ new JWT
-            var jwt = _jwtService.GenerateJwt(user.Id, user.Email);
+            var jwt = _jwtService.GenerateJwt(user.Id, user.Email, user.TenantId, new List<string>(), new List<string>());
 
             var expiresIn = (int)(jwt.Expiry - DateTime.UtcNow).TotalSeconds;
 
