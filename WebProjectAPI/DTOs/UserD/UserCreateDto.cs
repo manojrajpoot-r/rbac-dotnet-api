@@ -5,9 +5,10 @@
     public class UserCreateDto
     {
         [Required]
-        public string Name { get; set; }
+        public string FullName { get; set; }
 
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
         [Required]

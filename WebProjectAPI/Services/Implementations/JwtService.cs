@@ -33,10 +33,10 @@
                 SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-        new Claim(ClaimTypes.Email, email)
-    };
+            {
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(ClaimTypes.Email, email)
+            };
 
             if (tenantId.HasValue)
             {
@@ -53,7 +53,8 @@
                 claims.Add(new Claim("Permission", permission));
             }
 
-            var expiry = DateTime.UtcNow.AddMinutes(15);
+           
+            var expiry = DateTime.UtcNow.AddHours(12);
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
