@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
 
@@ -15,24 +16,24 @@ namespace WebProjectAPI.Repositories.Implementations
             _context = context;
         }
 
-        public List<User> GetAll(int pageNumber, int pageSize, string search, out int totalRecords)
+        public List<User> GetAll(PaginationRequest request)
         {
             var query = _context.Users.AsQueryable();
 
             //  search
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(request.Search))
             {
-                query = query.Where(x => x.FullName.Contains(search) || x.Email.Contains(search));
+                query = query.Where(x => x.FullName.Contains(request.Search) || x.Email.Contains(request.Search));
             }
 
             // 📊 total count
-            totalRecords = query.Count();
-
+          
+            int totalRecords = query.Count();
             // 📄 pagination
             return query
                 .OrderBy(x => x.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToList();
         }
 

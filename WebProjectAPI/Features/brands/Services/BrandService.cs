@@ -5,6 +5,7 @@ using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Models;
 using WebProjectAPI.Helpers;
@@ -28,14 +29,10 @@ namespace WebProjectAPI.Features.brands.Services
         }
 
         public async Task<ApiResponse<List<BrandDto>>> GetAllAsync(
-            int pageNumber,
-            int pageSize,
-            string search)
+           PaginationRequest request)
         {
             var result = await _repository.GetAllAsync(
-                pageNumber,
-                pageSize,
-                search);
+              request);
 
             var data = _mapper.Map<List<BrandDto>>(result.Brands);
 
@@ -44,8 +41,7 @@ namespace WebProjectAPI.Features.brands.Services
                 Success = true,
                 Data = data,
                 TotalRecords = result.TotalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize
+             
             };
         }
 

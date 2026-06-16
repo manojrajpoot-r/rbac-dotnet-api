@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sub_categories.Interfaces;
 using WebProjectAPI.Features.sub_categories.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebProjectAPI.Features.sub_categories.Repositories
 {
@@ -15,14 +17,24 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
             _context = context;
         }
 
-        public async Task<List<SubCategory>> GetAllAsync()
+        public async Task<List<SubCategory>> GetAllAsync(PaginationRequest request)
         {
+            var query = _context.SubCategories
+                .Include(x => x.Category)
+                .AsQueryable();
 
-            return await _context.SubCategories
-                    .Include(x => x.Category)
-                    .ToListAsync();
+            // Search
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(x => x.Name.Contains(request.Search));
+            }
+
+            return await query
+                .OrderBy(x => x.Id)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync();
         }
-
         public async Task<SubCategory?> GetByIdAsync(int id)
         {
             return await _context.SubCategories.FindAsync(id);

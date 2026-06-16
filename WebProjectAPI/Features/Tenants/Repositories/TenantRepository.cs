@@ -24,7 +24,6 @@ namespace WebProjectAPI.Features.Tenants.Repositories
         public async Task<ApiResponse<List<TenantDto>>> GetAll(PaginationRequest request)
         {
             var query = _context.Tenants
-                .Where(x => x.IsActive)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(request.Search))
@@ -240,8 +239,8 @@ namespace WebProjectAPI.Features.Tenants.Repositories
                 };
             }
 
-            
 
+            _context.Tenants.Remove(tenant);
             await _context.SaveChangesAsync();
 
             return new ApiResponse<string>

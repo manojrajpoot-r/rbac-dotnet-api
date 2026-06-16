@@ -47,10 +47,15 @@ namespace WebProjectAPI.Features.Tenants.Controllers
         }
 
         // ================= UPDATE =================
-        [HttpPut]
-        public async Task<IActionResult> Update([FromBody] UpdateTenantDto model)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(
+        int id,
+        [FromBody] UpdateTenantDto model)
         {
+            model.Id = id;
+
             var result = await _tenantService.Update(model);
+
             return Ok(result);
         }
 

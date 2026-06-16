@@ -4,6 +4,7 @@
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using WebProjectAPI.DTOs.UserD;
+    using WebProjectAPI.Features.Common.Paginations;
     using WebProjectAPI.Helpers;
     using WebProjectAPI.Models;
     using WebProjectAPI.Repositories.Interfaces;
@@ -22,19 +23,17 @@
             _hasher = new PasswordHasher<User>();
         }
 
-        public ApiResponse<List<User>> GetAll(int pageNumber, int pageSize, string search)
+        public ApiResponse<List<User>> GetAll(PaginationRequest request)
         {
-            int totalRecords;
+            
 
-            var data = _repo.GetAll(pageNumber, pageSize, search, out totalRecords);
+            var data = _repo.GetAll(request);
 
             return new ApiResponse<List<User>>
             {
                 Success = true,
                 Data = data,
-                TotalRecords = totalRecords,
-                PageNumber = pageNumber, // 🔥 ये important
-                PageSize = pageSize      // 🔥 ये important
+               
             };
         }
 

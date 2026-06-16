@@ -3,6 +3,7 @@ using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Categories.Interfaces;
 using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.Common.Helpers;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Helpers;
 using WebProjectAPI.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -22,15 +23,9 @@ namespace WebProjectAPI.Features.Categories.Services
         }
 
         public async Task<ApiResponse<List<CategoryDto>>> GetAllAsync(
-         int pageNumber,
-         int pageSize,
-         string search)
+        PaginationRequest request)
         {
-            var result = await _repository.GetAllAsync(
-                pageNumber,
-                pageSize,
-                search
-            );
+            var result = await _repository.GetAllAsync( request);
 
             var data =
                 _mapper.Map<List<CategoryDto>>(result.Data);
@@ -40,8 +35,6 @@ namespace WebProjectAPI.Features.Categories.Services
                 Success = true,
                 Data = data,
                 TotalRecords = result.TotalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize
             };
         }
 

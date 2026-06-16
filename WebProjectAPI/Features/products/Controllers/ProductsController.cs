@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.product_images.DTOs;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
@@ -22,13 +23,10 @@ namespace WebProjectAPI.Features.products.Controllers
             _context=context;
         }
         [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> GetAll(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string search = "")
+        [HttpPost("list")]
+        public async Task<IActionResult> GetAll(PaginationRequest request)
         {
-            var products = await _service.GetAllAsync(pageNumber, pageSize, search);
+            var products = await _service.GetAllAsync(request);
 
             return Ok(products);
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.brands.Models;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Models;
@@ -20,9 +21,7 @@ namespace WebProjectAPI.Features.products.Repositories
         }
 
     public async Task<(List<Product> Products, int TotalRecords)> GetAllAsync(
-     int pageNumber,
-     int pageSize,
-     string search)
+ PaginationRequest request)
         {
             var query = _context.Products
                 .Include(x => x.Category)
@@ -30,17 +29,17 @@ namespace WebProjectAPI.Features.products.Repositories
                 .Include(x => x.Brand)
                 .AsQueryable();
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(request.Search))
             {
-                query = query.Where(x => x.Name.Contains(search));
+                query = query.Where(x => x.Name.Contains(request.Search));
             }
 
             int totalRecords = await query.CountAsync();
 
             var products = await query
                 .OrderByDescending(x => x.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync();
 
             return (products, totalRecords);

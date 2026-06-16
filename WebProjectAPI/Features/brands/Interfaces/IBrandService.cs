@@ -1,5 +1,6 @@
 ﻿using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.Categories.DTOs;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Helpers;
 
 
@@ -7,7 +8,7 @@ namespace WebProjectAPI.Features.brands.Interfaces
 {
     public interface IBrandService
     {
-        Task<ApiResponse<List<BrandDto>>> GetAllAsync(int pageNumber, int pageSize, string search);
+        Task<ApiResponse<List<BrandDto>>> GetAllAsync(PaginationRequest request);
 
         Task<ApiResponse<BrandDto>> GetByIdAsync(int id);
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sub_categories.DTOs;
 using WebProjectAPI.Features.sub_categories.Interfaces;
 
@@ -16,10 +17,10 @@ namespace WebProjectAPI.Features.sub_categories.Controllers
             _service = service;
         }
         [Authorize]
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpPost("list")]
+        public async Task<IActionResult> GetAll(PaginationRequest request)
         {
-            var data = await _service.GetAllAsync();
+            var data = await _service.GetAllAsync(request);
           
             return Ok(data);
         }

@@ -1,4 +1,5 @@
 ﻿using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.Categories.Interfaces
@@ -6,7 +7,7 @@ namespace WebProjectAPI.Features.Categories.Interfaces
     public interface ICategoryRepository
     {
 
-        Task<(List<Category> Data, int TotalRecords)>GetAllAsync(int pageNumber,int pageSize, string search);
+        Task<(List<Category> Data, int TotalRecords)>GetAllAsync(PaginationRequest request);
         Task<Category?> GetByIdAsync(int id);
 
         Task<Category> CreateAsync(Category category);

@@ -1,8 +1,9 @@
-﻿using WebProjectAPI.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Security;
+using WebProjectAPI.Data;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.Security;
 
 namespace WebProjectAPI.Repositories.Implementations
 {
@@ -16,24 +17,24 @@ namespace WebProjectAPI.Repositories.Implementations
                 _context = context;
             }
 
-        public List<Permission> GetAll(int pageNumber, int pageSize, string search, out int totalRecords)
+        public List<Permission> GetAll(PaginationRequest request)
         {
             var query = _context.Permissions.AsQueryable();
 
             //  search
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(request.Search))
             {
-                query = query.Where(x => x.GroupName.Contains(search));
+                query = query.Where(x => x.GroupName.Contains(request.Search));
             }
 
             // 📊 total count
-            totalRecords = query.Count();
+            int totalRecords = query.Count();
 
             // 📄 pagination
             return query
                 .OrderBy(x => x.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToList();
         }
 

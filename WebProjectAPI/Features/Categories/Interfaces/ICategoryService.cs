@@ -1,4 +1,5 @@
 ﻿using WebProjectAPI.Features.Categories.DTOs;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Helpers;
 using WebProjectAPI.Models;
 
@@ -7,11 +8,7 @@ namespace WebProjectAPI.Features.Categories.Interfaces
     public interface ICategoryService
     {
 
-        Task<ApiResponse<List<CategoryDto>>> GetAllAsync(
-        int pageNumber,
-        int pageSize,
-        string search
-    );
+        Task<ApiResponse<List<CategoryDto>>> GetAllAsync(PaginationRequest request);
         Task<CategoryDto> CreateAsync(CreateCategoryDto dto);
         Task<CategoryDto> GetByIdAsync(int id);
 

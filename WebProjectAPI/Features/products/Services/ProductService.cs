@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Models;
@@ -26,14 +27,9 @@ namespace WebProjectAPI.Features.products.Services
         }
 
         public async Task<ApiResponse<List<ProductDto>>> GetAllAsync(
-            int pageNumber,
-            int pageSize,
-             string search)
+          PaginationRequest request)
         {
-            var result = await _repository.GetAllAsync(
-                pageNumber,
-                pageSize,
-                search);
+            var result = await _repository.GetAllAsync(request);
 
             var data = _mapper.Map<List<ProductDto>>(result.Products);
 
@@ -42,8 +38,7 @@ namespace WebProjectAPI.Features.products.Services
                 Success = true,
                 Data = data,
                 TotalRecords = result.TotalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize
+               
             };
         }
         public async Task<ApiResponse<ProductDto>> GetByIdAsync(int id)

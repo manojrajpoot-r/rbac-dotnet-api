@@ -1,10 +1,11 @@
-﻿using WebProjectAPI.Models;
+﻿using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Repositories.Interfaces
 {
     public interface IRoleRepository
     {
-        List<Role> GetAll(int pageNumber, int pageSize, string search, out int totalRecords);
+        List<Role> GetAll(PaginationRequest request);
         Role GetById(int id);
         Role Add(Role role);
         Role Update(Role role);

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebProjectAPI.Attributes;
 using WebProjectAPI.DTOs.PermissionDto;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Controllers.PermisssionC
@@ -20,10 +21,11 @@ namespace WebProjectAPI.Controllers.PermisssionC
 
         [Authorize]
         [Permission("view_permission")]
-        [HttpGet]
-        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, string search = "")
+
+        [HttpPost("list")]
+        public IActionResult GetAll(PaginationRequest request)
         {
-            var result = _service.GetAll(pageNumber, pageSize, search);
+            var result = _service.GetAll(request);
             return Ok(result);
         }
 

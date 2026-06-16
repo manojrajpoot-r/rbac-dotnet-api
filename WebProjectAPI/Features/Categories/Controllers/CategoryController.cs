@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Categories.Interfaces;
+using WebProjectAPI.Features.Common.Paginations;
 
 namespace WebProjectAPI.Features.Categories.Controllers
 {
@@ -16,15 +17,11 @@ namespace WebProjectAPI.Features.Categories.Controllers
             _service = service;
         }
         [Authorize]
-        [HttpGet]
+        [HttpPost("list")]
 
-        public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10,string search = "")
+        public async Task<IActionResult> GetAll(PaginationRequest request)
         {
-            var data = await _service.GetAllAsync(
-                pageNumber,
-                pageSize,
-                search
-            );
+            var data = await _service.GetAllAsync(request);
 
             return Ok(data);
         }
