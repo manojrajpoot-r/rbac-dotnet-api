@@ -3,6 +3,7 @@ using WebProjectAPI.Data;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
+using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Repositories.Implementations
 {
@@ -10,15 +11,22 @@ namespace WebProjectAPI.Repositories.Implementations
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
-
-        public UserRepository(AppDbContext context)
+        private readonly ICurrentUserService _currentUser;
+        public UserRepository(AppDbContext context,ICurrentUserService currentUser)
         {
             _context = context;
+            _currentUser = currentUser;
         }
 
         public List<User> GetAll(PaginationRequest request)
         {
             var query = _context.Users.AsQueryable();
+
+            if (!_currentUser.IsPlatformUser)
+            {
+                query = query.Where(x =>
+                    x.TenantId == _currentUser.TenantId);
+            }
 
             //  search
             if (!string.IsNullOrEmpty(request.Search))

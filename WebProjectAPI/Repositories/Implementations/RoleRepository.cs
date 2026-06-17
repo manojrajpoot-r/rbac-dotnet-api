@@ -2,22 +2,28 @@
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
+using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Repositories.Implementations
 {
     public class RoleRepository : IRoleRepository
     {
         private readonly AppDbContext _context;
-
-        public RoleRepository(AppDbContext context)
+        private readonly ICurrentUserService _currentUser;
+        public RoleRepository(AppDbContext context,ICurrentUserService currentUser)
         {
             _context = context;
+            _currentUser = currentUser;
         }
 
         public List<Role> GetAll(PaginationRequest request)
         {
             var query = _context.Roles.AsQueryable();
-
+            if (!_currentUser.IsPlatformUser)
+            {
+                query = query.Where(x =>
+                    x.TenantId == _currentUser.TenantId);
+            }
             //  search
             if (!string.IsNullOrEmpty(request.Search))
             {

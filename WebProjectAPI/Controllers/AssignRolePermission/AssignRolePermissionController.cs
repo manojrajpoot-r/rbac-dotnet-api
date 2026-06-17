@@ -16,13 +16,22 @@ namespace WebProjectAPI.Controllers.AssignRolePermission
             _context = context;
         }
 
+      
         [HttpPost("assign-permission")]
         public IActionResult AssignPermission(AssignPermissionDto dto)
         {
+            var role = _context.Roles.FirstOrDefault(x => x.Id == dto.RoleId);
+
+            if (role == null)
+            {
+                return NotFound("Role not found");
+            }
+
             foreach (var permissionId in dto.PermissionIds)
             {
                 var exists = _context.RolePermissions
                     .Any(x =>
+                        x.TenantId == role.TenantId &&
                         x.RoleId == dto.RoleId &&
                         x.PermissionId == permissionId);
 
@@ -31,6 +40,7 @@ namespace WebProjectAPI.Controllers.AssignRolePermission
                     _context.RolePermissions.Add(
                         new RolePermission
                         {
+                            TenantId = role.TenantId, // <-- Ye add karna hai
                             RoleId = dto.RoleId,
                             PermissionId = permissionId
                         });

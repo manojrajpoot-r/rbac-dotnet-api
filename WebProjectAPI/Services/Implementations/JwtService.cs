@@ -1,11 +1,15 @@
-﻿namespace WebProjectAPI.Services.Implementations
+﻿
+
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using WebProjectAPI.DTOs;
+using WebProjectAPI.Services.Interfaces;
+
+namespace WebProjectAPI.Services.Implementations
 {
-    using Microsoft.IdentityModel.Tokens;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
-    using System.Text;
-    using WebProjectAPI.DTOs;
-    using WebProjectAPI.Services.Interfaces;
+
 
 
 
@@ -19,11 +23,12 @@
         }
 
         public JwtResult GenerateJwt(
-      int userId,
-      string email,
-      int? tenantId,
-      List<string> roles,
-      List<string> permissions)
+             int userId,
+            string email,
+            int? tenantId,
+            bool isPlatformUser,
+            List<string> roles,
+            List<string> permissions)
         {
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
@@ -35,7 +40,9 @@
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Email, email)
+                new Claim(ClaimTypes.Email, email),
+                new Claim("isPlatformUser", isPlatformUser.ToString().ToLower())
+
             };
 
             if (tenantId.HasValue)

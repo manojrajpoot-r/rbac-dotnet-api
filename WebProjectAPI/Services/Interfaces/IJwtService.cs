@@ -8,6 +8,7 @@ namespace WebProjectAPI.Services.Interfaces
             int userId,
             string email,
             int? tenantId,
+            bool isPlatformUser,
             List<string> roles,
             List<string> permissions);
     }

@@ -8,16 +8,20 @@ using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.Tenants.DTOs;
 using WebProjectAPI.Features.Tenants.Interfaces;
 using WebProjectAPI.Models;
+using WebProjectAPI.Services.Interfaces;
 namespace WebProjectAPI.Features.Tenants.Repositories
 {
     public class TenantRepository : ITenantRepository
     {
         private readonly AppDbContext _context;
         private readonly IServiceProvider _serviceProvider;
-        public TenantRepository(AppDbContext context, IServiceProvider serviceProvider)
+        private readonly ILogger _logger;
+        private readonly ICurrentUserService _currentUser;
+        public TenantRepository(AppDbContext context, IServiceProvider serviceProvider,ICurrentUserService currentUser)
         {
             _context = context;
             _serviceProvider = serviceProvider;
+            _currentUser = currentUser;
         }
 
         // ================= GET ALL =================
@@ -26,6 +30,10 @@ namespace WebProjectAPI.Features.Tenants.Repositories
             var query = _context.Tenants
                 .AsQueryable();
 
+            if (!_currentUser.IsPlatformUser)
+            {
+                return Forbid();
+            }
             if (!string.IsNullOrEmpty(request.Search))
             {
                 query = query.Where(x => x.Name.Contains(request.Search));
@@ -52,6 +60,16 @@ namespace WebProjectAPI.Features.Tenants.Repositories
                 Message = "Tenant list fetched successfully",
                 Data = data,
                 TotalRecords = totalRecords
+            };
+        }
+
+        private ApiResponse<List<TenantDto>> Forbid()
+        {
+            return new ApiResponse<List<TenantDto>>
+            {
+                Success = false,
+                Message = "You are not authorized to access this resource.",
+                Data = null
             };
         }
 

@@ -55,6 +55,7 @@ using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Implementations;
 using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services.Implementations;
+using WebProjectAPI.Services.Implementations.WebProjectAPI.Services.Implementations;
 using WebProjectAPI.Services.Interfaces;
 
 
@@ -124,7 +125,7 @@ builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 
 
-
+builder.Services.AddScoped<ICurrentUserService,CurrentUserService>();
 
 
 
