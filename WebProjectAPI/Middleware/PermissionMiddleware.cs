@@ -47,7 +47,19 @@ namespace WebProjectAPI.Middleware
 
 
 
-       
+
+
+            var roleClaims = context.User.Claims
+            .Where(x => x.Type.Contains("role"))
+            .Select(x => x.Value)
+            .ToList();
+
+            Console.WriteLine(string.Join(",", roleClaims));
+
+
+
+
+
 
             // SuperAdmin bypass
             if (context.User.IsInRole("SuperAdmin"))

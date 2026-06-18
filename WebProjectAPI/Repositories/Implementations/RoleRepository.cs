@@ -49,6 +49,10 @@ namespace WebProjectAPI.Repositories.Implementations
 
         public Role Add(Role role)
         {
+            if (!_currentUser.TenantId.HasValue)
+                throw new Exception("TenantId not found in token");
+
+            role.TenantId = _currentUser.TenantId.Value;
             _context.Roles.Add(role);
             _context.SaveChanges();
             return role;

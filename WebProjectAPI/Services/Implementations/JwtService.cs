@@ -1,18 +1,13 @@
-﻿
-
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebProjectAPI.DTOs;
 using WebProjectAPI.Services.Interfaces;
+using WebProjectAPI.Helpers;
 
 namespace WebProjectAPI.Services.Implementations
 {
-
-
-
-
     public class JwtService : IJwtService
     {
         private readonly IConfiguration _config;
@@ -23,7 +18,7 @@ namespace WebProjectAPI.Services.Implementations
         }
 
         public JwtResult GenerateJwt(
-             int userId,
+            int userId,
             string email,
             int? tenantId,
             bool isPlatformUser,
@@ -31,36 +26,42 @@ namespace WebProjectAPI.Services.Implementations
             List<string> permissions)
         {
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                Encoding.UTF8.GetBytes(_config["Jwt:Key"])
+            );
 
-            var creds = new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                 new Claim(ClaimTypes.Email, email),
-                new Claim("isPlatformUser", isPlatformUser.ToString().ToLower())
-
+                new Claim("IsPlatformUser", isPlatformUser.ToString())
             };
 
+            // =========================
+            // TENANT CLAIM
+            // =========================
             if (tenantId.HasValue)
             {
-                claims.Add(new Claim("TenantId", tenantId.Value.ToString()));
+                claims.Add(new Claim(CustomClaims.TenantId, tenantId.Value.ToString()));
             }
 
+            // =========================
+            // ROLES
+            // =========================
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            foreach (var permission in permissions)
+            // =========================
+            // PERMISSIONS (IMPORTANT FIX)
+            // =========================
+            foreach (var permission in permissions.Distinct())
             {
-                claims.Add(new Claim("Permission", permission));
+                claims.Add(new Claim(CustomClaims.Permission, permission));
             }
 
-           
             var expiry = DateTime.UtcNow.AddHours(12);
 
             var token = new JwtSecurityToken(

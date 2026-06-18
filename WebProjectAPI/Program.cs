@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using WebProjectAPI.Data;
@@ -50,12 +52,12 @@ using WebProjectAPI.Features.sub_categories.Services;
 using WebProjectAPI.Features.Tenants.Interfaces;
 using WebProjectAPI.Features.Tenants.Repositories;
 using WebProjectAPI.Features.Tenants.Services;
+using WebProjectAPI.Helpers;
 using WebProjectAPI.Middleware;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Implementations;
 using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services.Implementations;
-using WebProjectAPI.Services.Implementations.WebProjectAPI.Services.Implementations;
 using WebProjectAPI.Services.Interfaces;
 
 
@@ -190,23 +192,33 @@ builder.Services.AddSwaggerGen(options =>
 // 🔐 JWT Authentication (IMPORTANT 🔥)
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
 
-builder.Services.AddAuthentication(options =>
-{
-	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
-	options.RequireHttpsMetadata = false;
-	options.SaveToken = true;
-	options.TokenValidationParameters = new TokenValidationParameters
-	{
-		ValidateIssuer = false,
-		ValidateAudience = false,
-		ValidateIssuerSigningKey = true,
-		ValidateLifetime = true,
-		IssuerSigningKey = new SymmetricSecurityKey(key)
-	};
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateIssuerSigningKey = true,
+        ValidateLifetime = true,
+
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+
+        RoleClaimType = ClaimTypes.Role,
+        NameClaimType = ClaimTypes.NameIdentifier
+    };
+});
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Permission", policy =>
+    {
+        policy.RequireClaim(CustomClaims.Permission);
+    });
 });
 
 

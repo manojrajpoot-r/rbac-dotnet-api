@@ -1,10 +1,9 @@
 ﻿
 using global::WebProjectAPI.Services.Interfaces;
 using System.Security.Claims;
+using WebProjectAPI.Helpers;
 
-namespace WebProjectAPI.Services.Implementations
-{
-    
+
     namespace WebProjectAPI.Services.Implementations
     {
         public class CurrentUserService : ICurrentUserService
@@ -29,17 +28,28 @@ namespace WebProjectAPI.Services.Implementations
 
             public int? TenantId =>
                 int.TryParse(
-                    User?.FindFirst("TenantId")?.Value,
+                    User?.FindFirst(CustomClaims.TenantId)?.Value,
                     out var id)
                         ? id
                         : null;
 
-            public bool IsPlatformUser =>
-                bool.TryParse(
-                    User?.FindFirst("IsPlatformUser")?.Value,
-                    out var value)
-                        ? value
-                        : false;
-        }
+
+
+
+    
+
+        public bool IsPlatformUser =>
+    bool.TryParse(
+        _httpContextAccessor.HttpContext?
+            .User?
+            .FindFirst("IsPlatformUser")?.Value,
+        out var value)
+            ? value
+            : false;
+
+
+
+
     }
-}
+    }
+

@@ -2,7 +2,7 @@
 using WebProjectAPI.DTOs;
 using WebProjectAPI.DTOs.PermissionDto;
 using WebProjectAPI.Features.Common.Paginations;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services.Interfaces;

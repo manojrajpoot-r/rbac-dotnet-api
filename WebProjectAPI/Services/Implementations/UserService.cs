@@ -5,11 +5,13 @@
     using Microsoft.EntityFrameworkCore;
     using WebProjectAPI.DTOs.UserD;
     using WebProjectAPI.Features.Common.Paginations;
+    using WebProjectAPI.Features.Tenants.DTOs;
+    using WebProjectAPI.Features.Tenants.Repositories;
     using WebProjectAPI.Helpers;
     using WebProjectAPI.Models;
     using WebProjectAPI.Repositories.Interfaces;
     using WebProjectAPI.Services.Implementations;
-
+    using WebProjectAPI.Features.Common.ApiResponse;
     public class UserService : IUserService
     {
         private readonly IUserRepository _repo;
@@ -23,19 +25,12 @@
             _hasher = new PasswordHasher<User>();
         }
 
-        public ApiResponse<List<User>> GetAll(PaginationRequest request)
+
+        public async Task<ApiResponse<List<UserListDto>>> GetAll(PaginationRequest request)
         {
-            
-
-            var data = _repo.GetAll(request);
-
-            return new ApiResponse<List<User>>
-            {
-                Success = true,
-                Data = data,
-               
-            };
+            return await _repo.GetAll(request);
         }
+ 
 
         public ApiResponse<User> Add(UserCreateDto dto)
         {

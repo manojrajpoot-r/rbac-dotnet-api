@@ -3,7 +3,7 @@ using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.product_images.DTOs;
 using WebProjectAPI.Features.product_images.Interfaces;
 using WebProjectAPI.Features.product_images.Models;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.ApiResponse;
 
 namespace WebProjectAPI.Features.product_images.Services
 {

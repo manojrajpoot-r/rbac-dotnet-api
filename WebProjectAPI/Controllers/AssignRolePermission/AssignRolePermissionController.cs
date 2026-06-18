@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using WebProjectAPI.Data;
 using WebProjectAPI.DTOs;
 using WebProjectAPI.Models;
@@ -8,42 +8,45 @@ using WebProjectAPI.Models;
 namespace WebProjectAPI.Controllers.AssignRolePermission
 {
     [ApiController]
-    [Route("api/[Controller]")]
+    [Route("api/[controller]")]
     public class AssignRolePermissionController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public AssignRolePermissionController(AppDbContext context) {
+
+        public AssignRolePermissionController(AppDbContext context)
+        {
             _context = context;
         }
 
-      
+        [Authorize(Policy = "Permission")]
+        // ==========================
+        // ASSIGN PERMISSIONS
+        // ==========================
         [HttpPost("assign-permission")]
-        public IActionResult AssignPermission(AssignPermissionDto dto)
+        public IActionResult AssignPermission([FromBody] AssignPermissionDto dto)
         {
-            var role = _context.Roles.FirstOrDefault(x => x.Id == dto.RoleId);
+            var role = _context.Roles
+                .FirstOrDefault(x => x.Id == dto.RoleId);
 
             if (role == null)
-            {
                 return NotFound("Role not found");
-            }
+
+            // already assigned permissions (fast lookup)
+            var existingPermissions = _context.RolePermissions
+                .Where(x => x.RoleId == dto.RoleId)
+                .Select(x => x.PermissionId)
+                .ToHashSet();
 
             foreach (var permissionId in dto.PermissionIds)
             {
-                var exists = _context.RolePermissions
-                    .Any(x =>
-                        x.TenantId == role.TenantId &&
-                        x.RoleId == dto.RoleId &&
-                        x.PermissionId == permissionId);
-
-                if (!exists)
+                if (!existingPermissions.Contains(permissionId))
                 {
-                    _context.RolePermissions.Add(
-                        new RolePermission
-                        {
-                            TenantId = role.TenantId, // <-- Ye add karna hai
-                            RoleId = dto.RoleId,
-                            PermissionId = permissionId
-                        });
+                    _context.RolePermissions.Add(new RolePermission
+                    {
+                        TenantId = role.TenantId,
+                        RoleId = dto.RoleId,
+                        PermissionId = permissionId
+                    });
                 }
             }
 
@@ -56,11 +59,16 @@ namespace WebProjectAPI.Controllers.AssignRolePermission
             });
         }
 
+        // ==========================
+        // REMOVE PERMISSION
+        // ==========================
         [HttpDelete("remove-permission")]
         public IActionResult RemovePermission(int roleId, int permissionId)
         {
             var data = _context.RolePermissions
-                .FirstOrDefault(x => x.RoleId == roleId && x.PermissionId == permissionId);
+                .FirstOrDefault(x =>
+                    x.RoleId == roleId &&
+                    x.PermissionId == permissionId);
 
             if (data == null)
                 return NotFound("Not found");
@@ -70,46 +78,53 @@ namespace WebProjectAPI.Controllers.AssignRolePermission
 
             return Ok(new
             {
-               success=true,
-               message= "Permission Removed Successfully!"
-                
+                success = true,
+                message = "Permission Removed Successfully!"
             });
         }
 
-      
+        // ==========================
+        // ROLE PERMISSIONS
+        // ==========================
         [HttpGet("role-permissions/{roleId}")]
         public IActionResult GetRolePermissions(int roleId)
         {
             var permissions = _context.RolePermissions
                 .Where(x => x.RoleId == roleId)
-                .Select(x => x.Permission.Name)
+                .Include(x => x.Permission)
+                .Where(x => x.Permission != null)
+                .Select(x => new
+                {
+                    id = x.PermissionId,
+                    name = x.Permission!.Name
+                })
                 .ToList();
 
             return Ok(new
             {
                 success = true,
-                data =permissions
+                data = permissions
             });
-               
         }
 
+        // ==========================
+        // USER PERMISSIONS
+        // ==========================
         [HttpGet("user-permissions/{userId}")]
         public IActionResult GetUserPermissions(int userId)
         {
             var permissions = _context.UserRoles
                 .Where(ur => ur.UserId == userId)
-                .Join(_context.RolePermissions,
-                    ur => ur.RoleId,
-                    rp => rp.RoleId,
-                    (ur, rp) => rp.PermissionId)
-                .Join(_context.Permissions,
-                    rp => rp,
-                    p => p.Id,
-                    (rp, p) => p.Name)
+                .SelectMany(ur => ur.Role.RolePermissions)
+                .Select(rp => rp.Permission.Name)
                 .Distinct()
                 .ToList();
 
-            return Ok(permissions);
+            return Ok(new
+            {
+                success = true,
+                data = permissions
+            });
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.product_images.DTOs;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.ApiResponse;
 
 namespace WebProjectAPI.Features.product_images.Interfaces
 {

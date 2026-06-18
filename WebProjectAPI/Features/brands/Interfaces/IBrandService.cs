@@ -1,7 +1,7 @@
 ﻿using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Common.Paginations;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.ApiResponse;
 
 
 namespace WebProjectAPI.Features.brands.Interfaces

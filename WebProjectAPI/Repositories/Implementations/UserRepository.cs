@@ -1,9 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using WebProjectAPI.Data;
+using WebProjectAPI.DTOs.UserD;
 using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Features.Tenants.DTOs;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using WebProjectAPI.Features.Common.ApiResponse;
 
 namespace WebProjectAPI.Repositories.Implementations
 {
@@ -18,32 +23,49 @@ namespace WebProjectAPI.Repositories.Implementations
             _currentUser = currentUser;
         }
 
-        public List<User> GetAll(PaginationRequest request)
+        public async Task<ApiResponse<List<UserListDto>>> GetAll(PaginationRequest request)
         {
-            var query = _context.Users.AsQueryable();
-
+            var query = _context.Users
+                .IgnoreQueryFilters()
+                .AsQueryable();
             if (!_currentUser.IsPlatformUser)
             {
                 query = query.Where(x =>
                     x.TenantId == _currentUser.TenantId);
             }
-
-            //  search
-            if (!string.IsNullOrEmpty(request.Search))
+            if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(x => x.FullName.Contains(request.Search) || x.Email.Contains(request.Search));
+                query = query.Where(x =>
+                    x.FullName.Contains(request.Search) ||
+                    x.Email.Contains(request.Search));
             }
 
-            // 📊 total count
-          
-            int totalRecords = query.Count();
-            // 📄 pagination
-            return query
-                .OrderBy(x => x.Id)
+            var totalRecords = await query.CountAsync();
+
+            var data = await query
+                .OrderByDescending(x => x.Id)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .ToList();
+                .Select(x => new UserListDto
+                {
+                    Id = x.Id,
+                    FullName = x.FullName,
+                    Email = x.Email,
+                    Status = x.Status
+                })
+                .ToListAsync();
+
+            return new ApiResponse<List<UserListDto>>
+            {
+                Success = true,
+                Data = data,
+                TotalRecords = totalRecords,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
         }
+
+
 
         public User GetById(int id)
         {
@@ -52,6 +74,10 @@ namespace WebProjectAPI.Repositories.Implementations
 
         public User Add(User user)
         {
+            if (!_currentUser.TenantId.HasValue)
+                throw new Exception("TenantId not found in token");
+
+            user.TenantId = _currentUser.TenantId.Value;
             _context.Users.Add(user);
             _context.SaveChanges();
             return user;

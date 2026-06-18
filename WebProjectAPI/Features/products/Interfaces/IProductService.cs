@@ -1,8 +1,7 @@
 ﻿using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
-using WebProjectAPI.Helpers;
 
-
+using WebProjectAPI.Features.Common.ApiResponse;
 namespace WebProjectAPI.Features.products.Interfaces
 {
     public interface IProductService

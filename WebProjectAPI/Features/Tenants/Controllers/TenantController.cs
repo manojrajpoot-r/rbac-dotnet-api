@@ -8,7 +8,7 @@ using WebProjectAPI.Features.Tenants.Interfaces;
 namespace WebProjectAPI.Features.Tenants.Controllers
 {
     [Authorize]
-    [Permission("ManageTenants")]
+    //[Permission("ManageTenants")]
 
     [Route("api/[controller]")]
     [ApiController]

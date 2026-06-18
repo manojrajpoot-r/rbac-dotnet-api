@@ -27,11 +27,13 @@ namespace WebProjectAPI.Controllers.UserC
         [Authorize]
         [Permission("view_user")]
 
-        [HttpPost("list")]
 
-        public IActionResult GetAll(PaginationRequest request)
+
+    
+        [HttpPost("list")]
+        public async Task<IActionResult> GetAll([FromBody] PaginationRequest request)
         {
-            var result = _service.GetAll(request);
+            var result = await _service.GetAll(request);
             return Ok(result);
         }
 

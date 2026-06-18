@@ -7,7 +7,7 @@ using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Models;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.ApiResponse;
 namespace WebProjectAPI.Features.products.Services
 {
     public class ProductService : IProductService

@@ -1,6 +1,6 @@
 ﻿using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Common.Paginations;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.Categories.Interfaces

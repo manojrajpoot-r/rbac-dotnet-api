@@ -27,39 +27,45 @@ namespace WebProjectAPI.Features.Tenants.Repositories
         // ================= GET ALL =================
         public async Task<ApiResponse<List<TenantDto>>> GetAll(PaginationRequest request)
         {
-            var query = _context.Tenants
-                .AsQueryable();
+          
 
+            var query = _context.Tenants
+                .IgnoreQueryFilters()
+                .AsQueryable();
             if (!_currentUser.IsPlatformUser)
             {
-                return Forbid();
+                query = query.Where(x => x.Id == _currentUser.TenantId);
             }
-            if (!string.IsNullOrEmpty(request.Search))
-            {
-                query = query.Where(x => x.Name.Contains(request.Search));
-            }
-
             var totalRecords = await query.CountAsync();
 
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(x =>
+                    x.Name.Contains(request.Search) ||
+                    x.SubDomain.Contains(request.Search));
+            }
+
             var data = await query
-                .OrderByDescending(x => x.Id)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .Select(x => new TenantDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Subdomain = x.SubDomain,
-                    IsActive = x.IsActive
-                })
-                .ToListAsync();
+                 .OrderByDescending(x => x.Id)
+                 .Skip((request.PageNumber - 1) * request.PageSize)
+                 .Take(request.PageSize)
+                 .Select(x => new TenantDto
+                 {
+                     Id = x.Id,
+                     Name = x.Name,
+                     Subdomain = x.SubDomain,
+                     IsActive = x.IsActive
+                 })
+                 .ToListAsync();
 
             return new ApiResponse<List<TenantDto>>
             {
                 Success = true,
-                Message = "Tenant list fetched successfully",
                 Data = data,
-                TotalRecords = totalRecords
+                TotalRecords = totalRecords,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
             };
         }
 
