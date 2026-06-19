@@ -146,10 +146,20 @@ namespace WebProjectAPI.Controllers.Auth
                 return Ok(new
                 {
                     success = true,
+                    message = "Login Successfully",
                     data = new
                     {
                         accessToken = jwt.Token,
-                        expiresAt = jwt.Expiry
+                        refreshToken = "",
+                        expiresAt = jwt.Expiry,
+                        user = new
+                        {
+                            admin.Id,
+                            admin.Email,
+                            admin.FullName,
+                            roles = roles,
+                            permissions = permissions
+                        }
                     }
                 });
             }

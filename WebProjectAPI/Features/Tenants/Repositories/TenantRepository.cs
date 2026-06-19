@@ -125,7 +125,7 @@ namespace WebProjectAPI.Features.Tenants.Repositories
                 // 2. Role
                 var role = new Role
                 {
-                    Name = "Tenant Admin",
+                    Name = model.RoleName,
                     Status = 1,
                     CreatedAt = DateTime.UtcNow,
                     TenantId = tenant.Id
@@ -151,8 +151,6 @@ namespace WebProjectAPI.Features.Tenants.Repositories
 
                 user.PasswordHash = hasher.HashPassword(user, model.Password);
 
-
-
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 
@@ -167,6 +165,9 @@ namespace WebProjectAPI.Features.Tenants.Repositories
                 _context.UserRoles.Add(userRole);
                 await _context.SaveChangesAsync();
 
+                await _context.SaveChangesAsync();
+
+
                 await transaction.CommitAsync();
 
                 return new ApiResponse<TenantDto>
@@ -180,7 +181,10 @@ namespace WebProjectAPI.Features.Tenants.Repositories
                         Subdomain = tenant.SubDomain,
                         IsActive = tenant.IsActive,
                         AdminName = user.FullName,
-                        AdminEmail = user.Email
+                        AdminEmail = user.Email,
+                        RoleName = role.Name,
+                       
+
                     }
                 };
             }

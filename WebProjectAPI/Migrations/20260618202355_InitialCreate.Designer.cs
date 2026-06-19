@@ -12,7 +12,7 @@ using WebProjectAPI.Data;
 namespace WebProjectAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260610100032_InitialCreate")]
+    [Migration("20260618202355_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />

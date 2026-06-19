@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 using WebProjectAPI.Data;
+using WebProjectAPI.Data.Seed;
 using WebProjectAPI.Data.Services;
 using WebProjectAPI.Features.booking.Interfaces;
 using WebProjectAPI.Features.booking.Mappings;
@@ -60,6 +61,18 @@ using WebProjectAPI.Services.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
+
+//Seeder for super admin
+Console.WriteLine("=== PROGRAM STARTED ===");
+builder.Services.AddScoped<IDataSeeder, SeedDefaultTenant>();
+builder.Services.AddScoped<IDataSeeder, PermissionSeeder>();
+builder.Services.AddScoped<IDataSeeder, RoleSeeder>();
+builder.Services.AddScoped<IDataSeeder, SuperAdminSeeder>();
+builder.Services.AddScoped<IDataSeeder, RolePermissionSeeder>();
+
 
 //Json me value
 builder.Services.AddControllers()
@@ -221,21 +234,11 @@ app.UseStaticFiles();
 //fronted add
 app.UseCors("AllowAll");
 
-//Seeder for super admin
-
-
-Console.WriteLine("=== PROGRAM STARTED ===");
-
+//seeder call
 using (var scope = app.Services.CreateScope())
 {
-    Console.WriteLine("=== CALLING SEEDER ===");
-
-    var services = scope.ServiceProvider;
-
-    await SuperAdminSeeder.Seed(services);
+    await SeederRunner.RunAsync(scope.ServiceProvider);
 }
-
-
 
 
 

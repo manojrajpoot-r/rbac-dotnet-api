@@ -9,9 +9,9 @@ namespace WebProjectAPI.Models
 
             public int Status { get; set; }
 
-            public Tenant Tenant { get; set; } = null!;
-
-            public ICollection<UserRole> UserRoles { get; set; }
+           
+        public Tenant? Tenant { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; }
                 = new List<UserRole>();
 
             public ICollection<RolePermission> RolePermissions { get; set; }

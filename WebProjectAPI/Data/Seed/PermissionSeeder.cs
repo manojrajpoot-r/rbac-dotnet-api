@@ -1,23 +1,33 @@
-﻿using WebProjectAPI.Models;
+﻿
+
+using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Data.Seed
 {
-    public static class PermissionSeeder
+    public class PermissionSeeder : IDataSeeder
     {
-        public static async Task Seed(IServiceProvider serviceProvider)
+        public int Order => 3;
+
+        public async Task SeedAsync(AppDbContext db, IServiceProvider sp)
         {
-            var db = serviceProvider.GetRequiredService<AppDbContext>();
+            if (await db.Permissions.AnyAsync()) return;
 
-            if (!db.Permissions.Any())
+            var permissions = new List<Permission>
             {
-                db.Permissions.AddRange(
-                    new Permission { Name = "USER_CREATE", GroupName = "Create User" },
-                    new Permission { Name = "USER_VIEW", GroupName = "View User" },
-                    new Permission { Name = "USER_DELETE", GroupName = "Delete User" }
-                );
+               new Permission { Name = "USER_CREATE", GroupName = "USER" },
+            new Permission { Name = "USER_VIEW", GroupName = "USER" },
+            new Permission { Name = "USER_EDIT", GroupName = "USER" },
+            new Permission { Name = "USER_DELETE", GroupName = "USER" },
 
-                await db.SaveChangesAsync();
-            }
+            new Permission { Name = "ROLE_CREATE", GroupName = "ROLE" },
+            new Permission { Name = "ROLE_VIEW", GroupName = "ROLE" },
+            new Permission { Name = "ROLE_EDIT", GroupName = "ROLE" },
+            new Permission { Name = "ROLE_DELETE", GroupName = "ROLE" }
+            };
+
+            db.Permissions.AddRange(permissions);
+            await db.SaveChangesAsync();
         }
     }
-}   
+}

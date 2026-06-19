@@ -13,6 +13,10 @@
         public string? AdminName { get; set; }
 
         public string? AdminEmail { get; set; }
+
+        public string? RoleName { get; set; }
+        public string? PermissionName { get; set; }
+        public string? GroupName { get; set; }
     }
 
 }

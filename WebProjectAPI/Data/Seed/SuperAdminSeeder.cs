@@ -1,47 +1,55 @@
-﻿using Microsoft.AspNetCore.Identity;
-using WebProjectAPI.Data;
+﻿
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Models;
 
-public static class SuperAdminSeeder
+namespace WebProjectAPI.Data.Seed
 {
-    public static async Task Seed(IServiceProvider serviceProvider)
+    public class SuperAdminSeeder : IDataSeeder
     {
-        try
+        public int Order => 5;
+
+        public async Task SeedAsync(AppDbContext db, IServiceProvider sp)
         {
-            Console.WriteLine("Seeder Started");
+            if (await db.PlatformUsers.AnyAsync(x => x.Email == "super_admin@saas.com"))
+                return;
+            var hasher = sp.GetRequiredService<IPasswordHasher<PlatformUser>>();
+            var role = await db.Roles.FirstOrDefaultAsync(x => x.Name == "SuperAdmin");
 
-            var db = serviceProvider.GetRequiredService<AppDbContext>();
+            if (role == null)
+                throw new Exception("SuperAdmin role not found");
 
-            var hasher = serviceProvider
-                .GetRequiredService<IPasswordHasher<PlatformUser>>();
-
-            if (!db.PlatformUsers.Any())
+           
+             var user = new PlatformUser
             {
-                var admin = new PlatformUser
-                {
-                    FullName = "Super Admin",
-                    Email = "admin@saas.com",
-                    Role = PlatformRole.SuperAdmin,
-                    IsActive = true
-                };
-
-                admin.PasswordHash =
-                    hasher.HashPassword(admin, "Admin@123");
-
-                db.PlatformUsers.Add(admin);
-
-                await db.SaveChangesAsync();
-
-                Console.WriteLine("Super Admin Created");
-            }
-            else
-            {
-                Console.WriteLine("Super Admin Already Exists");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("Seeder Error: " + ex);
+                FullName = "Super Admin",
+                Email = "super_admin@saas.com",
+                 Role = PlatformRole.SuperAdmin,
+                 IsActive = true
+            };
+            user.PasswordHash = hasher.HashPassword(user, "Admin@123");
+            db.PlatformUsers.Add(user);
+            await db.SaveChangesAsync();
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

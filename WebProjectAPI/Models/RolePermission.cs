@@ -4,7 +4,7 @@ namespace WebProjectAPI.Models
 {
     public class RolePermission : TenantEntity
     {
-        public int Id { get; set; }
+       
         public int RoleId { get; set; }
         public Role Role { get; set; } = null!;
 
