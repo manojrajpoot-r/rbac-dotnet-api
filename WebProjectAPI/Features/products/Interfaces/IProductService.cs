@@ -1,15 +1,12 @@
-﻿using WebProjectAPI.Features.products.DTOs;
-using WebProjectAPI.Helpers;
+﻿using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Features.products.DTOs;
 
-
+using WebProjectAPI.Features.Common.ApiResponse;
 namespace WebProjectAPI.Features.products.Interfaces
 {
     public interface IProductService
     {
-        Task<ApiResponse<List<ProductDto>>> GetAllAsync(
-       int pageNumber,
-       int pageSize,
-       string search);
+        Task<ApiResponse<List<ProductDto>>> GetAllAsync(PaginationRequest request);
 
         Task<ApiResponse<ProductDto>> GetByIdAsync(int id);
 

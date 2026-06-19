@@ -15,19 +15,11 @@ namespace WebProjectAPI.Features.product_images.Controllers
             _service = service;
         }
 
+    
         [HttpGet]
-        [HttpGet]
-        public async Task<IActionResult> GetAll(
-    int productId,
-    int pageNumber = 1,
-    int pageSize = 10,
-    string search = "")
+        public async Task<IActionResult> GetAll(int productId)
         {
-            var result = await _service.GetAllAsync(
-                productId,
-                pageNumber,
-                pageSize,
-                search);
+            var result = await _service.GetAllAsync(productId);
 
             return Ok(result);
         }

@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using WebProjectAPI.DTOs;
 using WebProjectAPI.DTOs.UserD;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services.Interfaces;
@@ -18,22 +19,13 @@ namespace WebProjectAPI.Services.Implementations
             _repo = repo;
             _mapper = mapper;
         }
-
-        public ApiResponse<List<Role>> GetAll(int pageNumber, int pageSize, string search)
+        public async Task<ApiResponse<List<RoleListDto>>> GetAll(PaginationRequest request)
         {
-            int totalRecords;
-
-            var data = _repo.GetAll(pageNumber, pageSize, search, out totalRecords);
-
-            return new ApiResponse<List<Role>>
-            {
-                Success = true,
-                Data = data,
-                TotalRecords = totalRecords,
-                PageNumber = pageNumber, 
-                PageSize = pageSize      
-            };
+            return await _repo.GetAll(request);
         }
+
+      
+        
 
         public ApiResponse<Role> Add(RoleCreateDto dto)
         {

@@ -1,4 +1,5 @@
-﻿using WebProjectAPI.Features.products.DTOs;
+﻿using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Models;
 
 namespace WebProjectAPI.Features.products.Interfaces
@@ -6,9 +7,7 @@ namespace WebProjectAPI.Features.products.Interfaces
     public interface IProductRepository
     {
         Task<(List<Product> Products, int TotalRecords)> GetAllAsync(
-           int pageNumber,
-           int pageSize,
-           string search);
+           PaginationRequest request);
 
         Task<Product?> GetByIdAsync(int id);
 

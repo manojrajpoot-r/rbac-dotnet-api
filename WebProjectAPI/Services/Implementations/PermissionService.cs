@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using WebProjectAPI.DTOs;
 using WebProjectAPI.DTOs.PermissionDto;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services.Interfaces;
@@ -19,19 +20,17 @@ namespace WebProjectAPI.Services.Implementations
             _mapper = mapper;
         }
 
-        public ApiResponse<List<Permission>> GetAll(int pageNumber, int pageSize, string search)
+        public ApiResponse<List<Permission>> GetAll(PaginationRequest request)
         {
-            int totalRecords;
+   ;
 
-            var data = _repo.GetAll(pageNumber, pageSize, search, out totalRecords);
+            var data = _repo.GetAll(request);
 
             return new ApiResponse<List<Permission>>
             {
                 Success = true,
                 Data = data,
-                TotalRecords = totalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize
+             
             };
         }
 

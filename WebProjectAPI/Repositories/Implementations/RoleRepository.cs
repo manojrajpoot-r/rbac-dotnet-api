@@ -1,37 +1,68 @@
-﻿using WebProjectAPI.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Data;
+using WebProjectAPI.DTOs;
+using WebProjectAPI.Features.Common.ApiResponse;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
+using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Repositories.Implementations
 {
     public class RoleRepository : IRoleRepository
     {
         private readonly AppDbContext _context;
-
-        public RoleRepository(AppDbContext context)
+        private readonly ICurrentUserService _currentUser;
+        public RoleRepository(AppDbContext context,ICurrentUserService currentUser)
         {
             _context = context;
+            _currentUser = currentUser;
         }
 
-        public List<Role> GetAll(int pageNumber, int pageSize, string search, out int totalRecords)
+        public async Task<ApiResponse<List<RoleListDto>>> GetAll(
+            PaginationRequest request)
         {
-            var query = _context.Roles.AsQueryable();
+            var query = _context.Roles
+                .Include(x => x.Tenant)
+                .AsQueryable();
 
-            //  search
-            if (!string.IsNullOrEmpty(search))
+            if (!_currentUser.IsPlatformUser)
             {
-                query = query.Where(x => x.Name.Contains(search));
+                query = query.Where(x =>
+                    x.TenantId == _currentUser.TenantId);
             }
 
-            // 📊 total count
-            totalRecords = query.Count();
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(x =>
+                    x.Name.Contains(request.Search));
+            }
 
-            // 📄 pagination
-            return query
-                .OrderBy(x => x.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
+            var totalRecords = await query.CountAsync();
+
+            var data = await query
+                .OrderByDescending(x => x.Id)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Select(x => new RoleListDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Status = x.Status,
+                    TenantName = x.Tenant != null
+                        ? x.Tenant.Name
+                        : "Platform"
+                })
+                .ToListAsync();
+
+            return new ApiResponse<List<RoleListDto>>
+            {
+                Success = true,
+                Data = data,
+                TotalRecords = totalRecords,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
         }
 
 
@@ -42,6 +73,10 @@ namespace WebProjectAPI.Repositories.Implementations
 
         public Role Add(Role role)
         {
+            if (!_currentUser.TenantId.HasValue)
+                throw new Exception("TenantId not found in token");
+
+            role.TenantId = _currentUser.TenantId.Value;
             _context.Roles.Add(role);
             _context.SaveChanges();
             return role;

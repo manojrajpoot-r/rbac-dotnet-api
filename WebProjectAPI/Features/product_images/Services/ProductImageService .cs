@@ -3,7 +3,7 @@ using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.product_images.DTOs;
 using WebProjectAPI.Features.product_images.Interfaces;
 using WebProjectAPI.Features.product_images.Models;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.ApiResponse;
 
 namespace WebProjectAPI.Features.product_images.Services
 {
@@ -24,17 +24,11 @@ namespace WebProjectAPI.Features.product_images.Services
         }
 
         public async Task<ApiResponse<List<ProductImageDto>>> GetAllAsync(
-            int productId,
-            int pageNumber,
-            int pageSize,
-            string search)
+            int productId)
         {
             var (images, totalRecords) =
                 await _repository.GetAllAsync(
-                    productId,
-                    pageNumber,
-                    pageSize,
-                    search);
+                    productId);
 
             var data = _mapper.Map<List<ProductImageDto>>(images);
 

@@ -1,12 +1,13 @@
 ﻿using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sub_categories.Models;
 
 namespace WebProjectAPI.Features.sub_categories.Interfaces
 {
     public interface ISubCategoryRepository
     {
-        Task<List<SubCategory>> GetAllAsync();
+        Task<List<SubCategory>> GetAllAsync(PaginationRequest request);
 
         Task<SubCategory?> GetByIdAsync(int id);
 

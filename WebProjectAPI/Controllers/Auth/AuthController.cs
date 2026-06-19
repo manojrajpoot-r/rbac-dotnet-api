@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -20,13 +21,14 @@ namespace WebProjectAPI.Controllers.Auth
         private readonly PasswordHasher<User> _passwordHasher;
         private readonly IConfiguration _configuration;
         private readonly IJwtService _jwtService;
-
+       
         public AuthController(AppDbContext context, IConfiguration configuration, IJwtService jwtService)
         {
             _context = context;
             _passwordHasher = new PasswordHasher<User>();
             _configuration = configuration;
             _jwtService = jwtService;
+           
         }
 
         [HttpPost("register")]
@@ -137,11 +139,12 @@ namespace WebProjectAPI.Controllers.Auth
                     .ToList();
 
                 var jwt = _jwtService.GenerateJwt(
-                    admin.Id,
-                    admin.Email,
-                    null,
-                    roles,
-                    permissions);
+                  admin.Id,
+                  admin.Email,
+                  null,
+                  true,
+                  roles,
+                  permissions);
 
                 return Ok(new
                 {
@@ -197,24 +200,31 @@ namespace WebProjectAPI.Controllers.Auth
                 .ToList();
 
             var permissionsList = _context.UserRoles
-                .Where(ur => ur.UserId == user.Id)
-                .Join(_context.RolePermissions,
-                    ur => ur.RoleId,
-                    rp => rp.RoleId,
-                    (ur, rp) => rp.PermissionId)
-                .Join(_context.Permissions,
-                    id => id,
-                    p => p.Id,
-                    (id, p) => p.Name)
-                .Distinct()
-                .ToList();
+                   .Where(ur =>
+                       ur.UserId == user.Id &&
+                       ur.TenantId == user.TenantId)
+                   .Join(
+                       _context.RolePermissions.Where(rp =>
+                           rp.TenantId == user.TenantId),
+                       ur => ur.RoleId,
+                       rp => rp.RoleId,
+                       (ur, rp) => rp.PermissionId)
+                   .Join(
+                       _context.Permissions,
+                       id => id,
+                       p => p.Id,
+                       (id, p) => p.Name)
+                   .Distinct()
+                   .ToList();
+            
 
             var token = _jwtService.GenerateJwt(
-                user.Id,
-                user.Email,
-                user.TenantId,
-                rolesList,
-                permissionsList);
+               user.Id,
+               user.Email,
+               user.TenantId,
+               false,
+               rolesList,
+               permissionsList);
 
             var refreshToken = new RefreshToken
             {
@@ -273,10 +283,42 @@ namespace WebProjectAPI.Controllers.Auth
 
             _context.RefreshTokens.Add(newRefreshToken);
 
-            var user = _context.Users.FirstOrDefault(x => x.Id == token.UserId);
+            var user = _context.Users
+             .FirstOrDefault(x => x.Id == token.UserId);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+
+            var roles = _context.UserRoles
+            .Where(x => x.UserId == user.Id)
+            .Select(x => x.Role.Name)
+            .Distinct()
+            .ToList();
+
+            var permissions = _context.UserRoles
+                .Where(ur => ur.UserId == user.Id)
+                .Join(_context.RolePermissions,
+                    ur => ur.RoleId,
+                    rp => rp.RoleId,
+                    (ur, rp) => rp.PermissionId)
+                .Join(_context.Permissions,
+                    id => id,
+                    p => p.Id,
+                    (id, p) => p.Name)
+                .Distinct()
+                .ToList();
 
             // ✅ new JWT
-            var jwt = _jwtService.GenerateJwt(user.Id, user.Email, user.TenantId, new List<string>(), new List<string>());
+            var jwt = _jwtService.GenerateJwt(
+                  user.Id,
+                  user.Email,
+                  user.TenantId,
+                  false,
+                  roles,
+                  permissions);
 
             var expiresIn = (int)(jwt.Expiry - DateTime.UtcNow).TotalSeconds;
 

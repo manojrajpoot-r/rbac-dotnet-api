@@ -4,7 +4,7 @@ using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.Common.ApiResponse;
 namespace WebProjectAPI.Features.colors.Services
 {
-    public class ColorService : IColorService
+    public class ColorService : IColorService 
     {
         private readonly IColorRepository _repository;
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.product_images.Interfaces;
 using WebProjectAPI.Features.product_images.Models;
 using WebProjectAPI.Features.products.Models;
@@ -15,11 +16,7 @@ namespace WebProjectAPI.Features.product_images.Repositories
             _context = context;
         }
 
-        public async Task<(List<ProductImage>, int)> GetAllAsync(
-            int productId,
-            int pageNumber,
-            int pageSize,
-            string search)
+        public async Task<(List<ProductImage>, int)> GetAllAsync(int productId)
         {
             var query = _context.ProductImages
                
@@ -27,18 +24,11 @@ namespace WebProjectAPI.Features.product_images.Repositories
                 .Where(x => x.ProductId == productId)
                 .AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                query = query.Where(x =>
-                    x.ImageUrl.Contains(search));
-            }
-
+       
             var totalRecords = await query.CountAsync();
 
             var data = await query
                 .OrderByDescending(x => x.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
 
             return (data, totalRecords);

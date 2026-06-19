@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WebProjectAPI.Attributes;
 using WebProjectAPI.DTOs;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Controllers.Role
@@ -19,12 +20,15 @@ namespace WebProjectAPI.Controllers.Role
 
         [Authorize]
         [Permission("view_role")]
-        [HttpGet]
-        public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, string search = "")
+
+        [HttpPost("list")]
+
+        public async Task<IActionResult> GetAll([FromBody] PaginationRequest request)
         {
-            var result = _service.GetAll(pageNumber,pageSize,search);
+            var result = await _service.GetAll(request);
             return Ok(result);
         }
+
 
         [Authorize]
         [Permission("add_role")]
@@ -69,7 +73,7 @@ namespace WebProjectAPI.Controllers.Role
 
         [Authorize]
         [Permission("status_role")]
-        [HttpPatch("{id}")]
+        [HttpPatch("status/{id}")]
         public IActionResult Status(int id)
         {
             return Ok(_service.ToggleStatus(id));

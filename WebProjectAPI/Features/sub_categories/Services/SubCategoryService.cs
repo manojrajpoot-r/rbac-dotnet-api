@@ -2,6 +2,7 @@
 using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.Models;
 using WebProjectAPI.Features.sub_categories.DTOs;
 using WebProjectAPI.Features.sub_categories.Interfaces;
@@ -26,9 +27,9 @@ namespace WebProjectAPI.Features.sub_categories.Services
         }
 
 
-        public async Task<List<SubCategoryDto>> GetAllAsync()
+        public async Task<List<SubCategoryDto>> GetAllAsync(PaginationRequest request)
         {
-            var data = await _repository.GetAllAsync();
+            var data = await _repository.GetAllAsync(request);
 
             return _mapper.Map<List<SubCategoryDto>>(data);
         }

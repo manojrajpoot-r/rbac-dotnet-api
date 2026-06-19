@@ -8,51 +8,74 @@ using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.Tenants.DTOs;
 using WebProjectAPI.Features.Tenants.Interfaces;
 using WebProjectAPI.Models;
+using WebProjectAPI.Services.Interfaces;
 namespace WebProjectAPI.Features.Tenants.Repositories
 {
     public class TenantRepository : ITenantRepository
     {
         private readonly AppDbContext _context;
         private readonly IServiceProvider _serviceProvider;
-        public TenantRepository(AppDbContext context, IServiceProvider serviceProvider)
+        private readonly ILogger _logger;
+        private readonly ICurrentUserService _currentUser;
+        public TenantRepository(AppDbContext context, IServiceProvider serviceProvider,ICurrentUserService currentUser)
         {
             _context = context;
             _serviceProvider = serviceProvider;
+            _currentUser = currentUser;
         }
 
         // ================= GET ALL =================
         public async Task<ApiResponse<List<TenantDto>>> GetAll(PaginationRequest request)
         {
+          
+
             var query = _context.Tenants
-                .Where(x => x.IsActive)
+                .IgnoreQueryFilters()
                 .AsQueryable();
-
-            if (!string.IsNullOrEmpty(request.Search))
+            if (!_currentUser.IsPlatformUser)
             {
-                query = query.Where(x => x.Name.Contains(request.Search));
+                query = query.Where(x => x.Id == _currentUser.TenantId);
             }
-
             var totalRecords = await query.CountAsync();
 
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(x =>
+                    x.Name.Contains(request.Search) ||
+                    x.SubDomain.Contains(request.Search));
+            }
+
             var data = await query
-                .OrderByDescending(x => x.Id)
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .Select(x => new TenantDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    Subdomain = x.SubDomain,
-                    IsActive = x.IsActive
-                })
-                .ToListAsync();
+                 .OrderByDescending(x => x.Id)
+                 .Skip((request.PageNumber - 1) * request.PageSize)
+                 .Take(request.PageSize)
+                 .Select(x => new TenantDto
+                 {
+                     Id = x.Id,
+                     Name = x.Name,
+                     Subdomain = x.SubDomain,
+                     IsActive = x.IsActive
+                 })
+                 .ToListAsync();
 
             return new ApiResponse<List<TenantDto>>
             {
                 Success = true,
-                Message = "Tenant list fetched successfully",
                 Data = data,
-                TotalRecords = totalRecords
+                TotalRecords = totalRecords,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
+        }
+
+        private ApiResponse<List<TenantDto>> Forbid()
+        {
+            return new ApiResponse<List<TenantDto>>
+            {
+                Success = false,
+                Message = "You are not authorized to access this resource.",
+                Data = null
             };
         }
 
@@ -244,8 +267,8 @@ namespace WebProjectAPI.Features.Tenants.Repositories
                 };
             }
 
-            
 
+            _context.Tenants.Remove(tenant);
             await _context.SaveChangesAsync();
 
             return new ApiResponse<string>

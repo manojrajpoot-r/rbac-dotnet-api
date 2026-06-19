@@ -1,13 +1,15 @@
 ﻿using WebProjectAPI.DTOs;
 using WebProjectAPI.DTOs.UserD;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Services.Interfaces
 {
     public interface IRoleService
     {
-        ApiResponse<List<Role>> GetAll(int pageNumber, int pageSize, string search);
+        Task<ApiResponse<List<RoleListDto>>> GetAll(PaginationRequest request);
+      
         ApiResponse<Role> Add(RoleCreateDto dto);
         ApiResponse<RoleUpdateDto> GetById(int id);
         ApiResponse<Role> Update(RoleUpdateDto dto);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.brands.Interfaces;
+using WebProjectAPI.Features.Common.Paginations;
 
 
 namespace WebProjectAPI.Features.Brands.Controllers
@@ -16,10 +17,10 @@ namespace WebProjectAPI.Features.Brands.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll(int pageNumber = 1, int pageSize = 10, string search = "")
+        [HttpPost("list")]
+        public async Task<IActionResult> GetAll(PaginationRequest request)
         {
-            var brands = await _service.GetAllAsync(pageNumber,pageSize, search);
+            var brands = await _service.GetAllAsync(request);
 
             return Ok(brands);
         }

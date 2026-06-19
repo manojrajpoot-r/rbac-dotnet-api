@@ -3,6 +3,7 @@ using WebProjectAPI.Data;
 using WebProjectAPI.Features.brands.Interfaces;
 using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.Common.Paginations;
 
 
 
@@ -18,22 +19,20 @@ namespace WebProjectAPI.Features.brands.Repositories
         }
 
         public async Task<(List<Brand> Brands, int TotalRecords)> GetAllAsync(
-              int pageNumber,
-              int pageSize,
-              string search)
+            PaginationRequest request)
         {
             var query = _context.Brands.AsQueryable();
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(request.Search))
             {
-                query = query.Where(x => x.Name.Contains(search));
+                query = query.Where(x => x.Name.Contains(request.Search));
             }
 
             int totalRecords = await query.CountAsync();
 
             var brands = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync();
 
             return (brands, totalRecords);

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WebProjectAPI.Attributes;
 using WebProjectAPI.DTOs.UserD;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Repositories.Implementations;
 using WebProjectAPI.Repositories.Interfaces;
 using WebProjectAPI.Services.Implementations;
@@ -16,19 +17,23 @@ namespace WebProjectAPI.Controllers.UserC
         public class UserController : ControllerBase
         {
             private readonly IUserService _service;
-
-            public UserController(IUserService service)
+    
+        public UserController(IUserService service)
             {
                 _service = service;
+              
             }
 
         [Authorize]
         [Permission("view_user")]
-        [HttpGet]
-      
-       public IActionResult GetAll(int pageNumber = 1, int pageSize = 10, string search = "")
+
+
+
+    
+        [HttpPost("list")]
+        public async Task<IActionResult> GetAll([FromBody] PaginationRequest request)
         {
-            var result = _service.GetAll(pageNumber, pageSize, search);
+            var result = await _service.GetAll(request);
             return Ok(result);
         }
 
@@ -75,7 +80,7 @@ namespace WebProjectAPI.Controllers.UserC
 
         [Authorize]
         [Permission("status_user")]
-        [HttpPatch("{id}")]
+        [HttpPatch("status/{id}")]
         public IActionResult Status(int id)
         {
             return Ok(_service.ToggleStatus(id));

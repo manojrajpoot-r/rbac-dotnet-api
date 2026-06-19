@@ -1,12 +1,15 @@
 ﻿using WebProjectAPI.DTOs.UserD;
-using WebProjectAPI.Helpers;
+using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Features.Tenants.DTOs;
 using WebProjectAPI.Models;
-
+using WebProjectAPI.Features.Common.ApiResponse;
 namespace WebProjectAPI.Services.Interfaces
 {
     public interface IUserService
     {
-        ApiResponse<List<User>> GetAll(int pageNumber, int pageSize, string search);
+      
+
+        Task<ApiResponse<List<UserListDto>>> GetAll(PaginationRequest request);
         ApiResponse<User> Add(UserCreateDto dto);
         ApiResponse<UserUpdateDto> GetById(int id);
 

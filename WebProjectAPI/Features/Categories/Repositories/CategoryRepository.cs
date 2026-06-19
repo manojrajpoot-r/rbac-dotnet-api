@@ -3,6 +3,7 @@ using System.Xml.Linq;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.Categories.Interfaces;
 using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.Common.Paginations;
 
 
 namespace WebProjectAPI.Features.Categories.Repositories
@@ -19,16 +20,14 @@ namespace WebProjectAPI.Features.Categories.Repositories
 
         public async Task<(List<Category> Data, int TotalRecords)>
     GetAllAsync(
-        int pageNumber,
-        int pageSize,
-        string search)
+      PaginationRequest request)
         {
             var query = _context.Categories.AsQueryable();
 
-            if (!string.IsNullOrEmpty(search))
+            if (!string.IsNullOrEmpty(request.Search))
             {
                 query = query.Where(
-                    x => x.Name.Contains(search)
+                    x => x.Name.Contains(request.Search)
                 );
             }
 
@@ -37,8 +36,8 @@ namespace WebProjectAPI.Features.Categories.Repositories
 
             var data = await query
                 .OrderBy(x => x.Id)
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .ToListAsync();
 
             return (data, totalRecords);
