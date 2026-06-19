@@ -6,6 +6,7 @@ using WebProjectAPI.Features.carts.Models;
 using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.colors.Models;
 using WebProjectAPI.Features.orders.Models;
+using WebProjectAPI.Features.plans.Models;
 using WebProjectAPI.Features.product_images.Models;
 using WebProjectAPI.Features.product_variant.Models;
 using WebProjectAPI.Features.products.Models;
@@ -62,7 +63,11 @@ namespace WebProjectAPI.Data
         public DbSet<Booking> Bookings => Set<Booking>();
         public DbSet<BookingServiceItem> BookingServiceItems => Set<BookingServiceItem>();
 
+        public DbSet<Plan> Plans { get; set; }
 
+        public DbSet<TenantSubscription> TenantSubscriptions { get; set; }
+
+        public DbSet<Payment> Payments { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

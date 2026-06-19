@@ -190,17 +190,23 @@ namespace WebProjectAPI.Controllers.Auth
                 .ToList();
 
             var permissionsList = _context.UserRoles
-                .Where(ur => ur.UserId == user.Id)
-                .Join(_context.RolePermissions,
-                    ur => ur.RoleId,
-                    rp => rp.RoleId,
-                    (ur, rp) => rp.PermissionId)
-                .Join(_context.Permissions,
-                    id => id,
-                    p => p.Id,
-                    (id, p) => p.Name)
-                .Distinct()
-                .ToList();
+                   .Where(ur =>
+                       ur.UserId == user.Id &&
+                       ur.TenantId == user.TenantId)
+                   .Join(
+                       _context.RolePermissions.Where(rp =>
+                           rp.TenantId == user.TenantId),
+                       ur => ur.RoleId,
+                       rp => rp.RoleId,
+                       (ur, rp) => rp.PermissionId)
+                   .Join(
+                       _context.Permissions,
+                       id => id,
+                       p => p.Id,
+                       (id, p) => p.Name)
+                   .Distinct()
+                   .ToList();
+            
 
             var token = _jwtService.GenerateJwt(
                user.Id,

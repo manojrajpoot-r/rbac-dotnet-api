@@ -22,11 +22,13 @@ namespace WebProjectAPI.Controllers.Role
         [Permission("view_role")]
 
         [HttpPost("list")]
-        public IActionResult GetAll(PaginationRequest request)
+
+        public async Task<IActionResult> GetAll([FromBody] PaginationRequest request)
         {
-            var result = _service.GetAll(request);
+            var result = await _service.GetAll(request);
             return Ok(result);
         }
+
 
         [Authorize]
         [Permission("add_role")]

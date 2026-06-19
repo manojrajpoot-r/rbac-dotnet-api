@@ -19,20 +19,13 @@ namespace WebProjectAPI.Services.Implementations
             _repo = repo;
             _mapper = mapper;
         }
-
-        public ApiResponse<List<Role>> GetAll(PaginationRequest request)
+        public async Task<ApiResponse<List<RoleListDto>>> GetAll(PaginationRequest request)
         {
-            
-
-            var data = _repo.GetAll(request);
-
-            return new ApiResponse<List<Role>>
-            {
-                Success = true,
-                Data = data,
-                   
-            };
+            return await _repo.GetAll(request);
         }
+
+      
+        
 
         public ApiResponse<Role> Add(RoleCreateDto dto)
         {

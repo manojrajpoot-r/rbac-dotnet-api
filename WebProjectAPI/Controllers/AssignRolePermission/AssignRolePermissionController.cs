@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
 using WebProjectAPI.DTOs;
 using WebProjectAPI.Models;
+using WebProjectAPI.Services.Implementations;
+using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Controllers.AssignRolePermission
 {
@@ -12,10 +14,12 @@ namespace WebProjectAPI.Controllers.AssignRolePermission
     public class AssignRolePermissionController : ControllerBase
     {
         private readonly AppDbContext _context;
+       private readonly ICurrentUserService _currentUser;
 
-        public AssignRolePermissionController(AppDbContext context)
+        public AssignRolePermissionController(AppDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUser = currentUserService;
         }
 
         [Authorize(Policy = "Permission")]
@@ -58,6 +62,48 @@ namespace WebProjectAPI.Controllers.AssignRolePermission
                 message = "Permissions Assigned Successfully!"
             });
         }
+
+
+
+
+
+        // ==========================
+        //  PERMISSION TENANT ALLOW ONLY
+        // ==========================
+
+        [HttpGet("my-tenant-permissions")]
+        public async Task<IActionResult> GetMyAvailablePermissions()
+        {
+            var userId = _currentUser.UserId;
+            var tenantId = _currentUser.TenantId;
+
+            var permissions = await _context.UserRoles
+                .Where(x =>
+                    x.UserId == userId &&
+                    x.TenantId == tenantId)
+                .Join(
+                    _context.RolePermissions.Where(x =>
+                        x.TenantId == tenantId),
+                    ur => ur.RoleId,
+                    rp => rp.RoleId,
+                    (ur, rp) => rp.Permission)
+                .Distinct()
+                .ToListAsync();
+
+            return Ok(new
+            {
+                success = true,
+                data = permissions
+            });
+        }
+           
+        
+
+
+
+
+
+
 
         // ==========================
         // REMOVE PERMISSION

@@ -25,9 +25,12 @@ namespace WebProjectAPI.Repositories.Implementations
 
         public async Task<ApiResponse<List<UserListDto>>> GetAll(PaginationRequest request)
         {
+           
             var query = _context.Users
-                .IgnoreQueryFilters()
-                .AsQueryable();
+            .IgnoreQueryFilters()
+            .Include(x => x.Tenant)
+            .AsQueryable();
+
             if (!_currentUser.IsPlatformUser)
             {
                 query = query.Where(x =>
@@ -51,8 +54,11 @@ namespace WebProjectAPI.Repositories.Implementations
                     Id = x.Id,
                     FullName = x.FullName,
                     Email = x.Email,
-                    Status = x.Status
-                })
+                    Status = x.Status,
+                    TenantName = x.Tenant != null
+                    ? x.Tenant.Name
+                    : "Platform"
+                        })
                 .ToListAsync();
 
             return new ApiResponse<List<UserListDto>>

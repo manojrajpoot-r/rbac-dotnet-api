@@ -1,4 +1,7 @@
-﻿using WebProjectAPI.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WebProjectAPI.Data;
+using WebProjectAPI.DTOs;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Interfaces;
@@ -16,29 +19,50 @@ namespace WebProjectAPI.Repositories.Implementations
             _currentUser = currentUser;
         }
 
-        public List<Role> GetAll(PaginationRequest request)
+        public async Task<ApiResponse<List<RoleListDto>>> GetAll(
+            PaginationRequest request)
         {
-            var query = _context.Roles.AsQueryable();
+            var query = _context.Roles
+                .Include(x => x.Tenant)
+                .AsQueryable();
+
             if (!_currentUser.IsPlatformUser)
             {
                 query = query.Where(x =>
                     x.TenantId == _currentUser.TenantId);
             }
-            //  search
-            if (!string.IsNullOrEmpty(request.Search))
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(x => x.Name.Contains(request.Search));
+                query = query.Where(x =>
+                    x.Name.Contains(request.Search));
             }
 
-            // 📊 total count
-          int totalRecords = query.Count();
+            var totalRecords = await query.CountAsync();
 
-            // 📄 pagination
-            return query
-                .OrderBy(x => x.Id)
+            var data = await query
+                .OrderByDescending(x => x.Id)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .ToList();
+                .Select(x => new RoleListDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Status = x.Status,
+                    TenantName = x.Tenant != null
+                        ? x.Tenant.Name
+                        : "Platform"
+                })
+                .ToListAsync();
+
+            return new ApiResponse<List<RoleListDto>>
+            {
+                Success = true,
+                Data = data,
+                TotalRecords = totalRecords,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
         }
 
 
