@@ -24,7 +24,26 @@ namespace WebProjectAPI.Features.subscription.Repositories
         // ================= GET ALL =================
         public async Task<ApiResponse<List<TenantSubscriptionDto>>> GetAll(PaginationRequest request)
         {
-            var query = _context.TenantSubscriptions.AsQueryable();
+            // Auto update expired subscriptions
+            var expiredSubscriptions = await _context.TenantSubscriptions
+                .Where(x => x.EndDate < DateTime.UtcNow
+                         && x.SubscriptionStatus != "Expired")
+                .ToListAsync();
+
+            if (expiredSubscriptions.Any())
+            {
+                foreach (var item in expiredSubscriptions)
+                {
+                    item.SubscriptionStatus = "Expired";
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
+            var query = _context.TenantSubscriptions
+                .Include(x => x.Tenant)
+                .Include(x => x.Plan)
+                .AsQueryable();
 
             var totalRecords = await query.CountAsync();
 
@@ -36,10 +55,15 @@ namespace WebProjectAPI.Features.subscription.Repositories
                 {
                     Id = x.Id,
                     TenantId = x.TenantId,
+                    TenantName = x.Tenant.Name,
+
                     PlanId = x.PlanId,
+                    PlanName = x.Plan.Name,
+
                     StartDate = x.StartDate,
                     EndDate = x.EndDate,
                     Amount = x.Amount,
+
                     SubscriptionStatus = x.SubscriptionStatus
                 })
                 .ToListAsync();
@@ -186,6 +210,50 @@ namespace WebProjectAPI.Features.subscription.Repositories
                 Message = "Status updated successfully"
             };
         }
+
+
+        public async Task<ApiResponse<string>> RenewSubscription(int subscriptionId)
+        {
+            var subscription = await _context.TenantSubscriptions
+                .Include(x => x.Plan)
+                .FirstOrDefaultAsync(x => x.Id == subscriptionId);
+
+            if (subscription == null)
+            {
+                return new ApiResponse<string>
+                {
+                    Success = false,
+                    Message = "Subscription not found"
+                };
+            }
+
+            var duration = subscription.Plan.DurationInMonths;
+
+            // Active subscription
+            if (subscription.EndDate > DateTime.UtcNow)
+            {
+                subscription.EndDate =
+                    subscription.EndDate.AddMonths(duration);
+            }
+            else
+            {
+                // Expired subscription
+                subscription.StartDate = DateTime.UtcNow;
+                subscription.EndDate =
+                    DateTime.UtcNow.AddMonths(duration);
+            }
+
+            subscription.Amount = subscription.Plan.Price;
+            subscription.SubscriptionStatus = "Active";
+
+            await _context.SaveChangesAsync();
+
+            return new ApiResponse<string>
+            {
+                Success = true,
+                Message = $"Subscription renewed for {duration} month(s)"
+            };
+        }
     }
-       
-}
+
+  }

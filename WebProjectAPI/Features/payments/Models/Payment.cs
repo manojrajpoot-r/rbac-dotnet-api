@@ -6,7 +6,11 @@ namespace WebProjectAPI.Features.payments.Models
     {
         public int Id { get; set; }
 
-        public int TenantSubscriptionId { get; set; }
+        public int? TenantSubscriptionId { get; set; }
+
+        public int TenantId { get; set; }
+
+        public int PlanId { get; set; }
 
         public decimal Amount { get; set; }
 
@@ -14,11 +18,10 @@ namespace WebProjectAPI.Features.payments.Models
 
         public string PaymentGateway { get; set; } = string.Empty;
 
-        public string PaymentStatus  { get; set; } = string.Empty;
-
+        public string PaymentStatus { get; set; } = string.Empty;
 
         public DateTime PaymentDate { get; set; }
 
-        public TenantSubscription TenantSubscription { get; set; } = null!;
+        public TenantSubscription? TenantSubscription { get; set; }
     }
 }

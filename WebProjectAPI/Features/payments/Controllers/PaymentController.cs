@@ -4,6 +4,7 @@ using global::WebProjectAPI.Features.Common.Paginations;
 using global::WebProjectAPI.Features.payments.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using WebProjectAPI.Features.payments.Interfaces;
+using WebProjectAPI.Features.payments.Repositories;
 namespace WebProjectAPI.Features.payments.Controllers
 {
         [Route("api/[controller]")]
@@ -68,6 +69,22 @@ namespace WebProjectAPI.Features.payments.Controllers
             {
                 return await _paymentService.GetByTransaction(transactionId);
             }
-        }
+
+            [HttpPost("CreateOrder")]
+            public async Task<IActionResult> CreateOrder(
+           [FromBody] CreateOrderDto model)
+            {
+                var result = await _paymentService.CreateOrder(model);
+                return Ok(result);
+            }
+
+            [HttpPost("VerifyPayment")]
+            public async Task<IActionResult> VerifyPayment(
+                [FromBody] VerifyPaymentDto model)
+            {
+                var result = await _paymentService.VerifyPayment(model);
+                return Ok(result);
+            }
+    }
     
 }

@@ -2,7 +2,7 @@
 {
     public class CreatePaymentDto
     {
-        public int TenantSubscriptionId { get; set; }
+        public int? TenantSubscriptionId { get; set; }
         public string PaymentGateway { get; set; } = "Razorpay";
     }
 }

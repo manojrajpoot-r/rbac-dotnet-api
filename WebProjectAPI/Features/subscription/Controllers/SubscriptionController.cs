@@ -80,7 +80,13 @@ namespace WebProjectAPI.Features.subscription.Controllers
         {
             return await _subscription.ChangeStatus(id);
         }
+        [HttpPut("{id}/renew")]
+        public async Task<IActionResult> RenewSubscription(int id)
+        {
+            var result = await _subscription.RenewSubscription(id);
 
+            return Ok(result);
+        }
 
     }
 }

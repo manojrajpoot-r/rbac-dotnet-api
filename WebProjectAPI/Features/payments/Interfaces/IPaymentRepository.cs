@@ -18,6 +18,10 @@
             Task<ApiResponse<string>> Delete(int id);
 
             Task<ApiResponse<PaymentDto>> GetByTransaction(string transactionId);
-        }
+
+        Task<ApiResponse<object>> CreateOrder(CreateOrderDto model);
+
+        Task<ApiResponse<string>> VerifyPayment(VerifyPaymentDto model);
+    }
     }
 

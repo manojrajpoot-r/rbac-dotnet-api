@@ -32,6 +32,7 @@ using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.Common.Services;
 using WebProjectAPI.Features.orders.services;
 using WebProjectAPI.Features.orders.Services;
+using WebProjectAPI.Features.payments.Constants;
 using WebProjectAPI.Features.payments.Interfaces;
 using WebProjectAPI.Features.payments.Repositories;
 using WebProjectAPI.Features.payments.Services;
@@ -73,8 +74,9 @@ using WebProjectAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
+//payment key register
+builder.Services.Configure<RazorpaySettings>(
+    builder.Configuration.GetSection("Razorpay"));
 
 //Seeder for super admin
 Console.WriteLine("=== PROGRAM STARTED ===");

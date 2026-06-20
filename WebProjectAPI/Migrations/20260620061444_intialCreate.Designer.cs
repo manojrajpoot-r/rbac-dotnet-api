@@ -12,8 +12,8 @@ using WebProjectAPI.Data;
 namespace WebProjectAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260619173828_plnaTable")]
-    partial class plnaTable
+    [Migration("20260620061444_intialCreate")]
+    partial class intialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -433,7 +433,7 @@ namespace WebProjectAPI.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("WebProjectAPI.Features.plans.Models.Payment", b =>
+            modelBuilder.Entity("WebProjectAPI.Features.payments.Models.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -502,42 +502,6 @@ namespace WebProjectAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Plans");
-                });
-
-            modelBuilder.Entity("WebProjectAPI.Features.plans.Models.TenantSubscription", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PlanId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SubscriptionStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TenantId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PlanId");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("TenantSubscriptions");
                 });
 
             modelBuilder.Entity("WebProjectAPI.Features.product_images.Models.ProductImage", b =>
@@ -780,6 +744,42 @@ namespace WebProjectAPI.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("SubCategories");
+                });
+
+            modelBuilder.Entity("WebProjectAPI.Features.subscription.Models.TenantSubscription", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SubscriptionStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("TenantSubscriptions");
                 });
 
             modelBuilder.Entity("WebProjectAPI.Features.wishlistItem.Models.Wishlist", b =>
@@ -1142,34 +1142,15 @@ namespace WebProjectAPI.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("WebProjectAPI.Features.plans.Models.Payment", b =>
+            modelBuilder.Entity("WebProjectAPI.Features.payments.Models.Payment", b =>
                 {
-                    b.HasOne("WebProjectAPI.Features.plans.Models.TenantSubscription", "TenantSubscription")
+                    b.HasOne("WebProjectAPI.Features.subscription.Models.TenantSubscription", "TenantSubscription")
                         .WithMany()
                         .HasForeignKey("TenantSubscriptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("TenantSubscription");
-                });
-
-            modelBuilder.Entity("WebProjectAPI.Features.plans.Models.TenantSubscription", b =>
-                {
-                    b.HasOne("WebProjectAPI.Features.plans.Models.Plan", "Plan")
-                        .WithMany()
-                        .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebProjectAPI.Models.Tenant", "Tenant")
-                        .WithMany()
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Plan");
-
-                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("WebProjectAPI.Features.product_images.Models.ProductImage", b =>
@@ -1246,6 +1227,25 @@ namespace WebProjectAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("WebProjectAPI.Features.subscription.Models.TenantSubscription", b =>
+                {
+                    b.HasOne("WebProjectAPI.Features.plans.Models.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebProjectAPI.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
+
+                    b.Navigation("Tenant");
                 });
 
             modelBuilder.Entity("WebProjectAPI.Features.wishlistItem.Models.Wishlist", b =>

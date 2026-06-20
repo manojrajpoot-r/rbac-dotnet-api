@@ -34,5 +34,14 @@ namespace WebProjectAPI.Features.subscription.Services
         {
             return await _repo.ChangeStatus(id);
         }
+
+        public async Task<ApiResponse<string>> RenewSubscription(int id)
+        {
+            return await _repo.RenewSubscription(id);
+        }
+
+      
+
+
     }
 }

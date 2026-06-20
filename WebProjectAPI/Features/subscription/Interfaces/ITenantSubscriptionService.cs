@@ -12,5 +12,8 @@ namespace WebProjectAPI.Features.subscription.Interfaces
         Task<ApiResponse<TenantSubscriptionDto>> Update(UpdateTenantSubscriptionDto model);
         Task<ApiResponse<string>> Delete(int id);
         Task<ApiResponse<string>> ChangeStatus(int id);
+
+        Task<ApiResponse<string>> RenewSubscription(int id);
+   
     }
 }

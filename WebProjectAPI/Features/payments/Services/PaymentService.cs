@@ -45,5 +45,17 @@
             {
                 return await _paymentRepository.GetByTransaction(transactionId);
             }
+
+
+        public async Task<ApiResponse<object>> CreateOrder(CreateOrderDto model)
+        {
+            return await _paymentRepository.CreateOrder(model);
         }
+
+        public async Task<ApiResponse<string>> VerifyPayment(VerifyPaymentDto model)
+        {
+            return await _paymentRepository.VerifyPayment(model);
+        }
+    
+    }
     }
