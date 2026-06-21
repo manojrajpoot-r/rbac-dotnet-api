@@ -25,7 +25,7 @@ namespace WebProjectAPI.Controllers.UserC
             }
 
         [Authorize]
-        [Permission("view_user")]
+        [Permission("USER_VIEW")]
 
 
 
@@ -38,7 +38,7 @@ namespace WebProjectAPI.Controllers.UserC
         }
 
         [Authorize]
-        [Permission("add_user")]
+        [Permission("USER_CREATE")]
         [HttpPost]
         public IActionResult Add(UserCreateDto dto)
             {
@@ -62,7 +62,7 @@ namespace WebProjectAPI.Controllers.UserC
 
 
         [Authorize]
-        [Permission("edit_user")]
+        [Permission("USER_EDIT")]
         [HttpPut("{id}")]
         public IActionResult Update(int id,UserUpdateDto dto)
         {
@@ -71,7 +71,7 @@ namespace WebProjectAPI.Controllers.UserC
         }
 
         [Authorize]
-        [Permission("delete_user")]
+        [Permission("USER_DELETE")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {

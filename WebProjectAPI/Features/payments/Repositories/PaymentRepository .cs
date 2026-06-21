@@ -50,7 +50,10 @@ namespace WebProjectAPI.Features.payments.Repositories
                 .Select(x => new PaymentDto
                 {
                     Id = x.Id,
-                    TenantSubscriptionId = x.TenantSubscriptionId,
+                    TenantId = x.TenantId,
+                    TenantName = x.Tenant.Name,
+                    PlanId = x.PlanId,
+                    PlanName = x.Plan.Name,
                     Amount = x.Amount,
                     TransactionId = x.TransactionId,
                     PaymentGateway = x.PaymentGateway,

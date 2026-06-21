@@ -19,7 +19,7 @@ namespace WebProjectAPI.Controllers.Role
         }
 
         [Authorize]
-        [Permission("view_role")]
+        [Permission("ROLE_VIEW")]
 
         [HttpPost("list")]
 
@@ -31,7 +31,7 @@ namespace WebProjectAPI.Controllers.Role
 
 
         [Authorize]
-        [Permission("add_role")]
+        [Permission("ROLE_CREATE")]
         [HttpPost]
         public IActionResult Add(RoleCreateDto dto)
         {
@@ -43,7 +43,7 @@ namespace WebProjectAPI.Controllers.Role
 
 
         [Authorize]
-        [Permission("view_role")]
+        [Permission("ROLE_VIEW")]
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -53,7 +53,7 @@ namespace WebProjectAPI.Controllers.Role
 
 
         [Authorize]
-        [Permission("edit_role")]
+        [Permission("ROLE_EDIT")]
         [HttpPut("{id}")]
         public IActionResult Update(int id ,RoleUpdateDto dto)
         {
@@ -64,7 +64,7 @@ namespace WebProjectAPI.Controllers.Role
         }
 
         [Authorize]
-        [Permission("delete_role")]
+        [Permission("ROLE_DELETE")]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -72,7 +72,7 @@ namespace WebProjectAPI.Controllers.Role
         }
 
         [Authorize]
-        [Permission("status_role")]
+        [Permission("ROLE_STATUS")]
         [HttpPatch("status/{id}")]
         public IActionResult Status(int id)
         {

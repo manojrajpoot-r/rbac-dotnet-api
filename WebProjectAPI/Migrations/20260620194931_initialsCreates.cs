@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebProjectAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class intialCreate : Migration
+    public partial class initialsCreates : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -447,7 +447,9 @@ namespace WebProjectAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    TenantSubscriptionId = table.Column<int>(type: "int", nullable: false),
+                    TenantSubscriptionId = table.Column<int>(type: "int", nullable: true),
+                    TenantId = table.Column<int>(type: "int", nullable: false),
+                    PlanId = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentGateway = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -461,8 +463,7 @@ namespace WebProjectAPI.Migrations
                         name: "FK_Payments_TenantSubscriptions_TenantSubscriptionId",
                         column: x => x.TenantSubscriptionId,
                         principalTable: "TenantSubscriptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(

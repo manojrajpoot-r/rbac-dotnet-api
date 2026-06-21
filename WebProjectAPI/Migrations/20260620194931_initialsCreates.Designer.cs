@@ -12,8 +12,8 @@ using WebProjectAPI.Data;
 namespace WebProjectAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260620123701_PaymentNullableSubscription")]
-    partial class PaymentNullableSubscription
+    [Migration("20260620194931_initialsCreates")]
+    partial class initialsCreates
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -454,6 +454,12 @@ namespace WebProjectAPI.Migrations
                     b.Property<string>("PaymentStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TenantId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("TenantSubscriptionId")
                         .HasColumnType("int");

@@ -1,4 +1,6 @@
 ﻿using WebProjectAPI.Features.subscription.Models;
+using WebProjectAPI.Features.plans.Models;
+using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.payments.Models
 {
@@ -9,9 +11,10 @@ namespace WebProjectAPI.Features.payments.Models
         public int? TenantSubscriptionId { get; set; }
 
         public int TenantId { get; set; }
-
+        public Tenant Tenant { get; set; }
+     
         public int PlanId { get; set; }
-
+        public Plan Plan { get; set; }
         public decimal Amount { get; set; }
 
         public string TransactionId { get; set; } = string.Empty;
