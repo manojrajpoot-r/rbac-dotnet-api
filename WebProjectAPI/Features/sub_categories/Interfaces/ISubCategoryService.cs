@@ -1,5 +1,4 @@
-﻿using WebProjectAPI.Features.brands.DTOs;
-using WebProjectAPI.Features.Common.ApiResponse;
+﻿using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sub_categories.DTOs;
 
@@ -8,8 +7,7 @@ namespace WebProjectAPI.Features.sub_categories.Interfaces
     public interface ISubCategoryService
     {
   
-        Task<ApiResponse<List<SubCategoryListDto>>> GetAllAsync(
-        PaginationRequest request);
+        Task<ApiResponse<List<SubCategoryListDto>>> GetAllAsync(PaginationRequest request);
         Task<SubCategoryListDto> CreateAsync(CreateSubCategoryDto dto);
         Task<SubCategoryListDto> GetByIdAsync(int id);
 

@@ -2,7 +2,6 @@
 using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
-using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Models;
 
 namespace WebProjectAPI.Features.Categories.Interfaces
@@ -10,8 +9,7 @@ namespace WebProjectAPI.Features.Categories.Interfaces
     public interface ICategoryRepository
     {
 
-        Task<ApiResponse<List<CategoryListDto>>> GetAllAsync(
-        PaginationRequest request);
+        Task<ApiResponse<List<CategoryListDto>>> GetAllAsync(PaginationRequest request);
         
         Task<Category?> GetByIdAsync(int id);
 
@@ -22,7 +20,6 @@ namespace WebProjectAPI.Features.Categories.Interfaces
         Task<bool> DeleteAsync(Category category);
 
         Task<bool> ChangeStatusAsync(int id);
-        Task<List<Category>>
-     GetCategoriesAsync();
+        Task<List<Category>>GetCategoriesAsync();
     }
 }

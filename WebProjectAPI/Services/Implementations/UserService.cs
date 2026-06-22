@@ -5,24 +5,23 @@
     using Microsoft.EntityFrameworkCore;
     using WebProjectAPI.DTOs.UserD;
     using WebProjectAPI.Features.Common.Paginations;
-    using WebProjectAPI.Features.Tenants.DTOs;
-    using WebProjectAPI.Features.Tenants.Repositories;
-    using WebProjectAPI.Helpers;
     using WebProjectAPI.Models;
     using WebProjectAPI.Repositories.Interfaces;
-    using WebProjectAPI.Services.Implementations;
     using WebProjectAPI.Features.Common.ApiResponse;
+    using WebProjectAPI.Data;
     public class UserService : IUserService
     {
         private readonly IUserRepository _repo;
         private readonly IMapper _mapper;
         private readonly PasswordHasher<User> _hasher;
+        private readonly AppDbContext _context;
 
-        public UserService(IUserRepository repo, IMapper mapper)
+        public UserService(IUserRepository repo, IMapper mapper, AppDbContext context)
         {
             _repo = repo;
             _mapper = mapper;
             _hasher = new PasswordHasher<User>();
+            _context = context;
         }
 
 
@@ -109,6 +108,47 @@
             {
                 Success = result,
                 Message = result ? "Status changed" : "Not found"
+            };
+        }
+
+        public async Task<ApiResponse<bool>> ChangePasswordAsync(ChangePasswordRequest request)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id.ToString() == request.UserId);
+
+            if (user == null)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "User not found",
+                    Data = false
+                };
+            }
+
+            // check current password
+            var isValid = BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash);
+
+            if (!isValid)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "Current password is incorrect",
+                    Data = false
+                };
+            }
+
+            // update password
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+
+            await _context.SaveChangesAsync();
+
+            return new ApiResponse<bool>
+            {
+                Success = true,
+                Message = "Password changed successfully",
+                Data = true
             };
         }
     }

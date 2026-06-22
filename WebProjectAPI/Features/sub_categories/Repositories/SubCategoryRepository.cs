@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
-using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sub_categories.DTOs;
 using WebProjectAPI.Features.sub_categories.Interfaces;
 using WebProjectAPI.Features.sub_categories.Models;
 using WebProjectAPI.Services.Interfaces;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+
 
 namespace WebProjectAPI.Features.sub_categories.Repositories
 {
@@ -64,6 +63,9 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
                 PageSize = request.PageSize
             };
         }
+
+
+
         public async Task<SubCategory?> GetByIdAsync(int id)
         {
             return await _context.SubCategories

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Xml.Linq;
 using WebProjectAPI.Data;
+using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Categories.Interfaces;
 using WebProjectAPI.Features.Categories.Models;
 using WebProjectAPI.Features.Common.ApiResponse;

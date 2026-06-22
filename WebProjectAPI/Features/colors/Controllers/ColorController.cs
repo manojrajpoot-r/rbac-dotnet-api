@@ -65,10 +65,10 @@ namespace WebProjectAPI.Features.colors.Controllers
 
         // STATUS CHANGE
         [HttpPatch("status/{id}")]
+       
         public async Task<IActionResult> ChangeStatus(int id)
         {
-            var result = await _service.ChangeStatus(id);
-
+            var result = await _service.ChangeStatusAsync(id);
             return Ok(result);
         }
 
