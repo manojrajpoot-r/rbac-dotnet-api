@@ -23,15 +23,15 @@ namespace WebProjectAPI.Features.Categories.Services
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<List<CategoryDto>>> GetAllAsync(
+        public async Task<ApiResponse<List<CategoryListDto>>> GetAllAsync(
         PaginationRequest request)
         {
             var result = await _repository.GetAllAsync( request);
 
             var data =
-                _mapper.Map<List<CategoryDto>>(result.Data);
+                _mapper.Map<List<CategoryListDto>>(result.Data);
 
-            return new ApiResponse<List<CategoryDto>>
+            return new ApiResponse<List<CategoryListDto>>
             {
                 Success = true,
                 Data = data,
@@ -39,17 +39,17 @@ namespace WebProjectAPI.Features.Categories.Services
             };
         }
 
-        public async Task<CategoryDto> GetByIdAsync(int id)
+        public async Task<CategoryListDto> GetByIdAsync(int id)
         {
             var category = await _repository.GetByIdAsync(id);
 
             if (category == null)
                 return null;
 
-            return _mapper.Map<CategoryDto>(category);
+            return _mapper.Map<CategoryListDto>(category);
         }
 
-        public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto)
+        public async Task<CategoryListDto> CreateAsync(CreateCategoryDto dto)
         {
             var category = _mapper.Map<Category>(dto);
 
@@ -58,10 +58,10 @@ namespace WebProjectAPI.Features.Categories.Services
 
             var result = await _repository.CreateAsync(category);
 
-            return _mapper.Map<CategoryDto>(result);
+            return _mapper.Map<CategoryListDto>(result);
         }
 
-        public async Task<CategoryDto> UpdateAsync(int id, UpdateCategoryDto dto)
+        public async Task<CategoryListDto> UpdateAsync(int id, UpdateCategoryDto dto)
         {
             var category = await _repository.GetByIdAsync(id);
 
@@ -72,7 +72,7 @@ namespace WebProjectAPI.Features.Categories.Services
             category.Slug = SlugHelper.GenerateSlug(dto.Name);
             var updatedCategory = await _repository.UpdateAsync(category);
 
-            return _mapper.Map<CategoryDto>(updatedCategory);
+            return _mapper.Map<CategoryListDto>(updatedCategory);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -95,18 +95,18 @@ namespace WebProjectAPI.Features.Categories.Services
 
 
 
-        public async Task<ApiResponse<List<CategoryDto>>>
+        public async Task<ApiResponse<List<CategoryListDto>>>
          GetCategoriesAsync()
         {
             var categories =
                 await _repository.GetCategoriesAsync();
 
             var data =
-                _mapper.Map<List<CategoryDto>>(
+                _mapper.Map<List<CategoryListDto>>(
                     categories
                 );
 
-            return new ApiResponse<List<CategoryDto>>
+            return new ApiResponse<List<CategoryListDto>>
             {
                 Success = true,
                 Data = data

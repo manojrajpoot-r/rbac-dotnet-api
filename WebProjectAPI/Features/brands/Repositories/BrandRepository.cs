@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
+using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.brands.Interfaces;
 using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
+using WebProjectAPI.Services.Interfaces;
 
 
 
@@ -12,39 +15,70 @@ namespace WebProjectAPI.Features.brands.Repositories
     public class BrandRepository : IBrandRepository
     {
         private readonly AppDbContext _context;
+        private  readonly ICurrentUserService _currentUser;
 
-        public BrandRepository(AppDbContext context)
+        public BrandRepository(AppDbContext context,ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUser = currentUserService;
+            
         }
 
-        public async Task<(List<Brand> Brands, int TotalRecords)> GetAllAsync(
-            PaginationRequest request)
+        public async Task<ApiResponse<List<BrandListDto>>> GetAllAsync(
+        PaginationRequest request)
         {
             var query = _context.Brands.AsQueryable();
 
-            if (!string.IsNullOrEmpty(request.Search))
+            if (!_currentUser.IsPlatformUser)
             {
-                query = query.Where(x => x.Name.Contains(request.Search));
+                query = query.Where(x =>
+                    x.TenantId == _currentUser.TenantId);
             }
 
-            int totalRecords = await query.CountAsync();
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                query = query.Where(x =>
+                    x.Name.Contains(request.Search));
+            }
 
-            var brands = await query
+            var totalRecords = await query.CountAsync();
+
+            var data = await query
+                .OrderByDescending(x => x.Id)
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
+                .Select(x => new BrandListDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Slug=x.Slug,
+                    Image=x.Image,
+                    IsFeatured=x.IsFeatured,
+                    Status = x.Status
+                })
                 .ToListAsync();
 
-            return (brands, totalRecords);
+            return new ApiResponse<List<BrandListDto>>
+            {
+                Success = true,
+                Data = data,
+                TotalRecords = totalRecords,
+                PageNumber = request.PageNumber,
+                PageSize = request.PageSize
+            };
         }
 
         public async Task<Brand?> GetByIdAsync(int id)
         {
-            return await _context.Brands.FindAsync(id);
+            return await _context.Brands
+            .FirstOrDefaultAsync(x =>
+            x.Id == id &&
+            x.TenantId == _currentUser.TenantId);
         }
 
         public async Task<Brand> CreateAsync(Brand brand)
         {
+            brand.TenantId = _currentUser.TenantId.Value;
             _context.Brands.Add(brand);
 
             await _context.SaveChangesAsync();
@@ -54,16 +88,33 @@ namespace WebProjectAPI.Features.brands.Repositories
 
         public async Task<Brand> UpdateAsync(Brand brand)
         {
-            _context.Brands.Update(brand);
+            var existingBrand = await _context.Brands
+                .FirstOrDefaultAsync(x =>
+                    x.Id == brand.Id &&
+                    x.TenantId == _currentUser.TenantId);
+
+            if (existingBrand == null)
+                throw new Exception("Brand not found");
+
+            existingBrand.Name = brand.Name;
+            existingBrand.Status = brand.Status;
 
             await _context.SaveChangesAsync();
 
-            return brand;
+            return existingBrand;
         }
 
         public async Task<bool> DeleteAsync(Brand brand)
         {
-            _context.Brands.Remove(brand);
+            var existingBrand = await _context.Brands
+                .FirstOrDefaultAsync(x =>
+                    x.Id == brand.Id &&
+                    x.TenantId == _currentUser.TenantId);
+
+            if (existingBrand == null)
+                return false;
+
+            _context.Brands.Remove(existingBrand);
 
             await _context.SaveChangesAsync();
 
@@ -72,7 +123,10 @@ namespace WebProjectAPI.Features.brands.Repositories
 
         public async Task<bool> ChangeStatusAsync(int id)
         {
-            var brand = await _context.Brands.FindAsync(id);
+            var brand = await _context.Brands
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.TenantId == _currentUser.TenantId);
 
             if (brand == null)
                 return false;
@@ -88,9 +142,11 @@ namespace WebProjectAPI.Features.brands.Repositories
        GetAllBrandsAsync()
         {
             return await _context.Brands
-                .Where(x => x.Status)
-                .OrderBy(x => x.Name)
-                .ToListAsync();
+         .Where(x =>
+             x.Status &&
+             x.TenantId == _currentUser.TenantId)
+         .OrderBy(x => x.Name)
+         .ToListAsync();
         }
     }
 }

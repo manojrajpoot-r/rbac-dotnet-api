@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using WebProjectAPI.Features.brands.DTOs;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.Common.Paginations;
-using WebProjectAPI.Features.products.Models;
 using WebProjectAPI.Features.sub_categories.DTOs;
 using WebProjectAPI.Features.sub_categories.Interfaces;
 using WebProjectAPI.Features.sub_categories.Mappings;
@@ -26,25 +25,25 @@ namespace WebProjectAPI.Features.sub_categories.Services
             _mapper = mapper;
         }
 
-
-        public async Task<List<SubCategoryDto>> GetAllAsync(PaginationRequest request)
+        public async Task<ApiResponse<List<SubCategoryListDto>>> GetAllAsync(
+       PaginationRequest request)
         {
-            var data = await _repository.GetAllAsync(request);
-
-            return _mapper.Map<List<SubCategoryDto>>(data);
+            return await _repository
+             .GetAllAsync(request);
+   
         }
 
-        public async Task<SubCategoryDto> GetByIdAsync(int id)
+        public async Task<SubCategoryListDto> GetByIdAsync(int id)
         {
             var subcategory = await _repository.GetByIdAsync(id);
 
             if (subcategory == null)
                 return null;
 
-            return _mapper.Map<SubCategoryDto>(subcategory);
+            return _mapper.Map<SubCategoryListDto>(subcategory);
         }
 
-        public async Task<SubCategoryDto> CreateAsync(CreateSubCategoryDto dto)
+        public async Task<SubCategoryListDto> CreateAsync(CreateSubCategoryDto dto)
         {
             var subCategory = _mapper.Map<SubCategory>(dto);
 
@@ -59,10 +58,10 @@ namespace WebProjectAPI.Features.sub_categories.Services
 
             var result = await _repository.CreateAsync(subCategory);
 
-            return _mapper.Map<SubCategoryDto>(result);
+            return _mapper.Map<SubCategoryListDto>(result);
         }
 
-        public async Task<SubCategoryDto> UpdateAsync(int id, UpdateSubCategoryDto dto)
+        public async Task<SubCategoryListDto> UpdateAsync(int id, UpdateSubCategoryDto dto)
         {
             var subCategory = await _repository.GetByIdAsync(id);
 
@@ -89,7 +88,7 @@ namespace WebProjectAPI.Features.sub_categories.Services
 
             var updatedSubCategory = await _repository.UpdateAsync(subCategory);
 
-            return _mapper.Map<SubCategoryDto>(updatedSubCategory);
+            return _mapper.Map<SubCategoryListDto>(updatedSubCategory);
         }
         public async Task<bool> DeleteAsync(int id)
         {
@@ -106,11 +105,11 @@ namespace WebProjectAPI.Features.sub_categories.Services
             return await _repository.ChangeStatusAsync(id);
         }
 
-        public async Task<List<SubCategoryDto>> GetAllSubCategoriesAsync()
+        public async Task<List<SubCategoryListDto>> GetAllSubCategoriesAsync()
         {
             var sub_categories = await _repository.GetAllSubCategoriesAsync();
 
-            return _mapper.Map<List<SubCategoryDto>>(sub_categories);
+            return _mapper.Map<List<SubCategoryListDto>>(sub_categories);
         }
     }
 }

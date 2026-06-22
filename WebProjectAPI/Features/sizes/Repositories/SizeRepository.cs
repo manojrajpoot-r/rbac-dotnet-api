@@ -1,29 +1,40 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
-using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.Common.ApiResponse;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sizes.DTOs;
 using WebProjectAPI.Features.sizes.Interfaces;
 using WebProjectAPI.Features.sizes.Models;
+using WebProjectAPI.Services.Interfaces;
 namespace WebProjectAPI.Features.sizes.Repositories
 {
     public class SizeRepository : ISizeRepository
     {
         private readonly AppDbContext _context;
+        private readonly ICurrentUserService _currentUser;
 
-        public SizeRepository(AppDbContext context)
+        public SizeRepository(
+            AppDbContext context,
+            ICurrentUserService currentUser)
         {
             _context = context;
+            _currentUser = currentUser;
         }
 
         // LIST WITH PAGINATION
-        public async Task<ApiResponse<List<SizeDto>>> GetAll(PaginationRequest request)
+        public async Task<ApiResponse<List<SizeDto>>> GetAll(
+          PaginationRequest request)
         {
             var query = _context.Sizes
                 .Where(x => !x.IsDeleted)
                 .AsQueryable();
 
-            // SEARCH
+            if (!_currentUser.IsPlatformUser)
+            {
+                query = query.Where(x =>
+                    x.TenantId == _currentUser.TenantId);
+            }
+
             if (!string.IsNullOrEmpty(request.Search))
             {
                 query = query.Where(x =>
@@ -55,8 +66,18 @@ namespace WebProjectAPI.Features.sizes.Repositories
         // GET BY ID
         public async Task<ApiResponse<SizeDto>> GetById(int id)
         {
-            var data = await _context.Sizes
-                .Where(x => x.Id == id && !x.IsDeleted)
+            var query = _context.Sizes
+                .Where(x =>
+                    x.Id == id &&
+                    !x.IsDeleted);
+
+            if (!_currentUser.IsPlatformUser)
+            {
+                query = query.Where(x =>
+                    x.TenantId == _currentUser.TenantId);
+            }
+
+            var data = await query
                 .Select(x => new SizeDto
                 {
                     Id = x.Id,
@@ -78,7 +99,8 @@ namespace WebProjectAPI.Features.sizes.Repositories
             var exists = await _context.Sizes
                 .AnyAsync(x =>
                     x.Name == model.Name &&
-                    !x.IsDeleted);
+                    !x.IsDeleted &&
+                    x.TenantId == _currentUser.TenantId);
 
             if (exists)
             {
@@ -91,6 +113,7 @@ namespace WebProjectAPI.Features.sizes.Repositories
 
             var size = new Size
             {
+                TenantId = _currentUser.TenantId.Value,
                 Name = model.Name,
                 IsActive = true,
                 IsDeleted = false,
@@ -117,7 +140,8 @@ namespace WebProjectAPI.Features.sizes.Repositories
             var size = await _context.Sizes
                 .FirstOrDefaultAsync(x =>
                     x.Id == model.Id &&
-                    !x.IsDeleted);
+                    !x.IsDeleted &&
+                    x.TenantId == _currentUser.TenantId);
 
             if (size == null)
             {
@@ -129,7 +153,6 @@ namespace WebProjectAPI.Features.sizes.Repositories
             }
 
             size.Name = model.Name;
-
             size.UpdatedAt = DateTime.Now;
 
             await _context.SaveChangesAsync();
@@ -145,7 +168,10 @@ namespace WebProjectAPI.Features.sizes.Repositories
         // DELETE
         public async Task<ApiResponse<string>> Delete(int id)
         {
-            var size = await _context.Sizes.FindAsync(id);
+            var size = await _context.Sizes
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.TenantId == _currentUser.TenantId);
 
             if (size == null)
             {
@@ -170,7 +196,10 @@ namespace WebProjectAPI.Features.sizes.Repositories
         // STATUS CHANGE
         public async Task<ApiResponse<string>> ChangeStatus(int id)
         {
-            var size = await _context.Sizes.FindAsync(id);
+            var size = await _context.Sizes
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.TenantId == _currentUser.TenantId);
 
             if (size == null)
             {
@@ -198,7 +227,8 @@ namespace WebProjectAPI.Features.sizes.Repositories
             return await _context.Sizes
                 .Where(x =>
                     x.IsActive &&
-                    !x.IsDeleted)
+                    !x.IsDeleted &&
+                    x.TenantId == _currentUser.TenantId)
                 .Select(x => new SizeDto
                 {
                     Id = x.Id,

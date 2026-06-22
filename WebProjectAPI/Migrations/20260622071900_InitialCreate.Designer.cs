@@ -12,8 +12,8 @@ using WebProjectAPI.Data;
 namespace WebProjectAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260620194931_initialsCreates")]
-    partial class initialsCreates
+    [Migration("20260622071900_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -469,6 +469,10 @@ namespace WebProjectAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("TenantSubscriptionId");
 
@@ -1150,9 +1154,25 @@ namespace WebProjectAPI.Migrations
 
             modelBuilder.Entity("WebProjectAPI.Features.payments.Models.Payment", b =>
                 {
+                    b.HasOne("WebProjectAPI.Features.plans.Models.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebProjectAPI.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("WebProjectAPI.Features.subscription.Models.TenantSubscription", "TenantSubscription")
                         .WithMany()
                         .HasForeignKey("TenantSubscriptionId");
+
+                    b.Navigation("Plan");
+
+                    b.Navigation("Tenant");
 
                     b.Navigation("TenantSubscription");
                 });

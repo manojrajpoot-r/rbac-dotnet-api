@@ -1,6 +1,5 @@
-﻿
-using WebProjectAPI.Data.Services;
-namespace WebProjectAPI.Middleware
+﻿using WebProjectAPI.Data.Services;
+namespace WebProjectAPI.Helpers.Middleware
 {
 
 

@@ -8,17 +8,17 @@ namespace WebProjectAPI.Features.brands.Interfaces
 {
     public interface IBrandService
     {
-        Task<ApiResponse<List<BrandDto>>> GetAllAsync(PaginationRequest request);
+        Task<ApiResponse<List<BrandListDto>>> GetAllAsync(
+         PaginationRequest request);
+        Task<ApiResponse<BrandListDto>> GetByIdAsync(int id);
 
-        Task<ApiResponse<BrandDto>> GetByIdAsync(int id);
+        Task<ApiResponse<BrandListDto>> CreateAsync(CreateBrandDto dto);
 
-        Task<ApiResponse<BrandDto>> CreateAsync(CreateBrandDto dto);
-
-        Task<ApiResponse<BrandDto>> UpdateAsync(int id, UpdateBrandDto dto);
+        Task<ApiResponse<BrandListDto>> UpdateAsync(int id, UpdateBrandDto dto);
         Task<ApiResponse<bool>> DeleteAsync(int id);
 
         Task<ApiResponse<bool>> ChangeStatusAsync(int id);
-        Task<ApiResponse<List<BrandDto>>>
+        Task<ApiResponse<List<BrandListDto>>>
      GetAllBrandsAsync();
     }
 }

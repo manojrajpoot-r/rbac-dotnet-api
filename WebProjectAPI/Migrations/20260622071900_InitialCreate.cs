@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebProjectAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class initialsCreates : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -460,10 +460,22 @@ namespace WebProjectAPI.Migrations
                 {
                     table.PrimaryKey("PK_Payments", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Payments_Plans_PlanId",
+                        column: x => x.PlanId,
+                        principalTable: "Plans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Payments_TenantSubscriptions_TenantSubscriptionId",
                         column: x => x.TenantSubscriptionId,
                         principalTable: "TenantSubscriptions",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Payments_Tenants_TenantId",
+                        column: x => x.TenantId,
+                        principalTable: "Tenants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -685,6 +697,16 @@ namespace WebProjectAPI.Migrations
                 name: "IX_OrderItems_OrderId",
                 table: "OrderItems",
                 column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_PlanId",
+                table: "Payments",
+                column: "PlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_TenantId",
+                table: "Payments",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_TenantSubscriptionId",

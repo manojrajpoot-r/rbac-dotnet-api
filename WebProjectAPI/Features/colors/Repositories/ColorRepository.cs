@@ -2,28 +2,39 @@
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.colors.DTOs;
 using WebProjectAPI.Features.colors.Interfaces;
+using WebProjectAPI.Features.colors.Models;
 using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
-using WebProjectAPI.Features.colors.Models;
+using WebProjectAPI.Services.Interfaces;
 namespace WebProjectAPI.Features.colors.Repositories
 {
     public class ColorRepository : IColorRepository
     {
         private readonly AppDbContext _context;
+        private readonly ICurrentUserService _currentUser;
 
-        public ColorRepository(AppDbContext context)
+        public ColorRepository(
+            AppDbContext context,
+            ICurrentUserService currentUser)
         {
             _context = context;
+            _currentUser = currentUser;
         }
 
         // LIST WITH PAGINATION
-        public async Task<ApiResponse<List<ColorDto>>> GetAll(PaginationRequest request)
+        public async Task<ApiResponse<List<ColorDto>>> GetAll(
+         PaginationRequest request)
         {
             var query = _context.Colors
                 .Where(x => !x.IsDeleted)
                 .AsQueryable();
 
-            // SEARCH
+            if (!_currentUser.IsPlatformUser)
+            {
+                query = query.Where(x =>
+                    x.TenantId == _currentUser.TenantId);
+            }
+
             if (!string.IsNullOrEmpty(request.Search))
             {
                 query = query.Where(x =>
@@ -52,12 +63,21 @@ namespace WebProjectAPI.Features.colors.Repositories
                 TotalRecords = totalRecords
             };
         }
-
         // GET BY ID
         public async Task<ApiResponse<ColorDto>> GetById(int id)
         {
-            var data = await _context.Colors
-                .Where(x => x.Id == id && !x.IsDeleted)
+            var query = _context.Colors
+                .Where(x =>
+                    x.Id == id &&
+                    !x.IsDeleted);
+
+            if (!_currentUser.IsPlatformUser)
+            {
+                query = query.Where(x =>
+                    x.TenantId == _currentUser.TenantId);
+            }
+
+            var data = await query
                 .Select(x => new ColorDto
                 {
                     Id = x.Id,
@@ -80,7 +100,8 @@ namespace WebProjectAPI.Features.colors.Repositories
             var exists = await _context.Colors
                 .AnyAsync(x =>
                     x.Name == model.Name &&
-                    !x.IsDeleted);
+                    !x.IsDeleted &&
+                    x.TenantId == _currentUser.TenantId);
 
             if (exists)
             {
@@ -93,6 +114,7 @@ namespace WebProjectAPI.Features.colors.Repositories
 
             var color = new Color
             {
+                TenantId = _currentUser.TenantId.Value,
                 Name = model.Name,
                 Code = model.Code,
                 IsActive = true,
@@ -120,7 +142,8 @@ namespace WebProjectAPI.Features.colors.Repositories
             var color = await _context.Colors
                 .FirstOrDefaultAsync(x =>
                     x.Id == model.Id &&
-                    !x.IsDeleted);
+                    !x.IsDeleted &&
+                    x.TenantId == _currentUser.TenantId);
 
             if (color == null)
             {
@@ -148,7 +171,10 @@ namespace WebProjectAPI.Features.colors.Repositories
         // DELETE
         public async Task<ApiResponse<string>> Delete(int id)
         {
-            var color = await _context.Colors.FindAsync(id);
+            var color = await _context.Colors
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.TenantId == _currentUser.TenantId);
 
             if (color == null)
             {
@@ -171,37 +197,13 @@ namespace WebProjectAPI.Features.colors.Repositories
         }
 
         // STATUS CHANGE
-        public async Task<ApiResponse<string>> ChangeStatus(int id)
-        {
-            var color = await _context.Colors.FindAsync(id);
-
-            if (color == null)
-            {
-                return new ApiResponse<string>
-                {
-                    Success = false,
-                    Message = "Color not found"
-                };
-            }
-
-            color.IsActive = !color.IsActive;
-
-            await _context.SaveChangesAsync();
-
-            return new ApiResponse<string>
-            {
-                Success = true,
-                Message = "Status updated successfully"
-            };
-        }
-
-        // DROPDOWN
         public async Task<List<ColorDto>> Dropdown()
         {
             return await _context.Colors
                 .Where(x =>
                     x.IsActive &&
-                    !x.IsDeleted)
+                    !x.IsDeleted &&
+                    x.TenantId == _currentUser.TenantId)
                 .Select(x => new ColorDto
                 {
                     Id = x.Id,
@@ -210,6 +212,8 @@ namespace WebProjectAPI.Features.colors.Repositories
                 })
                 .ToListAsync();
         }
+        
+       
     }
 
 }

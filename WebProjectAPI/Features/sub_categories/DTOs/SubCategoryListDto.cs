@@ -2,7 +2,7 @@
 
 namespace WebProjectAPI.Features.sub_categories.DTOs
 {
-    public class SubCategoryDto
+    public class SubCategoryListDto
     {
         public int Id { get; set; }
 

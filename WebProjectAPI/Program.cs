@@ -64,7 +64,7 @@ using WebProjectAPI.Features.Tenants.Interfaces;
 using WebProjectAPI.Features.Tenants.Repositories;
 using WebProjectAPI.Features.Tenants.Services;
 using WebProjectAPI.Helpers;
-using WebProjectAPI.Middleware;
+using WebProjectAPI.Helpers.Middleware;
 using WebProjectAPI.Models;
 using WebProjectAPI.Repositories.Implementations;
 using WebProjectAPI.Repositories.Interfaces;

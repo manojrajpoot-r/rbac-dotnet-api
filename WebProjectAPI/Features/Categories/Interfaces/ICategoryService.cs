@@ -8,17 +8,18 @@ namespace WebProjectAPI.Features.Categories.Interfaces
     public interface ICategoryService
     {
 
-        Task<ApiResponse<List<CategoryDto>>> GetAllAsync(PaginationRequest request);
-        Task<CategoryDto> CreateAsync(CreateCategoryDto dto);
-        Task<CategoryDto> GetByIdAsync(int id);
+        Task<ApiResponse<List<CategoryListDto>>> GetAllAsync(
+        PaginationRequest request);
+        Task<CategoryListDto> CreateAsync(CreateCategoryDto dto);
+        Task<CategoryListDto> GetByIdAsync(int id);
 
-        Task<CategoryDto> UpdateAsync(int id, UpdateCategoryDto dto);
+        Task<CategoryListDto> UpdateAsync(int id, UpdateCategoryDto dto);
 
         Task<bool> DeleteAsync(int id);
 
         Task<bool> ChangeStatusAsync(int id);
 
-        Task<ApiResponse<List<CategoryDto>>>
+        Task<ApiResponse<List<CategoryListDto>>>
             GetCategoriesAsync();
     }
 }

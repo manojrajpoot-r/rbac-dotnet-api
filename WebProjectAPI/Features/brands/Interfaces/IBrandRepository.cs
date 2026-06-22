@@ -1,5 +1,7 @@
-﻿using WebProjectAPI.Features.brands.Models;
+﻿using WebProjectAPI.Features.brands.DTOs;
+using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.Categories.Models;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Helpers;
 using WebProjectAPI.Models;
@@ -9,8 +11,8 @@ namespace WebProjectAPI.Features.brands.Interfaces
 {
     public interface IBrandRepository
     {
-        Task<(List<Brand> Brands, int TotalRecords)> GetAllAsync(
-           PaginationRequest request);
+        Task<ApiResponse<List<BrandListDto>>> GetAllAsync(
+        PaginationRequest request);
         Task<Brand?> GetByIdAsync(int id);
         
         Task<Brand> CreateAsync(Brand brand);

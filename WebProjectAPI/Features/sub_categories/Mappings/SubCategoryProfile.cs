@@ -7,7 +7,7 @@ namespace WebProjectAPI.Features.sub_categories.Mappings
     {
         public SubCategoryProfile()
         {
-            CreateMap<SubCategory, SubCategoryDto>()
+            CreateMap<SubCategory, SubCategoryListDto>()
              .ForMember(
                  dest => dest.CategoryName,
                  opt => opt.MapFrom(src => src.Category.Name)

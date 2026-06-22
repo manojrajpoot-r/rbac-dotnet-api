@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Models;
-using WebProjectAPI.Features.Common.ApiResponse;
+using WebProjectAPI.Features.products.Repositories;
 namespace WebProjectAPI.Features.products.Services
 {
     public class ProductService : IProductService
@@ -29,17 +30,10 @@ namespace WebProjectAPI.Features.products.Services
         public async Task<ApiResponse<List<ProductDto>>> GetAllAsync(
           PaginationRequest request)
         {
-            var result = await _repository.GetAllAsync(request);
+            return await _repository
+             .GetAllAsync(request);
 
-            var data = _mapper.Map<List<ProductDto>>(result.Products);
-
-            return new ApiResponse<List<ProductDto>>
-            {
-                Success = true,
-                Data = data,
-                TotalRecords = result.TotalRecords,
-               
-            };
+           
         }
         public async Task<ApiResponse<ProductDto>> GetByIdAsync(int id)
         {

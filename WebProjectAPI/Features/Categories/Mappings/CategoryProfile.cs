@@ -8,7 +8,7 @@ namespace WebProjectAPI.Features.Categories.Mappings
     {
         public CategoryProfile()
         {
-            CreateMap<Category, CategoryDto>();
+            CreateMap<Category, CategoryListDto>();
 
             CreateMap<CreateCategoryDto, Category>();
 

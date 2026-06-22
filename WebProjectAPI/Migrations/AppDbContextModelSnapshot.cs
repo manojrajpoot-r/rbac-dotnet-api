@@ -467,6 +467,10 @@ namespace WebProjectAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PlanId");
+
+                    b.HasIndex("TenantId");
+
                     b.HasIndex("TenantSubscriptionId");
 
                     b.ToTable("Payments");
@@ -1147,9 +1151,25 @@ namespace WebProjectAPI.Migrations
 
             modelBuilder.Entity("WebProjectAPI.Features.payments.Models.Payment", b =>
                 {
+                    b.HasOne("WebProjectAPI.Features.plans.Models.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebProjectAPI.Models.Tenant", "Tenant")
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("WebProjectAPI.Features.subscription.Models.TenantSubscription", "TenantSubscription")
                         .WithMany()
                         .HasForeignKey("TenantSubscriptionId");
+
+                    b.Navigation("Plan");
+
+                    b.Navigation("Tenant");
 
                     b.Navigation("TenantSubscription");
                 });

@@ -1,6 +1,6 @@
 ﻿namespace WebProjectAPI.Features.brands.DTOs
 {
-    public class BrandDto
+    public class BrandListDto
     {
         public int Id { get; set; }
 

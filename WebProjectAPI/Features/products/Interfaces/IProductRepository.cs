@@ -1,4 +1,5 @@
-﻿using WebProjectAPI.Features.Common.Paginations;
+﻿using WebProjectAPI.Features.Common.ApiResponse;
+using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Models;
 
@@ -6,9 +7,9 @@ namespace WebProjectAPI.Features.products.Interfaces
 {
     public interface IProductRepository
     {
-        Task<(List<Product> Products, int TotalRecords)> GetAllAsync(
-           PaginationRequest request);
-
+      
+        Task<ApiResponse<List<ProductDto>>> GetAllAsync(
+         PaginationRequest request);
         Task<Product?> GetByIdAsync(int id);
 
         Task<Product> CreateAsync(Product product);

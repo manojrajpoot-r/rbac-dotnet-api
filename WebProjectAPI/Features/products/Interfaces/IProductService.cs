@@ -6,8 +6,9 @@ namespace WebProjectAPI.Features.products.Interfaces
 {
     public interface IProductService
     {
-        Task<ApiResponse<List<ProductDto>>> GetAllAsync(PaginationRequest request);
-
+    
+        Task<ApiResponse<List<ProductDto>>> GetAllAsync(
+         PaginationRequest request);
         Task<ApiResponse<ProductDto>> GetByIdAsync(int id);
 
         Task<ProductDto> CreateAsync(CreateProductDto dto);

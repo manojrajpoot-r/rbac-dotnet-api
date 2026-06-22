@@ -2,7 +2,7 @@
 using WebProjectAPI.Attributes;
 using WebProjectAPI.Data;
 
-namespace WebProjectAPI.Middleware
+namespace WebProjectAPI.Helpers.Middleware
 {
     public class PermissionMiddleware
     {

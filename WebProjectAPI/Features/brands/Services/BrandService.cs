@@ -2,12 +2,9 @@
 using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.brands.Interfaces;
 using WebProjectAPI.Features.brands.Models;
-using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
 using WebProjectAPI.Features.Common.Paginations;
-using WebProjectAPI.Features.products.DTOs;
-using WebProjectAPI.Features.products.Models;
 using WebProjectAPI.Helpers;
 using WebProjectAPI.Features.Common.ApiResponse;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -29,45 +26,37 @@ namespace WebProjectAPI.Features.brands.Services
             _imageService = imageService;
         }
 
-        public async Task<ApiResponse<List<BrandDto>>> GetAllAsync(
+        public async Task<ApiResponse<List<BrandListDto>>> GetAllAsync(
            PaginationRequest request)
         {
-            var result = await _repository.GetAllAsync(
-              request);
+            return await _repository.GetAllAsync(request);
 
-            var data = _mapper.Map<List<BrandDto>>(result.Brands);
 
-            return new ApiResponse<List<BrandDto>>
-            {
-                Success = true,
-                Data = data,
-                TotalRecords = result.TotalRecords,
-             
-            };
+         
         }
 
-        public async Task<ApiResponse<BrandDto>> GetByIdAsync(int id)
+        public async Task<ApiResponse<BrandListDto>> GetByIdAsync(int id)
         {
             var brand = await _repository.GetByIdAsync(id);
 
             if (brand == null)
             {
-                return new ApiResponse<BrandDto>
+                return new ApiResponse<BrandListDto>
                 {
                     Success = false,
                     Message = "Brand not found"
                 };
             }
 
-            var dto = _mapper.Map<BrandDto>(brand); 
-            return new ApiResponse<BrandDto>
+            var dto = _mapper.Map<BrandListDto>(brand); 
+            return new ApiResponse<BrandListDto>
             {
                 Success = true,
                 Data = dto
             };
         }
 
-        public async Task<ApiResponse<BrandDto>> CreateAsync(CreateBrandDto dto)
+        public async Task<ApiResponse<BrandListDto>> CreateAsync(CreateBrandDto dto)
         {
             var brand = _mapper.Map<Brand>(dto);
 
@@ -82,14 +71,14 @@ namespace WebProjectAPI.Features.brands.Services
 
             var result = await _repository.CreateAsync(brand);
 
-            return new ApiResponse<BrandDto>
+            return new ApiResponse<BrandListDto>
             {
                 Success = true,
-                Data = _mapper.Map<BrandDto>(result)
+                Data = _mapper.Map<BrandListDto>(result)
             };
         }
 
-        public async Task<ApiResponse<BrandDto>> UpdateAsync(
+        public async Task<ApiResponse<BrandListDto>> UpdateAsync(
             int id,
             UpdateBrandDto dto)
         {
@@ -97,7 +86,7 @@ namespace WebProjectAPI.Features.brands.Services
 
             if (brand == null)
             {
-                return new ApiResponse<BrandDto>
+                return new ApiResponse<BrandListDto>
                 {
                     Success = false,
                     Message = "Brand not found"
@@ -122,11 +111,11 @@ namespace WebProjectAPI.Features.brands.Services
             var updatedBrand =
                 await _repository.UpdateAsync(brand);
 
-            return new ApiResponse<BrandDto>
+            return new ApiResponse<BrandListDto>
             {
                 Success = true,
                 Message = "Brand updated successfully",
-                Data = _mapper.Map<BrandDto>(updatedBrand)
+                Data = _mapper.Map<BrandListDto>(updatedBrand)
             };
         }
         public async Task<ApiResponse<bool>> DeleteAsync(int id)
@@ -175,16 +164,16 @@ namespace WebProjectAPI.Features.brands.Services
 
 
 
-        public async Task<ApiResponse<List<BrandDto>>>
+        public async Task<ApiResponse<List<BrandListDto>>>
      GetAllBrandsAsync()
         {
             var result =
                 await _repository.GetAllBrandsAsync();
 
             var data =
-                _mapper.Map<List<BrandDto>>(result);
+                _mapper.Map<List<BrandListDto>>(result);
 
-            return new ApiResponse<List<BrandDto>>
+            return new ApiResponse<List<BrandListDto>>
             {
                 Success = true,
                 Data = data
