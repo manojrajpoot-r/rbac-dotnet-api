@@ -113,8 +113,7 @@
 
         public async Task<ApiResponse<bool>> ChangePasswordAsync(ChangePasswordRequest request)
         {
-            var user = await _context.Users
-                .FirstOrDefaultAsync(x => x.Id.ToString() == request.UserId);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == request.UserId);
 
             if (user == null)
             {
@@ -126,10 +125,13 @@
                 };
             }
 
-            // check current password
-            var isValid = BCrypt.Net.BCrypt.Verify(request.CurrentPassword, user.PasswordHash);
+            var verifyResult = _hasher.VerifyHashedPassword(
+                user,
+                user.PasswordHash,
+                request.CurrentPassword
+            );
 
-            if (!isValid)
+            if (verifyResult == PasswordVerificationResult.Failed)
             {
                 return new ApiResponse<bool>
                 {
@@ -139,8 +141,10 @@
                 };
             }
 
-            // update password
-            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            user.PasswordHash = _hasher.HashPassword(
+                user,
+                request.NewPassword
+            );
 
             await _context.SaveChangesAsync();
 
@@ -151,5 +155,35 @@
                 Data = true
             };
         }
+        public async Task<ApiResponse<bool>> ResetPasswordAsync(ResetPasswordRequest request)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id == request.UserId);
+
+            if (user == null)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "User not found"
+                };
+            }
+
+            user.PasswordHash = _hasher.HashPassword(
+                user,
+                request.NewPassword
+            );
+
+            await _context.SaveChangesAsync();
+
+            return new ApiResponse<bool>
+            {
+                Success = true,
+                Message = "Password reset successfully",
+                Data = true
+            };
+        }
+
+
     }
 }

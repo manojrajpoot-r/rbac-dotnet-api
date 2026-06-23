@@ -18,5 +18,7 @@ namespace WebProjectAPI.Services.Interfaces
         ApiResponse<string> ToggleStatus(int id);
 
         Task<ApiResponse<bool>> ChangePasswordAsync(ChangePasswordRequest request);
+        Task<ApiResponse<bool>> ResetPasswordAsync(ResetPasswordRequest request);
+
     }
 }

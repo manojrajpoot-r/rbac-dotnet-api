@@ -87,9 +87,37 @@ namespace WebProjectAPI.Controllers.UserC
         }
 
 
+       
+            [Route("api/[controller]")]
+  
+            [HttpPost("ChangePassword")]
+            public async Task<IActionResult> ChangePassword(
+                [FromBody] ChangePasswordRequest request)
+            {
+                var result = await _service.ChangePasswordAsync(request);
+
+                if (!result.Success)
+                    return BadRequest(result);
+
+                return Ok(result);
+            }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(
+             [FromBody] ResetPasswordRequest request)
+        {
+            var result = await _service.ResetPasswordAsync(request);
+
+            if (!result.Success)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
 
 
-     
     }
+
+
+    
  }
 
