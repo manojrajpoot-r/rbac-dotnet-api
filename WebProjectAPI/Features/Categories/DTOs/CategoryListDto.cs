@@ -1,4 +1,4 @@
-﻿using WebProjectAPI.Features.products.DTOs;
+﻿using WebProjectAPI.Features.Categories.DTOs;
 
 namespace WebProjectAPI.Features.Categories.DTOs
 {

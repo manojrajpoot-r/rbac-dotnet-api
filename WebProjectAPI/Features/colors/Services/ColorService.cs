@@ -44,10 +44,28 @@ namespace WebProjectAPI.Features.colors.Services
         }
 
         // STATUS CHANGE
-        public async Task<ApiResponse<string>> ChangeStatus(int id)
+        public async Task<ApiResponse<bool>> ChangeStatusAsync(int id)
         {
-            return await _repository.ChangeStatus(id);
+            var result = await _repository.ChangeStatusAsync(id);
+
+            if (!result)
+            {
+                return new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "Color not found",
+                    Data = false
+                };
+            }
+
+            return new ApiResponse<bool>
+            {
+                Success = true,
+                Message = "Color status changed successfully",
+                Data = true
+            };
         }
+
 
         // forntend
         public async Task<ApiResponse<List<ColorDto>>> Dropdown()

@@ -9,7 +9,7 @@ namespace WebProjectAPI.Features.brands.Mappings
     {
         public BrandProfile()
         {
-            CreateMap<Brand, BrandDto>();
+            CreateMap<Brand, BrandListDto>();
 
             CreateMap<CreateBrandDto, Brand>();
 

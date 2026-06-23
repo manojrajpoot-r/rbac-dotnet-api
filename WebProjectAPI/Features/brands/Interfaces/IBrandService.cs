@@ -18,7 +18,6 @@ namespace WebProjectAPI.Features.brands.Interfaces
         Task<ApiResponse<bool>> DeleteAsync(int id);
 
         Task<ApiResponse<bool>> ChangeStatusAsync(int id);
-        Task<ApiResponse<List<BrandListDto>>>
-     GetAllBrandsAsync();
+        Task<ApiResponse<List<BrandListDto>>>GetAllBrandsAsync();
     }
 }

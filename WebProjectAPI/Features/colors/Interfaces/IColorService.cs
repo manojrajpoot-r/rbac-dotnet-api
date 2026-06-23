@@ -15,7 +15,7 @@ namespace WebProjectAPI.Features.colors.Interfaces
 
         Task<ApiResponse<string>> Delete(int id);
 
-        Task<ApiResponse<string>> ChangeStatus(int id);
+        Task<ApiResponse<bool>> ChangeStatusAsync(int id);
 
         Task<ApiResponse<List<ColorDto>>> Dropdown();
     }

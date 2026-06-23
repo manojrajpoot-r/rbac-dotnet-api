@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Razorpay.Api;
 using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -138,13 +139,21 @@ namespace WebProjectAPI.Controllers.Auth
                     .Select(x => x.Name)
                     .ToList();
 
+       
+
                 var jwt = _jwtService.GenerateJwt(
-                  admin.Id,
-                  admin.Email,
-                  null,
-                  true,
-                  roles,
-                  permissions);
+                     admin.Id,
+                     admin.Email,
+                     admin.FullName,
+                     null,
+                     null,
+                     true,
+                     roles,
+                     permissions);
+
+
+
+
 
                 return Ok(new
                 {
@@ -216,15 +225,22 @@ namespace WebProjectAPI.Controllers.Auth
                        (id, p) => p.Name)
                    .Distinct()
                    .ToList();
-            
+
+            var tenant = _context.Tenants.FirstOrDefault(x => x.Id == user.TenantId);
+
 
             var token = _jwtService.GenerateJwt(
-               user.Id,
-               user.Email,
-               user.TenantId,
-               false,
-               rolesList,
-               permissionsList);
+                  user.Id,
+                  user.Email,
+                  user.FullName,
+                  tenant?.Name ?? "",
+                  user.TenantId,
+                  false,
+                  rolesList,
+                  permissionsList
+              );
+
+
 
             var refreshToken = new RefreshToken
             {
@@ -311,10 +327,14 @@ namespace WebProjectAPI.Controllers.Auth
                 .Distinct()
                 .ToList();
 
+            var token_list = _context.Tenants.FirstOrDefault(x=>x.Id==user.TenantId);
+
             // ✅ new JWT
             var jwt = _jwtService.GenerateJwt(
                   user.Id,
                   user.Email,
+                  user.FullName,
+                  token_list?.Name ?? "",
                   user.TenantId,
                   false,
                   roles,

@@ -3,8 +3,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebProjectAPI.DTOs;
-using WebProjectAPI.Services.Interfaces;
 using WebProjectAPI.Helpers;
+using WebProjectAPI.Models;
+using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Services.Implementations
 {
@@ -18,13 +19,14 @@ namespace WebProjectAPI.Services.Implementations
         }
 
         public JwtResult GenerateJwt(
-            int userId,
-            string email,
-            int? tenantId,
-            bool isPlatformUser,
-            List<string> roles,
-            List<string> permissions)
-        {
+       int userId,
+       string email,
+       string fullName,
+       string tenantName,
+       int? tenantId,
+       bool isPlatformUser,
+       List<string> roles,
+       List<string> permissions) {
             var key = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(_config["Jwt:Key"])
             );
@@ -35,7 +37,9 @@ namespace WebProjectAPI.Services.Implementations
             {
                 new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                 new Claim(ClaimTypes.Email, email),
-                new Claim("IsPlatformUser", isPlatformUser.ToString())
+                new Claim("IsPlatformUser", isPlatformUser.ToString()),
+                new Claim("FullName", fullName ?? ""),
+                new Claim("TenantName", tenantName ?? "")
             };
 
             // =========================
@@ -61,6 +65,8 @@ namespace WebProjectAPI.Services.Implementations
             {
                 claims.Add(new Claim(CustomClaims.Permission, permission));
             }
+
+           
 
             var expiry = DateTime.UtcNow.AddHours(12);
 

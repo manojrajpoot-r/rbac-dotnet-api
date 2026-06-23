@@ -13,17 +13,14 @@ namespace WebProjectAPI.Features.colors.Repositories
         private readonly AppDbContext _context;
         private readonly ICurrentUserService _currentUser;
 
-        public ColorRepository(
-            AppDbContext context,
-            ICurrentUserService currentUser)
+        public ColorRepository(AppDbContext context,ICurrentUserService currentUserService)
         {
             _context = context;
-            _currentUser = currentUser;
+            _currentUser = currentUserService;
         }
 
         // LIST WITH PAGINATION
-        public async Task<ApiResponse<List<ColorDto>>> GetAll(
-         PaginationRequest request)
+        public async Task<ApiResponse<List<ColorDto>>> GetAll(PaginationRequest request)
         {
             var query = _context.Colors
                 .Where(x => !x.IsDeleted)
@@ -197,6 +194,24 @@ namespace WebProjectAPI.Features.colors.Repositories
         }
 
         // STATUS CHANGE
+
+        public async Task<bool> ChangeStatusAsync(int id)
+        {
+            var color = await _context.Colors
+                .FirstOrDefaultAsync(x =>
+                    x.Id == id &&
+                    x.TenantId == _currentUser.TenantId);
+
+            if (color == null)
+                return false;
+
+            color.IsActive = !color.IsActive;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
         public async Task<List<ColorDto>> Dropdown()
         {
             return await _context.Colors

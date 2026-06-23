@@ -1,15 +1,14 @@
 ﻿using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.Common.ApiResponse;
-using WebProjectAPI.Models;
+
 
 namespace WebProjectAPI.Features.Categories.Interfaces
 {
     public interface ICategoryService
     {
 
-        Task<ApiResponse<List<CategoryListDto>>> GetAllAsync(
-        PaginationRequest request);
+        Task<ApiResponse<List<CategoryListDto>>> GetAllAsync(PaginationRequest request);
         Task<CategoryListDto> CreateAsync(CreateCategoryDto dto);
         Task<CategoryListDto> GetByIdAsync(int id);
 
@@ -19,7 +18,6 @@ namespace WebProjectAPI.Features.Categories.Interfaces
 
         Task<bool> ChangeStatusAsync(int id);
 
-        Task<ApiResponse<List<CategoryListDto>>>
-            GetCategoriesAsync();
+        Task<ApiResponse<List<CategoryListDto>>>GetCategoriesAsync();
     }
 }

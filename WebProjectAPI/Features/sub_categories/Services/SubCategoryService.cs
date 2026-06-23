@@ -15,22 +15,29 @@ namespace WebProjectAPI.Features.sub_categories.Services
         private readonly IImageService _imageService;
         private readonly IMapper _mapper;
 
-        public SubCategoryService(
-            ISubCategoryRepository repository,
-            IImageService imageService,
-            IMapper mapper)
+        public SubCategoryService(ISubCategoryRepository repository,IImageService 
+            imageService,IMapper mapper)
         {
             _repository = repository;
             _imageService = imageService;
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<List<SubCategoryListDto>>> GetAllAsync(
-       PaginationRequest request)
+  
+
+        public async Task<ApiResponse<List<SubCategoryListDto>>>
+            GetAllAsync(PaginationRequest request)
         {
-            return await _repository
-             .GetAllAsync(request);
-   
+            var entities = await _repository.GetAllAsync(request);
+
+            var data = _mapper.Map<List<SubCategoryListDto>>(entities);
+
+            return new ApiResponse<List<SubCategoryListDto>>
+            {
+                Success = true,
+                Data = data,
+               
+            };
         }
 
         public async Task<SubCategoryListDto> GetByIdAsync(int id)

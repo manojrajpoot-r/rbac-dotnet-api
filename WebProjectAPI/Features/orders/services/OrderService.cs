@@ -3,15 +3,16 @@ using WebProjectAPI.Data;
 using WebProjectAPI.Features.orders.DTOs;
 using WebProjectAPI.Features.orders.Models;
 using WebProjectAPI.Services.Implementations;
+using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Features.orders.Services
 {
     public class OrderService
     {
         private readonly AppDbContext _context;
-        private CurrentUserService _currentUser;
+        private ICurrentUserService _currentUser;
 
-        public OrderService(AppDbContext context,CurrentUserService currentUserService)
+        public OrderService(AppDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
             _currentUser = currentUserService;

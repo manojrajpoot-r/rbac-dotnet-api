@@ -1,4 +1,3 @@
-﻿
 using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sub_categories.DTOs;
@@ -8,9 +7,11 @@ namespace WebProjectAPI.Features.sub_categories.Interfaces
 {
     public interface ISubCategoryRepository
     {
-     
+
+    
         Task<ApiResponse<List<SubCategoryListDto>>> GetAllAsync(
- PaginationRequest request);
+         PaginationRequest request);
+        
         Task<SubCategory?> GetByIdAsync(int id);
 
         Task<SubCategory> CreateAsync(SubCategory category);
