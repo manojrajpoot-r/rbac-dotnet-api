@@ -7,6 +7,7 @@ using WebProjectAPI.Features.orders.Models;
 using WebProjectAPI.Features.orders.services;
 using WebProjectAPI.Features.orders.Services;
 using WebProjectAPI.Models;
+using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Features.orders.Controllers
 {
@@ -17,13 +18,15 @@ namespace WebProjectAPI.Features.orders.Controllers
         private readonly RazorpayService _razorpayService;
         private readonly OrderService _orderService;
         private readonly AppDbContext _context;
+        private readonly ICurrentUserService _currentUser;
         public PaymentController(
             RazorpayService razorpayService,
-           OrderService orderService, AppDbContext context)
+           OrderService orderService, AppDbContext context, ICurrentUserService currentUserService)
         {
             _razorpayService = razorpayService;
             _orderService = orderService;
             _context = context;
+            _currentUser = currentUserService;
         }
 
 
@@ -63,15 +66,14 @@ namespace WebProjectAPI.Features.orders.Controllers
             {
                 key = _razorpayService.GetKey(),
 
-                orderId =
-                    order["id"].ToString(),
+                orderId = order["id"].ToString(),
 
-                amount =
-                    order["amount"],
+                amount =  order["amount"],
 
-                currency =
-                    order["currency"]
-            });
+                currency = order["currency"],
+
+                   
+        });
         }
 
         [HttpPost("verify")]
@@ -86,7 +88,15 @@ namespace WebProjectAPI.Features.orders.Controllers
             if (!isValid)
                 return BadRequest(new { message = "Payment failed" });
 
-            var order = await _orderService.GetOrder(dto.OrderId);
+            var order = await _context.Orders
+                         .FirstOrDefaultAsync(x =>
+                             x.Id == dto.OrderId &&
+                             x.TenantId == _currentUser.TenantId);
+
+            if (order == null)
+            {
+                return NotFound();
+            }
 
             await _orderService.MarkAsPaid(
                 order,
@@ -105,9 +115,10 @@ namespace WebProjectAPI.Features.orders.Controllers
         public async Task<IActionResult> PaymentFailed(
        [FromBody] PaymentFailedDto dto)
         {
-            var order =
-                await _orderService
-                .GetOrder(dto.OrderId);
+            var order = await _context.Orders
+      .FirstOrDefaultAsync(x =>
+          x.Id == dto.OrderId &&
+          x.TenantId == _currentUser.TenantId);
 
             if (order == null)
             {

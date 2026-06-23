@@ -2,16 +2,19 @@
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.orders.DTOs;
 using WebProjectAPI.Features.orders.Models;
+using WebProjectAPI.Services.Implementations;
 
 namespace WebProjectAPI.Features.orders.Services
 {
     public class OrderService
     {
         private readonly AppDbContext _context;
+        private CurrentUserService _currentUser;
 
-        public OrderService(AppDbContext context)
+        public OrderService(AppDbContext context,CurrentUserService currentUserService)
         {
             _context = context;
+            _currentUser = currentUserService;
         }
 
         public async Task<int> PlaceOrder(int userId, CheckoutDto dto)
@@ -38,6 +41,7 @@ namespace WebProjectAPI.Features.orders.Services
             var order = new Order
             {
                 UserId = userId,
+                TenantId = _currentUser.TenantId.Value,
                 OrderNumber = Guid.NewGuid().ToString("N")[..8],
 
                 Subtotal = subtotal,
