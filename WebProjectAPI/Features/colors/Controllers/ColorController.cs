@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WebProjectAPI.Attributes;
 using WebProjectAPI.Features.colors.DTOs;
 using WebProjectAPI.Features.colors.Interfaces;
 using WebProjectAPI.Features.colors.Services;
@@ -17,7 +19,8 @@ namespace WebProjectAPI.Features.colors.Controllers
             _service = service;
         }
 
-        // LIST
+        [Authorize]
+        [Permission("COLOR_VIEW")]
         [HttpPost("list")]
         public async Task<IActionResult> List(PaginationRequest request)
         {
@@ -35,7 +38,9 @@ namespace WebProjectAPI.Features.colors.Controllers
             return Ok(result);
         }
 
-        // ADD
+
+        [Authorize]
+        [Permission("COLOR_CREATE")]
         [HttpPost("add")]
         public async Task<IActionResult> Add(ColorDto model)
         {
@@ -44,8 +49,10 @@ namespace WebProjectAPI.Features.colors.Controllers
             return Ok(result);
         }
 
-   
 
+
+        [Authorize]
+        [Permission("COLOR_UPDATE")]
         [HttpPut("update")]
         public async Task<IActionResult> Update(ColorDto model)
         {
@@ -54,7 +61,9 @@ namespace WebProjectAPI.Features.colors.Controllers
             return Ok(result);
         }
 
-        // DELETE
+
+        [Authorize]
+        [Permission("COLOR_DELETE")]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -63,7 +72,8 @@ namespace WebProjectAPI.Features.colors.Controllers
             return Ok(result);
         }
 
-        // STATUS CHANGE
+        [Authorize]
+        [Permission("COLOR_STATUS")]
         [HttpPatch("status/{id}")]
        
         public async Task<IActionResult> ChangeStatus(int id)

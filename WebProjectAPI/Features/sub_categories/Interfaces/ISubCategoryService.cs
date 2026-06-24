@@ -6,8 +6,9 @@ namespace WebProjectAPI.Features.sub_categories.Interfaces
 {
     public interface ISubCategoryService
     {
-  
-        Task<ApiResponse<List<SubCategoryListDto>>> GetAllAsync(PaginationRequest request);
+
+        Task<ApiResponse<List<SubCategoryListDto>>> GetAllAsync(
+         PaginationRequest request);
         Task<SubCategoryListDto> CreateAsync(CreateSubCategoryDto dto);
         Task<SubCategoryListDto> GetByIdAsync(int id);
 

@@ -87,10 +87,9 @@ namespace WebProjectAPI.Controllers.UserC
         }
 
 
-       
-            [Route("api/[controller]")]
-  
-            [HttpPost("ChangePassword")]
+
+        [Authorize]
+        [HttpPost("ChangePassword")]
             public async Task<IActionResult> ChangePassword(
                 [FromBody] ChangePasswordRequest request)
             {
@@ -102,6 +101,7 @@ namespace WebProjectAPI.Controllers.UserC
                 return Ok(result);
             }
 
+        [Authorize]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(
              [FromBody] ResetPasswordRequest request)

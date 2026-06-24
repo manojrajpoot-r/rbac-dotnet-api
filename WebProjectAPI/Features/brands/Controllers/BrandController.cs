@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WebProjectAPI.Attributes;
 using WebProjectAPI.Features.brands.DTOs;
 using WebProjectAPI.Features.brands.Interfaces;
 using WebProjectAPI.Features.Common.Paginations;
@@ -17,6 +19,9 @@ namespace WebProjectAPI.Features.Brands.Controllers
             _service = service;
         }
 
+
+        [Authorize]
+        [Permission("BRAND_VIEW")]
         [HttpPost("list")]
         public async Task<IActionResult> GetAll(PaginationRequest request)
         {
@@ -36,6 +41,8 @@ namespace WebProjectAPI.Features.Brands.Controllers
             return Ok(brand);
         }
 
+        [Authorize]
+        [Permission("BRAND_CREATE")]
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateBrandDto dto)
         {
@@ -48,6 +55,9 @@ namespace WebProjectAPI.Features.Brands.Controllers
             });
         }
 
+
+        [Authorize]
+        [Permission("BRAND_EDIT")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromForm] UpdateBrandDto dto)
         {
@@ -63,6 +73,8 @@ namespace WebProjectAPI.Features.Brands.Controllers
             });
         }
 
+        [Authorize]
+        [Permission("BRAND_DELETE")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -76,6 +88,9 @@ namespace WebProjectAPI.Features.Brands.Controllers
                 message = "Brand deleted successfully"
             });
         }
+
+        [Authorize]
+        [Permission("BRAND_STATUS")]
 
         [HttpPatch("change-status/{id}")]
         public async Task<IActionResult> ChangeStatus(int id)

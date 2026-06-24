@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WebProjectAPI.Attributes;
 using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Categories.Interfaces;
 using WebProjectAPI.Features.Common.Paginations;
@@ -16,7 +17,10 @@ namespace WebProjectAPI.Features.Categories.Controllers
         {
             _service = service;
         }
+
+
         [Authorize]
+        [Permission("CATEGORY_VIEW")]
         [HttpPost("list")]
 
         public async Task<IActionResult> GetAll(PaginationRequest request)
@@ -41,7 +45,9 @@ namespace WebProjectAPI.Features.Categories.Controllers
 
             return Ok(data);
         }
+
         [Authorize]
+        [Permission("CATEGORY_CREATE")]
         [HttpPost]
         public async Task<IActionResult> Create(CreateCategoryDto dto)
         {
@@ -53,7 +59,9 @@ namespace WebProjectAPI.Features.Categories.Controllers
                 data
             });
         }
+
         [Authorize]
+        [Permission("CATEGORY_UPDATE")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateCategoryDto dto)
         {
@@ -73,7 +81,9 @@ namespace WebProjectAPI.Features.Categories.Controllers
                 data
             });
         }
+
         [Authorize]
+        [Permission("CATEGORY_DELETE")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -92,7 +102,9 @@ namespace WebProjectAPI.Features.Categories.Controllers
                 message = "Category deleted successfully"
             });
         }
+
         [Authorize]
+        [Permission("CATEGORY_STATUS")]
         [HttpPatch("change-status/{id}")]
         public async Task<IActionResult> ChangeStatus(int id)
         {

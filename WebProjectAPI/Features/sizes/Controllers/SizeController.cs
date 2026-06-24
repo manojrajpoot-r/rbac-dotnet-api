@@ -2,7 +2,8 @@
 using WebProjectAPI.Features.sizes.Interfaces;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sizes.DTOs;
-
+using WebProjectAPI.Attributes;
+using Microsoft.AspNetCore.Authorization;
 namespace WebProjectAPI.Features.sizes.Controllers
 {
     
@@ -17,7 +18,8 @@ namespace WebProjectAPI.Features.sizes.Controllers
                 _service = service;
             }
 
-            // LIST
+             [Authorize]
+             [Permission("SIZE_VIEW")]
             [HttpPost("list")]
             public async Task<IActionResult> List(PaginationRequest request)
             {
@@ -26,8 +28,10 @@ namespace WebProjectAPI.Features.sizes.Controllers
                 return Ok(result);
             }
 
-            // GET BY ID
-            [HttpGet("{id}")]
+
+        [Authorize]
+    
+        [HttpGet("{id}")]
             public async Task<IActionResult> GetById(int id)
             {
                 var result = await _service.GetById(id);
@@ -35,8 +39,10 @@ namespace WebProjectAPI.Features.sizes.Controllers
                 return Ok(result);
             }
 
-            // ADD
-            [HttpPost("add")]
+
+                [Authorize]
+                [Permission("SIZE_CREATE")]
+                [HttpPost("add")]
             public async Task<IActionResult> Add(SizeDto model)
             {
                 var result = await _service.Add(model);
@@ -44,7 +50,9 @@ namespace WebProjectAPI.Features.sizes.Controllers
                 return Ok(result);
             }
 
-            // UPDATE
+
+            [Authorize]
+            [Permission("SIZE_UPDATE")]
             [HttpPut("update")]
             public async Task<IActionResult> Update(SizeDto model)
             {
@@ -53,7 +61,9 @@ namespace WebProjectAPI.Features.sizes.Controllers
                 return Ok(result);
             }
 
-            // DELETE
+
+            [Authorize]
+            [Permission("SIZE_DELETE")]
             [HttpDelete("delete/{id}")]
             public async Task<IActionResult> Delete(int id)
             {
@@ -62,7 +72,9 @@ namespace WebProjectAPI.Features.sizes.Controllers
                 return Ok(result);
             }
 
-            // STATUS CHANGE
+
+            [Authorize]
+            [Permission("SIZE_STATUS")]
             [HttpPatch("status/{id}")]
             public async Task<IActionResult> ChangeStatus(int id)
             {

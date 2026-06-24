@@ -29,14 +29,12 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
 
             if (!_currentUser.IsPlatformUser)
             {
-                query = query.Where(x =>
-                    x.TenantId == _currentUser.TenantId);
+                query = query.Where(x => x.TenantId == _currentUser.TenantId);
             }
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(x =>
-                    x.Name.Contains(request.Search));
+                query = query.Where(x => x.Name.Contains(request.Search));
             }
 
             var totalRecords = await query.CountAsync();
@@ -50,7 +48,9 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
                     Id = x.Id,
                     Name = x.Name,
                     Status = x.Status,
-                    CategoryName = x.Category.Name
+                    CategoryName = x.Category.Name,
+                    Description=x.Description,
+                    Image=x.Image
                 })
                 .ToListAsync();
 
@@ -65,7 +65,6 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
         }
 
 
-
         public async Task<SubCategory?> GetByIdAsync(int id)
         {
             return await _context.SubCategories
@@ -75,14 +74,17 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
                     x.TenantId == _currentUser.TenantId);
         }
 
-        public async Task<SubCategory> CreateAsync(
-         SubCategory subCategory)
+        public async Task<SubCategory> CreateAsync(SubCategory subCategory)
         {
-            subCategory.TenantId =
-                _currentUser.TenantId.Value;
+            var categoryExists = await _context.Categories
+                .AnyAsync(x => x.Id == subCategory.CategoryId);
+
+            if (!categoryExists)
+                throw new Exception("Invalid CategoryId");
+
+            subCategory.TenantId = _currentUser.TenantId.Value;
 
             _context.SubCategories.Add(subCategory);
-
             await _context.SaveChangesAsync();
 
             return subCategory;

@@ -23,21 +23,12 @@ namespace WebProjectAPI.Features.sub_categories.Services
             _mapper = mapper;
         }
 
-  
 
-        public async Task<ApiResponse<List<SubCategoryListDto>>>
-            GetAllAsync(PaginationRequest request)
+
+        public async Task<ApiResponse<List<SubCategoryListDto>>> GetAllAsync(
+        PaginationRequest request)
         {
-            var entities = await _repository.GetAllAsync(request);
-
-            var data = _mapper.Map<List<SubCategoryListDto>>(entities);
-
-            return new ApiResponse<List<SubCategoryListDto>>
-            {
-                Success = true,
-                Data = data,
-               
-            };
+            return await _repository.GetAllAsync(request);
         }
 
         public async Task<SubCategoryListDto> GetByIdAsync(int id)

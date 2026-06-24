@@ -7,7 +7,7 @@ using WebProjectAPI.Features.product_images.DTOs;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Services;
-
+using WebProjectAPI.Attributes;
 namespace WebProjectAPI.Features.products.Controllers
 {
     [ApiController]
@@ -22,7 +22,10 @@ namespace WebProjectAPI.Features.products.Controllers
             _service = service;
             _context=context;
         }
+
         [Authorize]
+        [Permission("PRODUCT_VIEW")]
+        
         [HttpPost("list")]
         public async Task<IActionResult> GetAll(PaginationRequest request)
         {
@@ -30,6 +33,7 @@ namespace WebProjectAPI.Features.products.Controllers
 
             return Ok(products);
         }
+
         [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -46,7 +50,9 @@ namespace WebProjectAPI.Features.products.Controllers
 
             return Ok(product);
         }
+
         [Authorize]
+        [Permission("PRODUCT_CREATE")]
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateProductDto dto)
         {
@@ -59,6 +65,7 @@ namespace WebProjectAPI.Features.products.Controllers
             });
         }
         [Authorize]
+        [Permission("PRODUCT_UPDATE")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromForm] UpdateProductDto dto)
         {
@@ -79,6 +86,7 @@ namespace WebProjectAPI.Features.products.Controllers
             });
         }
         [Authorize]
+        [Permission("PRODUCT_DELETE")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

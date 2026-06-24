@@ -77,7 +77,7 @@ namespace WebProjectAPI.Features.orders.Controllers
         }
 
         [HttpPost("verify")]
-        public async Task<IActionResult> VerifyPayment([FromBody] VerifyPaymentDto dto)
+        public async Task<IActionResult> VerifyPayment([FromBody] OrderVerifyPaymentDto dto)
         {
             var isValid = _razorpayService.VerifySignature(
                 dto.RazorpayOrderId,

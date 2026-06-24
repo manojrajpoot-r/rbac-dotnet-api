@@ -49,6 +49,7 @@ namespace WebProjectAPI.Features.Categories.Repositories
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    Description=x.Description,
                     Status = x.Status
                 })
                 .ToListAsync();

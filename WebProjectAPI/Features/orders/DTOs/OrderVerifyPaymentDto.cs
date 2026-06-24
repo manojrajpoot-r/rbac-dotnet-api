@@ -1,6 +1,6 @@
 ﻿namespace WebProjectAPI.Features.orders.DTOs
 {
-    public class VerifyPaymentDto
+    public class OrderVerifyPaymentDto
     {
         public int OrderId { get; set; }
         public string RazorpayOrderId { get; set; }
