@@ -48,6 +48,7 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
                     Id = x.Id,
                     Name = x.Name,
                     Status = x.Status,
+                    CategoryId=x.CategoryId,
                     CategoryName = x.Category.Name,
                     Description=x.Description,
                     Image=x.Image

@@ -58,7 +58,7 @@ namespace WebProjectAPI.Features.sub_categories.Controllers
             });
         }
         [Authorize]
-        [Permission("SUBCATEGORY_UPDATE")]
+        [Permission("SUBCATEGORY_EDIT")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromForm] UpdateSubCategoryDto dto)
         {
