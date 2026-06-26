@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using WebProjectAPI.Features.sizes.Interfaces;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WebProjectAPI.Attributes;
+using WebProjectAPI.Features.colors.DTOs;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sizes.DTOs;
-using WebProjectAPI.Attributes;
-using Microsoft.AspNetCore.Authorization;
+using WebProjectAPI.Features.sizes.Interfaces;
 namespace WebProjectAPI.Features.sizes.Controllers
 {
     
@@ -42,7 +43,7 @@ namespace WebProjectAPI.Features.sizes.Controllers
 
                 [Authorize]
                 [Permission("SIZE_CREATE")]
-                [HttpPost("add")]
+                [HttpPost]
             public async Task<IActionResult> Add(SizeDto model)
             {
                 var result = await _service.Add(model);
@@ -52,11 +53,11 @@ namespace WebProjectAPI.Features.sizes.Controllers
 
 
             [Authorize]
-            [Permission("SIZE_UPDATE")]
-            [HttpPut("update")]
-            public async Task<IActionResult> Update(SizeDto model)
+            [Permission("SIZE_EDIT")]
+            [HttpPut("{id}")]
+             public async Task<IActionResult> Update(int id, [FromBody] SizeDto model)
             {
-                var result = await _service.Update(model);
+                var result = await _service.Update(id,model);
 
                 return Ok(result);
             }

@@ -41,7 +41,7 @@ namespace WebProjectAPI.Features.colors.Controllers
 
         [Authorize]
         [Permission("COLOR_CREATE")]
-        [HttpPost("add")]
+        [HttpPost]
         public async Task<IActionResult> Add(ColorDto model)
         {
             var result = await _service.Add(model);
@@ -52,12 +52,12 @@ namespace WebProjectAPI.Features.colors.Controllers
 
 
         [Authorize]
-        [Permission("COLOR_UPDATE")]
-        [HttpPut("update")]
-        public async Task<IActionResult> Update(ColorDto model)
+        [Permission("COLOR_EDIT")]
+       
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] ColorDto model)
         {
-            var result = await _service.Update(model);
-
+            var result = await _service.Update(id, model);
             return Ok(result);
         }
 

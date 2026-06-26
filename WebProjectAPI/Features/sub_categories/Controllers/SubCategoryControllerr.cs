@@ -120,7 +120,12 @@ namespace WebProjectAPI.Features.sub_categories.Controllers
         }
 
         // FRONTEND
-
+        [HttpGet("by-category/{categoryId}")]
+        public async Task<IActionResult> GetByCategory(int categoryId)
+        {
+            var data = await _service.GetByCategoryIdAsync(categoryId);
+            return Ok(data);
+        }
         [HttpGet("frontend")]
         public async Task<IActionResult> GetAllSubCategories()
         {

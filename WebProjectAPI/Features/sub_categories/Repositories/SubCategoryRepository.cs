@@ -157,6 +157,20 @@ namespace WebProjectAPI.Features.sub_categories.Repositories
         }
 
 
+    
+            public async Task<List<SubCategoryListDto>> GetByCategoryIdAsync(int categoryId)
+            {
+                return await _context.SubCategories
+                    .Where(x => x.CategoryId == categoryId && x.Status)
+                    .Select(x => new SubCategoryListDto
+                    {
+                        Id = x.Id,
+                        Name = x.Name
+                    })
+                    .ToListAsync();
+            }
+        
+
         public async Task<List<SubCategory>>
        GetAllSubCategoriesAsync()
         {

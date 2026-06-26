@@ -59,13 +59,28 @@ namespace WebProjectAPI.Features.products.Services
 
         public async Task<ProductDto> CreateAsync(CreateProductDto dto)
         {
-            var product = _mapper.Map<Product>(dto);
+           
 
+            bool isValid = await _repository.IsValidCategorySubCategoryAsync(
+                  dto.CategoryId,
+                  dto.SubCategoryId
+              );
+
+            if (!isValid)
+            {
+                throw new Exception("Invalid Category and SubCategory combination.");
+            }
+            var product = _mapper.Map<Product>(dto);
             if (dto.Image != null)
             {
                 product.Image = await _imageService
                     .UploadImageAsync(dto.Image, "uploads/products");
             }
+
+            // Discount Calculation
+            product.DiscountPrice = PriceHelper.CalculateDiscountPrice( dto.Price,dto.DiscountPercentage);
+         
+
             product.Slug = SlugHelper.GenerateSlug(dto.Name);
             product.SKU = SKUHelper.GenerateSKU("PRD");
             product.Status = true;
@@ -77,6 +92,15 @@ namespace WebProjectAPI.Features.products.Services
 
         public async Task<ProductDto> UpdateAsync(int id, UpdateProductDto dto)
         {
+            bool isValid = await _repository.IsValidCategorySubCategoryAsync(
+                dto.CategoryId,
+                dto.SubCategoryId
+            );
+
+            if (!isValid)
+            {
+                throw new Exception("Invalid Category and SubCategory combination.");
+            }
             var product = await _repository.GetByIdAsync(id);
 
             if (product == null)
@@ -94,13 +118,16 @@ namespace WebProjectAPI.Features.products.Services
                 product.Image = await _imageService
                     .UploadImageAsync(dto.Image, "uploads/products");
             }
+
+            // Discount Calculation
+            product.DiscountPrice = PriceHelper.CalculateDiscountPrice(dto.Price, dto.DiscountPercentage);
+
             product.Slug = SlugHelper.GenerateSlug(dto.Name);
-          
+
             var updatedProduct = await _repository.UpdateAsync(product);
 
             return _mapper.Map<ProductDto>(updatedProduct);
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
             var product = await _repository.GetByIdAsync(id);
@@ -131,9 +158,6 @@ namespace WebProjectAPI.Features.products.Services
 
 
 
-
-
-  
 
 
         //frontend

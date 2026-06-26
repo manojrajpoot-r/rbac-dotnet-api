@@ -29,5 +29,7 @@ namespace WebProjectAPI.Features.products.Interfaces
         );
 
         Task<List<CategoryWithProductsDto>>GetHomeCategoryProductsAsync();
+
+        Task<bool> IsValidCategorySubCategoryAsync(int categoryId, int subCategoryId);
     }
 }

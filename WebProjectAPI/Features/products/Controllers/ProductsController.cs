@@ -65,7 +65,7 @@ namespace WebProjectAPI.Features.products.Controllers
             });
         }
         [Authorize]
-        [Permission("PRODUCT_UPDATE")]
+        [Permission("PRODUCT_EDIT")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromForm] UpdateProductDto dto)
         {
@@ -105,7 +105,19 @@ namespace WebProjectAPI.Features.products.Controllers
                 message = "Product deleted successfully"
             });
         }
-       
+
+
+ 
+
+
+
+
+
+
+
+
+
+
         [HttpGet("featured")]
         public async Task<IActionResult> GetFeaturedProducts()
         {

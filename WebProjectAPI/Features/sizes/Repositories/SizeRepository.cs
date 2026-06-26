@@ -135,11 +135,11 @@ namespace WebProjectAPI.Features.sizes.Repositories
         }
 
         // UPDATE
-        public async Task<ApiResponse<SizeDto>> Update(SizeDto model)
+        public async Task<ApiResponse<SizeDto>> Update(int id, SizeDto model)
         {
             var size = await _context.Sizes
                 .FirstOrDefaultAsync(x =>
-                    x.Id == model.Id &&
+                    x.Id == id &&
                     !x.IsDeleted &&
                     x.TenantId == _currentUser.TenantId);
 

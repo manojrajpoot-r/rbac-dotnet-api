@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using WebProjectAPI.Features.Categories.DTOs;
 using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
@@ -103,11 +104,34 @@ namespace WebProjectAPI.Features.sub_categories.Services
             return await _repository.ChangeStatusAsync(id);
         }
 
-        public async Task<List<SubCategoryListDto>> GetAllSubCategoriesAsync()
-        {
-            var sub_categories = await _repository.GetAllSubCategoriesAsync();
+      
 
-            return _mapper.Map<List<SubCategoryListDto>>(sub_categories);
-        }
+
+      
+
+            public async Task<List<SubCategoryListDto>> GetByCategoryIdAsync(int categoryId)
+            {
+                return await _repository.GetByCategoryIdAsync(categoryId);
+            }
+        
+
+        public async Task<ApiResponse<List<SubCategoryListDto>>>
+              GetAllSubCategoriesAsync()
+                {
+                    var sub_categories =
+                        await _repository.GetAllSubCategoriesAsync();
+
+                    var data =
+                        _mapper.Map<List<SubCategoryListDto>>(
+                            sub_categories
+                        );
+
+                    return new ApiResponse<List<SubCategoryListDto>>
+                    {
+                        Success = true,
+                        Data = data
+                    };
+                }
+    
     }
 }

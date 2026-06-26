@@ -1,4 +1,5 @@
-﻿using WebProjectAPI.Features.Common.ApiResponse;
+﻿using WebProjectAPI.Features.Categories.DTOs;
+using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.sub_categories.DTOs;
 
@@ -17,7 +18,11 @@ namespace WebProjectAPI.Features.sub_categories.Interfaces
         Task<bool> DeleteAsync(int id);
 
         Task<bool> ChangeStatusAsync(int id);
+        Task<ApiResponse<List<SubCategoryListDto>>> GetAllSubCategoriesAsync();
 
-        Task<List<SubCategoryListDto>> GetAllSubCategoriesAsync();
+       
+           Task<List<SubCategoryListDto>> GetByCategoryIdAsync(int categoryId);
+        
+
     }
 }

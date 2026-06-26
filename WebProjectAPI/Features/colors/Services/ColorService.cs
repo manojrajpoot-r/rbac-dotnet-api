@@ -32,9 +32,9 @@ namespace WebProjectAPI.Features.colors.Services
         }
 
         // UPDATE
-        public async Task<ApiResponse<ColorDto>> Update(ColorDto model)
+        public async Task<ApiResponse<ColorDto>> Update(int id, ColorDto model)
         {
-            return await _repository.Update(model);
+            return await _repository.Update(id, model);
         }
 
         // DELETE
