@@ -52,6 +52,7 @@ namespace WebProjectAPI.Features.brands.Repositories
                     Id = x.Id,
                     Name = x.Name,
                     Slug=x.Slug,
+                    Description=x.Description,
                     Image=x.Image,
                     IsFeatured=x.IsFeatured,
                     Status = x.Status

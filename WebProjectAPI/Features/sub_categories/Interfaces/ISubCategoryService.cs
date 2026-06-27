@@ -18,6 +18,7 @@ namespace WebProjectAPI.Features.sub_categories.Interfaces
 
         Task<bool> ChangeStatusAsync(int id);
 
-        Task<List<SubCategoryListDto>> GetAllSubCategoriesAsync();
+
+        Task<ApiResponse<List<SubCategoryListDto>>> GetAllSubCategoriesAsync();
     }
 }

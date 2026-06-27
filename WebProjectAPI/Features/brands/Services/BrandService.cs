@@ -165,7 +165,7 @@ namespace WebProjectAPI.Features.brands.Services
 
 
         public async Task<ApiResponse<List<BrandListDto>>>
-     GetAllBrandsAsync()
+            GetAllBrandsAsync()
         {
             var result =
                 await _repository.GetAllBrandsAsync();
