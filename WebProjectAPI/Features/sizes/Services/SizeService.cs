@@ -30,9 +30,9 @@ namespace WebProjectAPI.Features.sizes.Services
             return await _repository.Add(model);
         }
 
-        public async Task<ApiResponse<SizeDto>> Update(SizeDto model)
+        public async Task<ApiResponse<SizeDto>> Update(int id,SizeDto model)
         {
-            return await _repository.Update(model);
+            return await _repository.Update(id,model);
         }
 
         public async Task<ApiResponse<string>> Delete(int id)

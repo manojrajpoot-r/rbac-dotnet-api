@@ -11,7 +11,7 @@ namespace WebProjectAPI.Features.colors.Interfaces
 
         Task<ApiResponse<ColorDto>> Add(ColorDto model);
 
-        Task<ApiResponse<ColorDto>> Update(ColorDto model);
+        Task<ApiResponse<ColorDto>> Update(int id,ColorDto model);
 
         Task<ApiResponse<string>> Delete(int id);
 

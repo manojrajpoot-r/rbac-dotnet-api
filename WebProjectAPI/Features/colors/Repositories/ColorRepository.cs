@@ -134,11 +134,11 @@ namespace WebProjectAPI.Features.colors.Repositories
         }
 
         // UPDATE
-        public async Task<ApiResponse<ColorDto>> Update(ColorDto model)
+        public async Task<ApiResponse<ColorDto>> Update(int id,ColorDto model)
         {
             var color = await _context.Colors
                 .FirstOrDefaultAsync(x =>
-                    x.Id == model.Id &&
+                    x.Id == id &&
                     !x.IsDeleted &&
                     x.TenantId == _currentUser.TenantId);
 
@@ -165,6 +165,8 @@ namespace WebProjectAPI.Features.colors.Repositories
             };
         }
 
+
+        
         // DELETE
         public async Task<ApiResponse<string>> Delete(int id)
         {

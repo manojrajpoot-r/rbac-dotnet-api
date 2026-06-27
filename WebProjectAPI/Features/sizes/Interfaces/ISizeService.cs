@@ -13,7 +13,7 @@ namespace WebProjectAPI.Features.sizes.Interfaces
 
         Task<ApiResponse<SizeDto>> Add(SizeDto model);
 
-        Task<ApiResponse<SizeDto>> Update(SizeDto model);
+        Task<ApiResponse<SizeDto>> Update(int id,SizeDto model);
 
         Task<ApiResponse<string>> Delete(int id);
 

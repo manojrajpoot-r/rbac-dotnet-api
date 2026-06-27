@@ -57,11 +57,21 @@ namespace WebProjectAPI.Features.products.Repositories
                     Name = x.Name,
                     Price = x.Price,
                     DiscountPrice = x.DiscountPrice,
+                    DiscountPercentage = x.DiscountPercentage,
                     Quantity = x.Quantity,
                     Status = x.Status,
+                    CategoryId=x.CategoryId,
                     CategoryName = x.Category.Name,
+                    SubCategoryId = x.SubCategoryId,
                     SubCategoryName = x.SubCategory.Name,
-                    BrandName = x.Brand.Name
+                    BrandId = x.BrandId,
+                    BrandName = x.Brand.Name,
+                    ShortDescription=x.ShortDescription,
+                    Description=x.Description,
+                    Image = x.Image,
+                    Slug= x.Slug,
+                    SKU=x.SKU
+
                 })
                 .ToListAsync();
 
@@ -81,6 +91,15 @@ namespace WebProjectAPI.Features.products.Repositories
             x.Id == id && x.TenantId == _currentUser.TenantId);
         }
 
+
+
+        public async Task<bool> IsValidCategorySubCategoryAsync(int categoryId, int subCategoryId)
+        {
+            return await _context.SubCategories.AnyAsync(x =>
+                x.Id == subCategoryId &&
+                x.CategoryId == categoryId &&
+                x.Status);
+        }
         public async Task<Product> CreateAsync(Product product)
         {
             product.TenantId = _currentUser.TenantId.Value;
@@ -143,7 +162,6 @@ namespace WebProjectAPI.Features.products.Repositories
 
             return true;
         }
-
 
 
 
