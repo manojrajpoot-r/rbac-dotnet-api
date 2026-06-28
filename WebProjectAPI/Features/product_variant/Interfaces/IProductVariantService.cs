@@ -13,7 +13,7 @@ namespace WebProjectAPI.Features.product_variant.Interfaces
 
         Task<ApiResponse<ProductVariantCreateUpdateDto>> Add(ProductVariantCreateUpdateDto model);
 
-        Task<ApiResponse<ProductVariantCreateUpdateDto>> Update(ProductVariantCreateUpdateDto model);
+        Task<ApiResponse<ProductVariantCreateUpdateDto>> Update(int id,ProductVariantCreateUpdateDto model);
 
         Task<ApiResponse<string>> Delete(int id);
 

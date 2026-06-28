@@ -31,9 +31,9 @@ namespace WebProjectAPI.Features.product_variant.Services
 
             return await _repository.Add(model);
         }
-        public async Task<ApiResponse<ProductVariantCreateUpdateDto>> Update(ProductVariantCreateUpdateDto model)
+        public async Task<ApiResponse<ProductVariantCreateUpdateDto>> Update(int id,ProductVariantCreateUpdateDto model)
         {
-            return await _repository.Update(model);
+            return await _repository.Update(id,model);
         }
 
         public async Task<ApiResponse<string>> Delete(int id)

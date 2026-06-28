@@ -3,6 +3,7 @@ using WebProjectAPI.Features.product_images.Models;
 
 namespace WebProjectAPI.Features.product_images.Interfaces
 {
+ 
     public interface IProductImageRepository
     {
         Task<(List<ProductImage>, int)> GetAllAsync(int productId);
@@ -11,8 +12,8 @@ namespace WebProjectAPI.Features.product_images.Interfaces
 
         Task<List<ProductImage>> CreateRangeAsync(List<ProductImage> images);
 
-        Task UpdateAsync(ProductImage image);
-
         Task DeleteAsync(ProductImage image);
+
+        Task SetPrimaryAsync(ProductImage image);
     }
 }

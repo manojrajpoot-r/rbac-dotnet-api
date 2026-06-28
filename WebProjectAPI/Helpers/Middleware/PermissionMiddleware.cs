@@ -38,27 +38,12 @@ namespace WebProjectAPI.Helpers.Middleware
                 .Select(ur => ur.Role.Name)
                 .ToList();
 
-            // Admin bypass
-            //if (roles.Any(r => r.Equals("Admin", StringComparison.OrdinalIgnoreCase)))
-            //{
-            //    await _next(context);
-            //    return;
-            //}
-
-
-
-
-
             var roleClaims = context.User.Claims
             .Where(x => x.Type.Contains("role"))
             .Select(x => x.Value)
             .ToList();
 
             Console.WriteLine(string.Join(",", roleClaims));
-
-
-
-
 
 
             // SuperAdmin bypass

@@ -1,10 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Razorpay.Api;
 using WebProjectAPI.Data;
-using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.product_images.Interfaces;
 using WebProjectAPI.Features.product_images.Models;
-using WebProjectAPI.Features.products.Models;
 using WebProjectAPI.Services.Interfaces;
 
 namespace WebProjectAPI.Features.product_images.Repositories
@@ -65,20 +62,7 @@ namespace WebProjectAPI.Features.product_images.Repositories
             return images;
         }
 
-        public async Task UpdateAsync(ProductImage image)
-        {
-            var existingImage =
-                await _context.ProductImages
-                .FirstOrDefaultAsync(x =>
-                    x.Id == image.Id &&
-                    x.TenantId == _currentUser.TenantId);
-
-            if (existingImage == null)
-                throw new Exception("Image not found");
-
-
-            await _context.SaveChangesAsync();
-        }
+        
 
         public async Task DeleteAsync(ProductImage image)
         {
@@ -92,6 +76,24 @@ namespace WebProjectAPI.Features.product_images.Repositories
                 throw new Exception("Image not found");
 
             _context.ProductImages.Remove(existingImage);
+
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task SetPrimaryAsync(ProductImage image)
+        {
+            var images = await _context.ProductImages
+                .Where(x => x.ProductId == image.ProductId &&
+                            x.TenantId == _currentUser.TenantId)
+                .ToListAsync();
+
+            foreach (var item in images)
+            {
+                item.IsMain = false;
+            }
+
+            image.IsMain = true;
 
             await _context.SaveChangesAsync();
         }

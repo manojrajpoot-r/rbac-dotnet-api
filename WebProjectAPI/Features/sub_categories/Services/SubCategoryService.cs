@@ -103,13 +103,31 @@ namespace WebProjectAPI.Features.sub_categories.Services
             return await _repository.ChangeStatusAsync(id);
         }
 
-        public async Task<List<SubCategoryListDto>> GetAllSubCategoriesAsync()
+        public async Task<List<SubCategoryListDto>> GetByCategoryIdAsync(int categoryId)
         {
-            var sub_categories = await _repository.GetAllSubCategoriesAsync();
-
-            return _mapper.Map<List<SubCategoryListDto>>(sub_categories);
+            return await _repository.GetByCategoryIdAsync(categoryId);
         }
 
-        
+
+        public async Task<ApiResponse<List<SubCategoryListDto>>>
+              GetAllSubCategoriesAsync()
+        {
+            var sub_categories =
+                await _repository.GetAllSubCategoriesAsync();
+
+            var data =
+                _mapper.Map<List<SubCategoryListDto>>(
+                    sub_categories
+                );
+
+            return new ApiResponse<List<SubCategoryListDto>>
+            {
+                Success = true,
+                Data = data
+            };
+        }
+
     }
+
+
 }

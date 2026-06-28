@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using WebProjectAPI.Data;
 using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Helpers;
 using WebProjectAPI.Features.Common.Interfaces;
@@ -8,7 +7,6 @@ using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Models;
-using WebProjectAPI.Features.products.Repositories;
 namespace WebProjectAPI.Features.products.Services
 {
     public class ProductService : IProductService
@@ -173,19 +171,12 @@ namespace WebProjectAPI.Features.products.Services
             .Select(x => new ProductDto
             {
                 Id = x.Id,
-
                 Name = x.Name,
-
                 Price = x.Price,
-
                 DiscountPrice = x.DiscountPrice,
-
                 DiscountPercentage = x.DiscountPercentage,
-
                 Image = x.Image,
-
                 Status = x.Status,
-
                 Slug = x.Slug,
 
                 CategoryId = x.CategoryId,

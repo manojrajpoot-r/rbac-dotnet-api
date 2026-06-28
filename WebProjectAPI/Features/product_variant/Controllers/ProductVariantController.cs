@@ -7,13 +7,13 @@
 
         [Authorize]
         [Permission("PRODUCT_VARIANT_CREATE")]
-        [HttpPost("add")]		public async Task<IActionResult> Add(ProductVariantCreateUpdateDto model)		{			var result = await _service.Add(model);			return Ok(result);		}
+        [HttpPost]		public async Task<IActionResult> Add(ProductVariantCreateUpdateDto model)		{			var result = await _service.Add(model);			return Ok(result);		}
 
         [Authorize]
-        [Permission("PRODUCT_VARIANT_UPDATE")]
-        [HttpPut("update")]		public async Task<IActionResult> Update(ProductVariantCreateUpdateDto model)		{			var result = await _service.Update(model);			return Ok(result);		}
+        [Permission("PRODUCT_VARIANT_EDIT")]
+        [HttpPut("{id}")]		public async Task<IActionResult> Update(int id			,ProductVariantCreateUpdateDto model)		{			var result = await _service.Update(id,model);			return Ok(result);		}
         [Authorize]
-        [Permission("PRODUCT_VARIANT_UPDATE")]
+        [Permission("PRODUCT_VARIANT_DELETE")]
         [HttpDelete("delete/{id}")]		public async Task<IActionResult> Delete(int id)		{			var result = await _service.Delete(id);			return Ok(result);		}
 
         [Authorize]

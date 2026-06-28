@@ -157,11 +157,11 @@ namespace WebProjectAPI.Features.product_variant.Repositories
         }
 
         // UPDATE
-        public async Task<ApiResponse<ProductVariantCreateUpdateDto>> Update(ProductVariantCreateUpdateDto model)
+        public async Task<ApiResponse<ProductVariantCreateUpdateDto>> Update(int id, ProductVariantCreateUpdateDto model)
         {
             var variant = await _context.ProductVariants
                      .FirstOrDefaultAsync(x =>
-                         x.Id == model.Id &&
+                         x.Id == id &&
                          !x.IsDeleted &&
                          x.TenantId == _currentUser.TenantId);
 

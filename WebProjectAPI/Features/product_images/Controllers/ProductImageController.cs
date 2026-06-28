@@ -2,65 +2,41 @@
 using WebProjectAPI.Features.product_images.DTOs;
 using WebProjectAPI.Features.product_images.Interfaces;
 
-namespace WebProjectAPI.Features.product_images.Controllers
+namespace WebProjectAPI.Features.product_images.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ProductImageController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductImageController : ControllerBase
+    private readonly IProductImageService _service;
+
+    public ProductImageController(IProductImageService service)
     {
-        private readonly IProductImageService _service;
+        _service = service;
+    }
 
-        public ProductImageController(IProductImageService service)
-        {
-            _service = service;
-        }
+    [HttpGet("{productId}")]
+    public async Task<IActionResult> GetByProductId(int productId)
+    {
+        return Ok(await _service.GetAllAsync(productId));
+    }
 
-    
-        [HttpGet]
-        public async Task<IActionResult> GetAll(int productId)
-        {
-            var result = await _service.GetAllAsync(productId);
+    [HttpPost]
+    public async Task<IActionResult> Create(
+        [FromForm] ProductImageCreateDto dto)
+    {
+        return Ok(await _service.CreateAsync(dto.ProductId, dto.Images));
+    }
 
-            return Ok(result);
-        }
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        return Ok(await _service.DeleteAsync(id));
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(
-            [FromForm] ProductImageCreateDto dto)
-        {
-            var result = await _service.CreateAsync(
-                dto.ProductId,
-                dto.Images);
-
-            return Ok(result);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(
-            int id,
-            [FromForm] ProductImageUpdateDto dto)
-        {
-            var result = await _service.UpdateAsync(id, dto);
-
-            if (!result.Success)
-            {
-                return NotFound(result);
-            }
-
-            return Ok(result);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var result = await _service.DeleteAsync(id);
-
-            if (!result.Success)
-            {
-                return NotFound(result);
-            }
-
-            return Ok(result);
-        }
+    [HttpPut("set-primary/{id}")]
+    public async Task<IActionResult> SetPrimary(int id)
+    {
+        return Ok(await _service.SetPrimaryAsync(id));
     }
 }

@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
 using WebProjectAPI.Features.Common.Paginations;
-using WebProjectAPI.Features.product_images.DTOs;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
-using WebProjectAPI.Features.products.Services;
+
 using WebProjectAPI.Attributes;
 namespace WebProjectAPI.Features.products.Controllers
 {
@@ -118,7 +117,7 @@ namespace WebProjectAPI.Features.products.Controllers
 
 
 
-        [HttpGet("featured")]
+        [HttpGet("features")]
         public async Task<IActionResult> GetFeaturedProducts()
         {
             var products = await _service.GetFeaturedProductsAsync();

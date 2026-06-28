@@ -1,15 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WebProjectAPI.Data;
-using WebProjectAPI.Features.brands.Models;
 using WebProjectAPI.Features.Common.ApiResponse;
 using WebProjectAPI.Features.Common.Paginations;
 using WebProjectAPI.Features.products.DTOs;
 using WebProjectAPI.Features.products.Interfaces;
 using WebProjectAPI.Features.products.Models;
-using WebProjectAPI.Features.sub_categories.Models;
-using WebProjectAPI.Models;
-using WebProjectAPI.Services.Implementations;
+
 using WebProjectAPI.Services.Interfaces;
+
 
 
 namespace WebProjectAPI.Features.products.Repositories
@@ -18,10 +16,14 @@ namespace WebProjectAPI.Features.products.Repositories
     {
         private readonly AppDbContext _context;
         private readonly ICurrentUserService _currentUser;
-        public ProductRepository(AppDbContext context, ICurrentUserService currentUserService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ProductRepository(AppDbContext context,
+            ICurrentUserService currentUserService, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _currentUser = currentUserService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ApiResponse<List<ProductDto>>> GetAllAsync(
@@ -168,8 +170,10 @@ namespace WebProjectAPI.Features.products.Repositories
 
         public IQueryable<Product> GetQueryable()
         {
+            var tenantId = Convert.ToInt32(_httpContextAccessor.HttpContext!.Items["TenantId"]);
+
             return _context.Products
-         .Where(x => x.TenantId == _currentUser.TenantId);
+                .Where(x => x.TenantId == tenantId);
         }
 
         public IQueryable<Product> GetLatestProductsAsync()
